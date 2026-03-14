@@ -3,6 +3,13 @@ export type ModelCTA = {
   href: string;
 };
 
+export type LegacyModelCTA = {
+  primaryLabel: string;
+  primaryHref: string;
+  secondaryLabel?: string;
+  secondaryHref?: string;
+};
+
 export type ModelNavItem = {
   label: string;
   href: string;
@@ -23,8 +30,10 @@ export type ModelConfig = {
   seoTitle?: string;
   seoDescription?: string;
 
+  cta?: LegacyModelCTA;
   primaryCta?: ModelCTA;
   secondaryCta?: ModelCTA;
+
   navItems?: ModelNavItem[];
   stats?: ModelStat[];
 };
