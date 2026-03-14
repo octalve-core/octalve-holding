@@ -28,8 +28,8 @@ export async function generateMetadata({
   }
 
   return {
-    title: config.seoTitle,
-    description: config.seoDescription,
+    title: config.seoTitle ?? config.title,
+    description: config.seoDescription ?? config.description,
   };
 }
 

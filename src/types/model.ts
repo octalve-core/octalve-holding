@@ -19,6 +19,10 @@ export type ModelConfig = {
   eyebrow?: string;
   title: string;
   description: string;
+
+  seoTitle?: string;
+  seoDescription?: string;
+
   primaryCta?: ModelCTA;
   secondaryCta?: ModelCTA;
   navItems?: ModelNavItem[];
