@@ -38,12 +38,13 @@ export default function PaystackSuccessClient() {
       return;
     }
 
+    const safeReference = reference;
     let cancelled = false;
 
     async function verify() {
       try {
         const response = await fetch(
-          `/api/payments/paystack/verify?reference=${encodeURIComponent(reference)}`,
+          `/api/payments/paystack/verify?reference=${encodeURIComponent(safeReference)}`,
           { method: "GET" },
         );
 
@@ -52,11 +53,11 @@ export default function PaystackSuccessClient() {
         if (cancelled) return;
 
         if (json?.verified) {
-          setState({ kind: "success", reference });
+          setState({ kind: "success", reference: safeReference });
           return;
         }
 
-        setState({ kind: "pending", reference });
+        setState({ kind: "pending", reference: safeReference });
       } catch (error) {
         if (!cancelled) {
           setState({

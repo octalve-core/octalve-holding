@@ -38,12 +38,13 @@ export default function FlutterwaveSuccessClient() {
       return;
     }
 
+    const safeTxRef = txRef;
     let cancelled = false;
 
     async function verify() {
       try {
         const response = await fetch(
-          `/api/payments/flutterwave/verify?tx_ref=${encodeURIComponent(txRef)}`,
+          `/api/payments/flutterwave/verify?tx_ref=${encodeURIComponent(safeTxRef)}`,
           { method: "GET" },
         );
 
@@ -52,11 +53,11 @@ export default function FlutterwaveSuccessClient() {
         if (cancelled) return;
 
         if (json?.verified) {
-          setState({ kind: "success", txRef });
+          setState({ kind: "success", txRef: safeTxRef });
           return;
         }
 
-        setState({ kind: "pending", txRef });
+        setState({ kind: "pending", txRef: safeTxRef });
       } catch (error) {
         if (!cancelled) {
           setState({
