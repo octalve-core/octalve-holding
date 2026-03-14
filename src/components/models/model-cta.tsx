@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ModelConfig } from "@/types/model";
+import type { ModelConfig } from "@/types/model";
 
 type ModelCTAProps = {
   model: ModelConfig;
