@@ -1,0 +1,109 @@
+import { NextResponse } from "next/server";
+
+import { prisma } from "@/lib/prisma";
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
+export async function GET(request: Request) {
+  try {
+    const secretKey = process.env.FLUTTERWAVE_SECRET_KEY;
+
+    if (!secretKey) {
+      return NextResponse.json(
+        { error: "Flutterwave secret key is not configured." },
+        { status: 500 },
+      );
+    }
+
+    const { searchParams } = new URL(request.url);
+    const txRef = searchParams.get("tx_ref")?.trim();
+
+    if (!txRef) {
+      return NextResponse.json(
+        { error: "Transaction reference is required." },
+        { status: 400 },
+      );
+    }
+
+    const attempt = await prisma.paymentAttempt.findUnique({
+      where: { providerReference: txRef },
+      include: { order: true },
+    });
+
+    if (!attempt || attempt.provider !== "FLUTTERWAVE") {
+      return NextResponse.json(
+        { error: "Payment attempt not found." },
+        { status: 404 },
+      );
+    }
+
+    const verifyResponse = await fetch(
+      `https://api.flutterwave.com/v3/transactions/verify_by_reference?tx_ref=${encodeURIComponent(txRef)}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${secretKey}`,
+        },
+      },
+    );
+
+    const verifyJson = await verifyResponse.json();
+    const data = verifyJson?.data;
+
+    await prisma.paymentAttempt.update({
+      where: { id: attempt.id },
+      data: {
+        providerTxId: data?.id ? String(data.id) : null,
+        status: data?.status || "unknown",
+        rawVerify: verifyJson,
+      },
+    });
+
+    const paid =
+      verifyResponse.ok &&
+      verifyJson?.status === "success" &&
+      data?.status === "successful" &&
+      data?.tx_ref === txRef &&
+      data?.currency === attempt.currency &&
+      Number(data?.amount) >= attempt.amount &&
+      (!data?.customer?.email ||
+        String(data.customer.email).toLowerCase() ===
+          attempt.order.email.toLowerCase());
+
+    if (!paid) {
+      return NextResponse.json({
+        verified: false,
+        status: data?.status || "pending",
+        reference: txRef,
+      });
+    }
+
+    await prisma.order.update({
+      where: { id: attempt.orderId },
+      data: {
+        status: "PAID",
+        paidAt: data?.created_at ? new Date(data.created_at) : new Date(),
+      },
+    });
+
+    return NextResponse.json({
+      verified: true,
+      status: "successful",
+      reference: txRef,
+      orderId: attempt.orderId,
+    });
+  } catch (error) {
+    console.error("Flutterwave verify error:", error);
+
+    return NextResponse.json(
+      {
+        error:
+          error instanceof Error
+            ? error.message
+            : "Flutterwave verification failed.",
+      },
+      { status: 500 },
+    );
+  }
+}
