@@ -1,3 +1,13 @@
+export type ModelSlug =
+  | "node"
+  | "suite"
+  | "consult"
+  | "lab"
+  | "leap"
+  | "vault"
+  | "cloud"
+  | "one";
+
 export type ModelCTA = {
   label: string;
   href: string;
@@ -43,7 +53,7 @@ export type ModelSection = {
 };
 
 export type ModelConfig = {
-  slug: string;
+  slug: ModelSlug;
   name: string;
   eyebrow?: string;
   title: string;
