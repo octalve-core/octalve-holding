@@ -33,7 +33,7 @@ export type ModelStat = {
 export type ModelSectionItem =
   | string
   | {
-      title: string;
+      title?: string;
       description?: string;
       label?: string;
       href?: string;
@@ -42,7 +42,7 @@ export type ModelSectionItem =
 export type ModelSection = {
   id?: string;
   eyebrow?: string;
-  title: string;
+  title?: string;
   description?: string;
   content?: string;
   items?: ModelSectionItem[];
@@ -57,9 +57,16 @@ export type ModelSection = {
 export type ModelConfig = {
   slug: ModelSlug;
   name: string;
+  shortName?: string;
+  subdomain?: string;
+
   eyebrow?: string;
-  title: string;
-  description: string;
+
+  title?: string;
+  description?: string;
+
+  heroTitle?: string;
+  heroDescription?: string;
 
   seoTitle?: string;
   seoDescription?: string;

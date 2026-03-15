@@ -1,50 +1,43 @@
-import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { MODEL_ORDER, MODEL_CONFIGS } from "@/data/models";
+import { MODEL_CONFIGS } from "@/data/models";
 import { renderModelPage } from "@/lib/models/render-model-page";
-import { getModelConfig } from "@/lib/models/get-model";
+import {
+  getModelSeoDescription,
+  getModelSeoTitle,
+} from "@/lib/models/normalize-model";
+import type { ModelSlug } from "@/types/model";
 
-type PageProps = {
+type ModelPageProps = {
   params: Promise<{
     model: string;
   }>;
 };
 
-export async function generateStaticParams() {
-  return MODEL_ORDER.map((model) => ({ model }));
-}
-
-export async function generateMetadata({
-  params,
-}: PageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: ModelPageProps) {
   const { model } = await params;
-  const config = getModelConfig(model);
+  const config = MODEL_CONFIGS[model as ModelSlug];
 
   if (!config) {
     return {
-      title: "Model Not Found | Octalve",
+      title: "Model Not Found",
+      description: "The requested model could not be found.",
     };
   }
 
   return {
-    title: config.seoTitle ?? config.title,
-    description: config.seoDescription ?? config.description,
+    title: getModelSeoTitle(config),
+    description: getModelSeoDescription(config),
   };
 }
 
-export default async function ModelPage({ params }: PageProps) {
+export default async function ModelPage({ params }: ModelPageProps) {
   const { model } = await params;
+  const config = MODEL_CONFIGS[model as ModelSlug];
 
-  if (!(model in MODEL_CONFIGS)) {
+  if (!config) {
     notFound();
   }
 
-  const page = renderModelPage(model);
-
-  if (!page) {
-    notFound();
-  }
-
-  return page;
+  return renderModelPage(model as ModelSlug);
 }

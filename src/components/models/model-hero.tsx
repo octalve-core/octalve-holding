@@ -1,21 +1,24 @@
 import Link from "next/link";
 import type { ModelConfig } from "@/types/model";
+import {
+  getModelDescription,
+  getModelPrimaryCta,
+  getModelSecondaryCta,
+  getModelTitle,
+} from "@/lib/models/normalize-model";
 
 type ModelHeroProps = {
   model: ModelConfig;
 };
 
 export default function ModelHero({ model }: ModelHeroProps) {
-  const primaryHref =
-    model.cta?.primaryHref ?? model.primaryCta?.href ?? "/contact";
-  const primaryLabel =
-    model.cta?.primaryLabel ?? model.primaryCta?.label ?? "Get Started";
+  const title = getModelTitle(model);
+  const description = getModelDescription(model);
+  const primaryCta = getModelPrimaryCta(model);
+  const secondaryCta = getModelSecondaryCta(model);
 
-  const secondaryHref = model.cta?.secondaryHref ?? model.secondaryCta?.href;
-  const secondaryLabel = model.cta?.secondaryLabel ?? model.secondaryCta?.label;
-
-  const primaryIsExternal = primaryHref.startsWith("http");
-  const secondaryIsExternal = secondaryHref?.startsWith("http") ?? false;
+  const primaryIsExternal = primaryCta.href.startsWith("http");
+  const secondaryIsExternal = secondaryCta?.href.startsWith("http") ?? false;
 
   return (
     <section className="px-4 py-16 sm:px-6 md:py-20">
@@ -27,33 +30,35 @@ export default function ModelHero({ model }: ModelHeroProps) {
         )}
 
         <h1 className="mt-4 max-w-[14ch] text-4xl font-medium leading-[1.05] tracking-[-0.04em] text-slate-950 sm:text-5xl md:text-6xl">
-          {model.title}
+          {title}
         </h1>
 
-        <p className="mt-6 max-w-3xl text-base leading-8 text-slate-600 sm:text-lg">
-          {model.description}
-        </p>
+        {description && (
+          <p className="mt-6 max-w-3xl text-base leading-8 text-slate-600 sm:text-lg">
+            {description}
+          </p>
+        )}
 
         <div className="mt-8 flex flex-wrap gap-3">
           <Link
-            href={primaryHref}
+            href={primaryCta.href}
             className="inline-flex items-center justify-center rounded-full bg-slate-950 px-6 py-3 text-sm font-medium text-white transition hover:bg-slate-800"
             {...(primaryIsExternal
               ? { target: "_blank", rel: "noopener noreferrer" }
               : {})}
           >
-            {primaryLabel}
+            {primaryCta.label}
           </Link>
 
-          {secondaryHref && secondaryLabel && (
+          {secondaryCta && (
             <Link
-              href={secondaryHref}
+              href={secondaryCta.href}
               className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-6 py-3 text-sm font-medium text-slate-900 transition hover:bg-slate-50"
               {...(secondaryIsExternal
                 ? { target: "_blank", rel: "noopener noreferrer" }
                 : {})}
             >
-              {secondaryLabel}
+              {secondaryCta.label}
             </Link>
           )}
         </div>

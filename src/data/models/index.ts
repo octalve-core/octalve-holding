@@ -1,4 +1,4 @@
-import { ModelConfig, ModelSlug } from "@/types/model";
+import type { ModelConfig, ModelSlug } from "@/types/model";
 
 export const MODEL_CONFIGS: Record<ModelSlug, ModelConfig> = {
   node: {

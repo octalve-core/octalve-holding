@@ -1,20 +1,17 @@
 import Link from "next/link";
 import type { ModelConfig } from "@/types/model";
+import {
+  getModelPrimaryCta,
+  getModelSecondaryCta,
+} from "@/lib/models/normalize-model";
 
 type ModelCTAProps = {
   model: ModelConfig;
 };
 
 export default function ModelCTA({ model }: ModelCTAProps) {
-  const primaryHref =
-    model.cta?.primaryHref ?? model.primaryCta?.href ?? "/contact";
-  const primaryLabel =
-    model.cta?.primaryLabel ?? model.primaryCta?.label ?? "Get Started";
-
-  const secondaryHref =
-    model.cta?.secondaryHref ?? model.secondaryCta?.href ?? "/contact";
-  const secondaryLabel =
-    model.cta?.secondaryLabel ?? model.secondaryCta?.label ?? "Talk to Us";
+  const primaryCta = getModelPrimaryCta(model);
+  const secondaryCta = getModelSecondaryCta(model);
 
   return (
     <section className="px-4 py-16 sm:px-6 md:py-20">
@@ -34,18 +31,20 @@ export default function ModelCTA({ model }: ModelCTAProps) {
 
         <div className="mt-8 flex flex-wrap gap-3">
           <Link
-            href={primaryHref}
+            href={primaryCta.href}
             className="inline-flex items-center justify-center rounded-full bg-white px-6 py-3 text-sm font-medium text-slate-950 transition hover:bg-slate-100"
           >
-            {primaryLabel}
+            {primaryCta.label}
           </Link>
 
-          <Link
-            href={secondaryHref}
-            className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/5 px-6 py-3 text-sm font-medium text-white transition hover:bg-white/10"
-          >
-            {secondaryLabel}
-          </Link>
+          {secondaryCta && (
+            <Link
+              href={secondaryCta.href}
+              className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/5 px-6 py-3 text-sm font-medium text-white transition hover:bg-white/10"
+            >
+              {secondaryCta.label}
+            </Link>
+          )}
         </div>
       </div>
     </section>

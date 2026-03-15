@@ -14,9 +14,11 @@ export default function ModelSectionBlock({ section }: ModelSectionBlockProps) {
           </p>
         )}
 
-        <h2 className="mt-4 text-3xl font-medium tracking-[-0.03em] text-slate-950 sm:text-4xl">
-          {section.title}
-        </h2>
+        {section.title && (
+          <h2 className="mt-4 text-3xl font-medium tracking-[-0.03em] text-slate-950 sm:text-4xl">
+            {section.title}
+          </h2>
+        )}
 
         {section.description && (
           <p className="mt-4 max-w-3xl text-base leading-8 text-slate-600 sm:text-lg">
