@@ -20,6 +20,28 @@ export type ModelStat = {
   value: string;
 };
 
+export type ModelSectionItem = {
+  title: string;
+  description?: string;
+  label?: string;
+  href?: string;
+};
+
+export type ModelSection = {
+  id?: string;
+  eyebrow?: string;
+  title: string;
+  description?: string;
+  content?: string;
+  items?: ModelSectionItem[];
+
+  cta?: LegacyModelCTA;
+  primaryCta?: ModelCTA;
+  secondaryCta?: ModelCTA;
+
+  [key: string]: unknown;
+};
+
 export type ModelConfig = {
   slug: string;
   name: string;
@@ -36,4 +58,7 @@ export type ModelConfig = {
 
   navItems?: ModelNavItem[];
   stats?: ModelStat[];
+  sections?: ModelSection[];
+
+  [key: string]: unknown;
 };

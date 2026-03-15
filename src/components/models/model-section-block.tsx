@@ -1,4 +1,4 @@
-import { ModelSection } from "@/types/model";
+import type { ModelSection } from "@/types/model";
 
 type ModelSectionBlockProps = {
   section: ModelSection;
@@ -6,28 +6,61 @@ type ModelSectionBlockProps = {
 
 export default function ModelSectionBlock({ section }: ModelSectionBlockProps) {
   return (
-    <section className="px-4 py-8 sm:px-6 md:py-10">
-      <div className="mx-auto max-w-[1200px] rounded-[28px] border border-slate-200 bg-white p-8 sm:p-10">
-        <h2 className="text-2xl font-medium tracking-[-0.03em] text-slate-950 sm:text-3xl">
+    <section className="px-4 py-16 sm:px-6 md:py-20">
+      <div className="mx-auto max-w-[1200px]">
+        {section.eyebrow && (
+          <p className="text-sm font-medium uppercase tracking-[0.16em] text-blue-600">
+            {section.eyebrow}
+          </p>
+        )}
+
+        <h2 className="mt-4 text-3xl font-medium tracking-[-0.03em] text-slate-950 sm:text-4xl">
           {section.title}
         </h2>
 
-        <p className="mt-4 max-w-3xl text-base leading-8 text-slate-600">
-          {section.description}
-        </p>
+        {section.description && (
+          <p className="mt-4 max-w-3xl text-base leading-8 text-slate-600 sm:text-lg">
+            {section.description}
+          </p>
+        )}
 
-        {section.items?.length ? (
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {section.items.map((item) => (
+        {section.content && (
+          <p className="mt-4 max-w-3xl text-base leading-8 text-slate-600">
+            {section.content}
+          </p>
+        )}
+
+        {section.items && section.items.length > 0 && (
+          <div className="mt-10 grid gap-5 md:grid-cols-2">
+            {section.items.map((item, index) => (
               <div
-                key={item}
-                className="rounded-[20px] border border-slate-200 bg-slate-50 px-5 py-4 text-sm leading-7 text-slate-700"
+                key={item.title || item.label || item.href || index}
+                className="rounded-3xl border border-slate-200 bg-white p-6"
               >
-                {item}
+                {(item.label || item.title) && (
+                  <h3 className="text-lg font-medium text-slate-950">
+                    {item.label ?? item.title}
+                  </h3>
+                )}
+
+                {item.description && (
+                  <p className="mt-3 text-base leading-7 text-slate-600">
+                    {item.description}
+                  </p>
+                )}
+
+                {item.href && (
+                  <a
+                    href={item.href}
+                    className="mt-4 inline-flex text-sm font-semibold text-blue-600 transition hover:text-blue-700"
+                  >
+                    Learn more
+                  </a>
+                )}
               </div>
             ))}
           </div>
-        ) : null}
+        )}
       </div>
     </section>
   );
