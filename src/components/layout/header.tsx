@@ -26,7 +26,7 @@ const NAV_COLORS = {
 
 const models = [
   {
-    title: "Octalve One",
+    title: "One",
     description: "Building intelligent business solutions for SMEs.",
     href: "/models/one",
   },
