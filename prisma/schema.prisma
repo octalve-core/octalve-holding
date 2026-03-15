@@ -103,12 +103,32 @@ model DownloadGrant {
   revokedAt       DateTime?
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
+  accessChallenges DownloadAccessChallenge[]
 
   orderItem       OrderItem      @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
 
   @@index([email])
   @@index([token])
 }
+
+
+model DownloadAccessChallenge {
+  id             String       @id @default(cuid())
+  grantId        String
+  email          String
+  otpCodeHash    String
+  magicTokenHash String
+  expiresAt      DateTime
+  usedAt         DateTime?
+  createdAt      DateTime     @default(now())
+
+  grant          DownloadGrant @relation(fields: [grantId], references: [id], onDelete: Cascade)
+
+  @@index([grantId, email])
+  @@index([expiresAt])
+}
+
+
 
 model WebhookEvent {
   id               String          @id @default(cuid())

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { prisma } from "@/lib/prisma";
+import { finalizeSuccessfulPayment } from "@/server/vault/secure-fulfillment";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -79,19 +80,19 @@ export async function GET(request: Request) {
       });
     }
 
-    await prisma.order.update({
-      where: { id: attempt.orderId },
-      data: {
-        status: "PAID",
-        paidAt: data?.paid_at ? new Date(data.paid_at) : new Date(),
-      },
+    const result = await finalizeSuccessfulPayment({
+      paymentAttemptId: attempt.id,
+      providerTxId: data?.id ? String(data.id) : null,
+      paidAt: data?.paid_at ? new Date(data.paid_at) : new Date(),
+      rawVerify: verifyJson,
     });
 
     return NextResponse.json({
       verified: true,
       status: "success",
       reference,
-      orderId: attempt.orderId,
+      orderId: result.orderId,
+      grantsCreated: result.grants.length,
     });
   } catch (error) {
     console.error("Paystack verify error:", error);

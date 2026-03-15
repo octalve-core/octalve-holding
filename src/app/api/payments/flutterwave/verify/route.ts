@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { prisma } from "@/lib/prisma";
+import { finalizeSuccessfulPayment } from "@/server/vault/secure-fulfillment";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -66,7 +67,7 @@ export async function GET(request: Request) {
       data?.status === "successful" &&
       data?.tx_ref === txRef &&
       data?.currency === attempt.currency &&
-      Number(data?.amount) >= attempt.amount &&
+      Number(data?.amount) === attempt.amount &&
       (!data?.customer?.email ||
         String(data.customer.email).toLowerCase() ===
           attempt.order.email.toLowerCase());
@@ -79,19 +80,19 @@ export async function GET(request: Request) {
       });
     }
 
-    await prisma.order.update({
-      where: { id: attempt.orderId },
-      data: {
-        status: "PAID",
-        paidAt: data?.created_at ? new Date(data.created_at) : new Date(),
-      },
+    const result = await finalizeSuccessfulPayment({
+      paymentAttemptId: attempt.id,
+      providerTxId: data?.id ? String(data.id) : null,
+      paidAt: data?.created_at ? new Date(data.created_at) : new Date(),
+      rawVerify: verifyJson,
     });
 
     return NextResponse.json({
       verified: true,
       status: "successful",
       reference: txRef,
-      orderId: attempt.orderId,
+      orderId: result.orderId,
+      grantsCreated: result.grants.length,
     });
   } catch (error) {
     console.error("Flutterwave verify error:", error);
