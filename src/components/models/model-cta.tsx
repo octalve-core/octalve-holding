@@ -1,18 +1,11 @@
 import Link from "next/link";
 import type { ModelConfig } from "@/types/model";
-import {
-  getModelPrimaryCta,
-  getModelSecondaryCta,
-} from "@/lib/models/normalize-model";
 
 type ModelCTAProps = {
   model: ModelConfig;
 };
 
 export default function ModelCTA({ model }: ModelCTAProps) {
-  const primaryCta = getModelPrimaryCta(model);
-  const secondaryCta = getModelSecondaryCta(model);
-
   return (
     <section className="px-4 py-16 sm:px-6 md:py-20">
       <div className="mx-auto max-w-[1200px] rounded-[32px] bg-slate-950 px-6 py-10 text-white sm:px-8 md:px-10">
@@ -31,18 +24,18 @@ export default function ModelCTA({ model }: ModelCTAProps) {
 
         <div className="mt-8 flex flex-wrap gap-3">
           <Link
-            href={primaryCta.href}
+            href={model.primaryCta.href}
             className="inline-flex items-center justify-center rounded-full bg-white px-6 py-3 text-sm font-medium text-slate-950 transition hover:bg-slate-100"
           >
-            {primaryCta.label}
+            {model.primaryCta.label}
           </Link>
 
-          {secondaryCta && (
+          {model.secondaryCta && (
             <Link
-              href={secondaryCta.href}
+              href={model.secondaryCta.href}
               className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/5 px-6 py-3 text-sm font-medium text-white transition hover:bg-white/10"
             >
-              {secondaryCta.label}
+              {model.secondaryCta.label}
             </Link>
           )}
         </div>

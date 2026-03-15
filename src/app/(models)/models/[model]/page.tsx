@@ -2,10 +2,6 @@ import { notFound } from "next/navigation";
 
 import { MODEL_CONFIGS } from "@/data/models";
 import { renderModelPage } from "@/lib/models/render-model-page";
-import {
-  getModelSeoDescription,
-  getModelSeoTitle,
-} from "@/lib/models/normalize-model";
 import type { ModelSlug } from "@/types/model";
 
 type ModelPageProps = {
@@ -26,8 +22,8 @@ export async function generateMetadata({ params }: ModelPageProps) {
   }
 
   return {
-    title: getModelSeoTitle(config),
-    description: getModelSeoDescription(config),
+    title: config.seoTitle,
+    description: config.seoDescription,
   };
 }
 

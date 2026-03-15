@@ -1,6 +1,7 @@
-import type { ModelConfig, ModelSlug } from "@/types/model";
+import type { LegacyModelConfig, ModelConfig, ModelSlug } from "@/types/model";
+import { normalizeModelConfigRecord } from "@/lib/models/normalize-model";
 
-export const MODEL_CONFIGS: Record<ModelSlug, ModelConfig> = {
+const RAW_MODEL_CONFIGS: Record<ModelSlug, LegacyModelConfig> = {
   node: {
     slug: "node",
     name: "Octalve Node",
@@ -344,6 +345,9 @@ export const MODEL_CONFIGS: Record<ModelSlug, ModelConfig> = {
     },
   },
 };
+
+export const MODEL_CONFIGS: Record<ModelSlug, ModelConfig> =
+  normalizeModelConfigRecord(RAW_MODEL_CONFIGS);
 
 export const MODEL_ORDER: ModelSlug[] = [
   "node",
