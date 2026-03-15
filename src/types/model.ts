@@ -30,12 +30,14 @@ export type ModelStat = {
   value: string;
 };
 
-export type ModelSectionItem = {
-  title: string;
-  description?: string;
-  label?: string;
-  href?: string;
-};
+export type ModelSectionItem =
+  | string
+  | {
+      title: string;
+      description?: string;
+      label?: string;
+      href?: string;
+    };
 
 export type ModelSection = {
   id?: string;

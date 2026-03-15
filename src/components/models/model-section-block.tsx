@@ -32,33 +32,48 @@ export default function ModelSectionBlock({ section }: ModelSectionBlockProps) {
 
         {section.items && section.items.length > 0 && (
           <div className="mt-10 grid gap-5 md:grid-cols-2">
-            {section.items.map((item, index) => (
-              <div
-                key={item.title || item.label || item.href || index}
-                className="rounded-3xl border border-slate-200 bg-white p-6"
-              >
-                {(item.label || item.title) && (
-                  <h3 className="text-lg font-medium text-slate-950">
-                    {item.label ?? item.title}
-                  </h3>
-                )}
-
-                {item.description && (
-                  <p className="mt-3 text-base leading-7 text-slate-600">
-                    {item.description}
-                  </p>
-                )}
-
-                {item.href && (
-                  <a
-                    href={item.href}
-                    className="mt-4 inline-flex text-sm font-semibold text-blue-600 transition hover:text-blue-700"
+            {section.items.map((item, index) => {
+              if (typeof item === "string") {
+                return (
+                  <div
+                    key={`${item}-${index}`}
+                    className="rounded-3xl border border-slate-200 bg-white p-6"
                   >
-                    Learn more
-                  </a>
-                )}
-              </div>
-            ))}
+                    <h3 className="text-lg font-medium text-slate-950">
+                      {item}
+                    </h3>
+                  </div>
+                );
+              }
+
+              return (
+                <div
+                  key={item.title || item.label || item.href || index}
+                  className="rounded-3xl border border-slate-200 bg-white p-6"
+                >
+                  {(item.label || item.title) && (
+                    <h3 className="text-lg font-medium text-slate-950">
+                      {item.label ?? item.title}
+                    </h3>
+                  )}
+
+                  {item.description && (
+                    <p className="mt-3 text-base leading-7 text-slate-600">
+                      {item.description}
+                    </p>
+                  )}
+
+                  {item.href && (
+                    <a
+                      href={item.href}
+                      className="mt-4 inline-flex text-sm font-semibold text-blue-600 transition hover:text-blue-700"
+                    >
+                      Learn more
+                    </a>
+                  )}
+                </div>
+              );
+            })}
           </div>
         )}
       </div>
