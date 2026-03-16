@@ -75,8 +75,9 @@ const whoWeAre = [
 ];
 
 const explore = [
-  { label: "Trend", href: "/explore/trend" },
-  { label: "Bixpod", href: "/explore/bixpod" },
+  { label: "Trend", href: "/trends" },
+  { label: "Bixpod", href: "/bixpod" },
+  { label: "Career", href: "/career" },
 ];
 
 function isActivePath(pathname: string, href: string) {

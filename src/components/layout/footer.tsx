@@ -39,33 +39,33 @@ const suites = [
 const products = [
   {
     label: "Business Plan Templates",
-    href: "/products/business-plan-templates",
+    href: "/vault/shop",
   },
-  { label: "Pitch Deck Templates", href: "/products/pitch-deck-templates" },
-  { label: "Proposal Templates", href: "/products/proposal-templates" },
-  { label: "Invoice Templates", href: "/products/invoice-templates" },
-  { label: "Startup Guides", href: "/products/startup-guides" },
-  { label: "Sales Scripts", href: "/products/sales-scripts" },
-  { label: "HR Templates", href: "/products/hr-templates" },
-  { label: "Finance Trackers", href: "/products/finance-trackers" },
-  { label: "Resource Bundles", href: "/products/resource-bundles" },
+  { label: "Pitch Deck Templates", href: "/vault/shop" },
+  { label: "Proposal Templates", href: "/vault/shop" },
+  { label: "Invoice Templates", href: "/vault/shop" },
+  { label: "Startup Guides", href: "/vault/shop" },
+  { label: "Sales Scripts", href: "/vault/shop" },
+  { label: "HR Templates", href: "/vault/shop" },
+  { label: "Finance Trackers", href: "/vault/shop" },
+  { label: "Resource Bundles", href: "/vault/shop" },
 ];
 
 const helpSupport = [
   { label: "Who We Are", href: "/who-we-are" },
   { label: "Leadership", href: "/leadership" },
   { label: "Contact us", href: "/contact" },
-  { label: "Mail Login", href: "/mail-login" },
+  { label: "Mail Login", href: "/#" },
   // { label: "Archives", href: "/archives" },
   { label: "Privacy Policy", href: "/privacy-policy" },
-  { label: "Octalve Smart", href: "/octalve-smart" },
-  { label: "Octalve Academy", href: "/octalve-academy" },
-  { label: "Trend", href: "/trend" },
-  { label: "Careers", href: "/careers" },
+  { label: "Octalve Smart", href: "/#" },
+  { label: "Octalve Academy", href: "/#" },
+  { label: "Trend", href: "/trends" },
+  { label: "Careers", href: "/career" },
 ];
 
 const feedback = [
-  { label: "Give feedback", href: "/feedback" },
+  { label: "Give feedback", href: "/contact" },
   { label: "+234 807 345 9090", href: "tel:+2348073459090" },
   { label: "Info@octalve.com", href: "mailto:Info@octalve.com" },
   { label: "Wuye, Abuja.", href: "/contact" },
