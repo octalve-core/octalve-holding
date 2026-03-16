@@ -5,6 +5,7 @@ import LabPage from "@/features/models/lab/page";
 import LeapPage from "@/features/models/leap/page";
 import OnePage from "@/features/models/one/page";
 import VaultPage from "@/features/models/vault/page";
+import CloudPage from "@/features/models/cloud/page";
 
 export function renderModelPage(model: string) {
   switch (model) {
@@ -14,7 +15,6 @@ export function renderModelPage(model: string) {
       return <ConsultPage />;
     case "suite":
       return <SuitePage />;
-
     case "lab":
       return <LabPage />;
     case "leap":
@@ -23,6 +23,8 @@ export function renderModelPage(model: string) {
       return <OnePage />;
     case "vault":
       return <VaultPage />;
+    case "cloud":
+      return <CloudPage />;
     default:
       return null;
   }
