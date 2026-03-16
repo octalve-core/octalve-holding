@@ -29,7 +29,7 @@ export default function Hero() {
 
             <Link
               href={cloudConsoleLinks.signUp}
-              className="inline-flex rounded-full border border-slate-300 px-6 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:text-slate-950"
+              className="inline-flex text-black rounded-full border border-slate-300 px-6 py-3 text-sm font-semibold text-black transition hover:border-slate-950 hover:text-slate-950"
             >
               Create account
             </Link>

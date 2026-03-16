@@ -1,0 +1,492 @@
+"use client";
+
+import { useEffect, useMemo, useRef } from "react";
+import {
+  type ChatMessage,
+  type SourceItem,
+  useOctalveSmart,
+} from "./octalve-smart-provider";
+
+const UI_COLORS = {
+  red: "#EF4444",
+  blue: "#3B82F6",
+  yellow: "#F59E0B",
+  green: "#22C55E",
+  pageBg: "#F8FAFC",
+  white: "#FFFFFF",
+  border: "#E5E7EB",
+  chipBg: "#F3F4F6",
+  darkButton: "#111827",
+  textSoft: "#64748B",
+};
+
+const CANONICAL_HEADINGS = [
+  "What this usually means",
+  "How Octalve can help",
+  "What result to expect",
+  "Recommended next step",
+] as const;
+
+type ParsedSection = {
+  heading: string | null;
+  body: string;
+};
+
+function SendIcon() {
+  return (
+    <svg
+      width="22"
+      height="22"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M12 5V19M12 5L6 11M12 5L18 11"
+        stroke="currentColor"
+        strokeWidth="1.9"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function CloseIcon() {
+  return (
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M6 6L18 18M18 6L6 18"
+        stroke="currentColor"
+        strokeWidth="1.9"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+function RefreshIcon() {
+  return (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M20 11A8 8 0 1 0 18.3 16.3M20 11V5M20 11H14"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function normalizeHeading(block: string) {
+  const cleaned = block
+    .replace(/^\*\*/, "")
+    .replace(/\*\*$/, "")
+    .replace(/:$/, "")
+    .trim();
+
+  const canonical = CANONICAL_HEADINGS.find(
+    (heading) => heading.toLowerCase() === cleaned.toLowerCase(),
+  );
+
+  return canonical ?? null;
+}
+
+function parseAssistantSections(content: string): ParsedSection[] {
+  const blocks = content
+    .split(/\n{2,}/)
+    .map((block) => block.trim())
+    .filter(Boolean);
+
+  if (blocks.length === 0) {
+    return [{ heading: null, body: content.trim() }];
+  }
+
+  const sections: ParsedSection[] = [];
+  let current: ParsedSection = { heading: null, body: "" };
+
+  function pushCurrent() {
+    if (current.heading || current.body.trim()) {
+      sections.push({
+        heading: current.heading,
+        body: current.body.trim(),
+      });
+    }
+  }
+
+  for (const block of blocks) {
+    const heading = normalizeHeading(block);
+
+    if (heading) {
+      pushCurrent();
+      current = { heading, body: "" };
+      continue;
+    }
+
+    if (!current.body) {
+      current.body = block;
+    } else {
+      current.body = `${current.body}\n\n${block}`;
+    }
+  }
+
+  pushCurrent();
+
+  return sections.length > 0
+    ? sections
+    : [{ heading: null, body: content.trim() }];
+}
+
+function toReadablePath(path: string) {
+  if (!path || path === "/") return "Home";
+
+  return path
+    .replace(/^\/+/, "")
+    .split("/")
+    .filter(Boolean)
+    .map((part) =>
+      part
+        .replace(/[-_]+/g, " ")
+        .replace(/\b\w/g, (char) => char.toUpperCase()),
+    )
+    .join(" / ");
+}
+
+function sourceLabel(source: SourceItem) {
+  const pageLabel = source.title?.trim() || toReadablePath(source.path);
+  return `${source.site} — ${pageLabel}`;
+}
+
+function renderBody(body: string) {
+  const lines = body.split("\n").filter((line) => line.trim().length > 0);
+  const isBulletList =
+    lines.length > 1 && lines.every((line) => /^(-|•)\s+/.test(line.trim()));
+
+  if (isBulletList) {
+    return (
+      <ul className="space-y-2 pl-5 text-[15px] leading-7 text-slate-800 sm:text-base">
+        {lines.map((line) => (
+          <li key={line}>{line.replace(/^(-|•)\s+/, "")}</li>
+        ))}
+      </ul>
+    );
+  }
+
+  return (
+    <div className="space-y-3">
+      {body.split(/\n{2,}/).map((paragraph, index) => (
+        <p
+          key={`${paragraph}-${index}`}
+          className="whitespace-pre-wrap text-[15px] leading-7 text-slate-800 sm:text-base sm:leading-8"
+        >
+          {paragraph}
+        </p>
+      ))}
+    </div>
+  );
+}
+
+function AssistantBubble({ message }: { message: ChatMessage }) {
+  const sections = useMemo(
+    () => parseAssistantSections(message.content),
+    [message.content],
+  );
+
+  return (
+    <div
+      className="max-w-[92%] rounded-[24px] rounded-tl-md px-5 py-4 text-slate-900"
+      style={{ backgroundColor: UI_COLORS.chipBg }}
+    >
+      <div className="space-y-4">
+        {sections.map((section, index) => {
+          const isRecommendation =
+            section.heading?.toLowerCase() === "recommended next step";
+
+          if (isRecommendation) {
+            return (
+              <div
+                key={`${section.heading}-${index}`}
+                className="rounded-2xl border border-slate-200 bg-white px-4 py-4"
+              >
+                {section.heading && (
+                  <p className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
+                    {section.heading}
+                  </p>
+                )}
+                <div className="text-slate-900">{renderBody(section.body)}</div>
+              </div>
+            );
+          }
+
+          return (
+            <div key={`${section.heading}-${index}`} className="space-y-2">
+              {section.heading && (
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
+                  {section.heading}
+                </p>
+              )}
+              {renderBody(section.body)}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+export default function OctalveSmartWindow() {
+  const {
+    isOpen,
+    closeChat,
+    startNewChat,
+    sendMessage,
+    chatInput,
+    setChatInput,
+    messages,
+    suggestions,
+    isLoading,
+    mode,
+    sources,
+  } = useOctalveSmart();
+
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    document.body.style.overflow = "hidden";
+
+    const onEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        closeChat();
+      }
+    };
+
+    document.addEventListener("keydown", onEscape);
+
+    return () => {
+      document.body.style.overflow = "";
+      document.removeEventListener("keydown", onEscape);
+    };
+  }, [isOpen, closeChat]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    messagesEndRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "end",
+    });
+  }, [isOpen, messages, isLoading]);
+
+  const modeLabel = useMemo(() => {
+    if (mode === "website-first") return "Website-first";
+    if (mode === "fallback-guided") return "Guided";
+    return "Live";
+  }, [mode]);
+
+  function handleKeyDown(event: React.KeyboardEvent<HTMLTextAreaElement>) {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+      void sendMessage();
+    }
+  }
+
+  if (!isOpen) return null;
+
+  return (
+    <div
+      className="fixed inset-0 z-[90] flex flex-col"
+      style={{ backgroundColor: UI_COLORS.pageBg }}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Octalve Smart chat"
+    >
+      <div className="flex h-1 w-full flex-none">
+        <div className="w-1/4" style={{ backgroundColor: UI_COLORS.red }} />
+        <div className="w-1/4" style={{ backgroundColor: UI_COLORS.blue }} />
+        <div className="w-1/4" style={{ backgroundColor: UI_COLORS.yellow }} />
+        <div className="w-1/4" style={{ backgroundColor: UI_COLORS.green }} />
+      </div>
+
+      <div
+        className="relative flex h-[72px] flex-none items-center justify-center border-b"
+        style={{
+          borderColor: UI_COLORS.border,
+          backgroundColor: UI_COLORS.white,
+        }}
+      >
+        <div className="flex items-center gap-3">
+          <h2 className="text-xl font-semibold text-slate-900">
+            Octalve Smart
+          </h2>
+          <span className="rounded-full bg-slate-900 px-3 py-1 text-xs text-white">
+            {modeLabel}
+          </span>
+        </div>
+
+        <div className="absolute left-4 flex items-center gap-2 sm:left-6">
+          <button
+            onClick={startNewChat}
+            className="inline-flex h-10 w-10 items-center justify-center rounded-full text-slate-900 transition hover:bg-slate-100"
+            aria-label="Start new chat"
+            title="Start new chat"
+          >
+            <RefreshIcon />
+          </button>
+        </div>
+
+        <button
+          onClick={closeChat}
+          className="absolute right-4 inline-flex h-11 w-11 items-center justify-center rounded-full text-slate-900 transition hover:bg-slate-100 sm:right-6"
+          aria-label="Close chat"
+        >
+          <CloseIcon />
+        </button>
+      </div>
+
+      <div className="flex min-h-0 flex-1 flex-col">
+        <div className="min-h-0 flex-1 overflow-y-auto">
+          <div className="mx-auto max-w-[920px] px-4 py-6 sm:px-6 md:py-8">
+            {sources.length > 0 && (
+              <div className="mb-6 flex flex-wrap gap-2">
+                {sources.slice(0, 4).map((source) => (
+                  <a
+                    key={source.url}
+                    href={source.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="rounded-full border px-3 py-2 text-xs text-slate-700 transition hover:bg-slate-100"
+                    style={{ borderColor: UI_COLORS.border }}
+                    title={source.url}
+                  >
+                    {sourceLabel(source)}
+                  </a>
+                ))}
+              </div>
+            )}
+
+            <div className="space-y-6">
+              {messages.map((message) => (
+                <div
+                  key={message.id}
+                  className={`flex ${
+                    message.role === "user" ? "justify-end" : "justify-start"
+                  }`}
+                >
+                  {message.role === "user" ? (
+                    <div
+                      className="max-w-[80%] rounded-[24px] rounded-tr-md px-5 py-4 text-white"
+                      style={{ backgroundColor: UI_COLORS.green }}
+                    >
+                      <p className="whitespace-pre-wrap text-[15px] leading-7 sm:text-base sm:leading-8">
+                        {message.content}
+                      </p>
+                    </div>
+                  ) : (
+                    <AssistantBubble message={message} />
+                  )}
+                </div>
+              ))}
+
+              {isLoading && (
+                <div className="flex justify-start">
+                  <div
+                    className="max-w-[92%] rounded-[24px] rounded-tl-md px-5 py-4 text-slate-900"
+                    style={{ backgroundColor: UI_COLORS.chipBg }}
+                  >
+                    <p className="text-[15px] leading-7 sm:text-base sm:leading-8">
+                      Octalve Smart is checking our services and infrastructure…
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              <div ref={messagesEndRef} />
+            </div>
+          </div>
+        </div>
+
+        <div
+          className="flex-none border-t px-4 pb-5 pt-4 sm:px-6"
+          style={{
+            borderColor: UI_COLORS.border,
+            backgroundColor: "rgba(248, 250, 252, 0.96)",
+            backdropFilter: "blur(14px)",
+          }}
+        >
+          <div className="mx-auto max-w-[920px]">
+            <div className="mb-4 flex items-center justify-between gap-4">
+              <div className="overflow-x-auto pb-1 hide-scrollbar">
+                <div className="flex w-max min-w-full gap-3">
+                  {suggestions.map((prompt) => (
+                    <button
+                      key={prompt}
+                      onClick={() => void sendMessage(prompt)}
+                      disabled={isLoading}
+                      className="whitespace-nowrap rounded-[16px] border px-4 py-3 text-sm text-slate-900 transition hover:bg-slate-50 disabled:opacity-60"
+                      style={{
+                        borderColor: UI_COLORS.border,
+                        backgroundColor: UI_COLORS.chipBg,
+                      }}
+                    >
+                      {prompt}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <p className="hidden text-xs text-slate-500 md:block">
+                Ask about websites, branding, cloud, systems, or AI automation.
+              </p>
+            </div>
+
+            <div
+              className="rounded-[32px] border bg-white p-4 shadow-[0_10px_35px_rgba(15,23,42,0.05)] sm:p-5"
+              style={{
+                borderColor: UI_COLORS.border,
+                backgroundColor: UI_COLORS.white,
+              }}
+            >
+              <textarea
+                value={chatInput}
+                onChange={(event) => setChatInput(event.target.value)}
+                onKeyDown={handleKeyDown}
+                rows={3}
+                placeholder="Ask Octalve Smart about your website, brand, cloud setup, product, or business system..."
+                className="min-h-[96px] w-full resize-none border-none bg-transparent text-base leading-7 text-slate-900 outline-none placeholder:text-slate-400"
+              />
+
+              <div className="mt-4 flex items-center justify-between gap-4">
+                <p className="text-xs text-slate-500">Press Enter to send</p>
+
+                <button
+                  onClick={() => void sendMessage()}
+                  disabled={isLoading}
+                  className="inline-flex h-12 w-12 items-center justify-center rounded-full text-white disabled:opacity-60"
+                  style={{ backgroundColor: UI_COLORS.darkButton }}
+                  aria-label="Send chat message"
+                >
+                  <SendIcon />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
