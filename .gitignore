@@ -46,6 +46,6 @@ next-env.d.ts
 .next/cache
 
 # local env
-.env.local
+# .env.local
 
 /src/generated/prisma
