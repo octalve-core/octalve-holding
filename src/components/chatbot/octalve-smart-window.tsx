@@ -17,7 +17,6 @@ const UI_COLORS = {
   border: "#E5E7EB",
   chipBg: "#F3F4F6",
   darkButton: "#111827",
-  textSoft: "#64748B",
 };
 
 const CANONICAL_HEADINGS = [
@@ -87,6 +86,20 @@ function RefreshIcon() {
         strokeLinecap="round"
         strokeLinejoin="round"
       />
+    </svg>
+  );
+}
+
+function StopIcon() {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden="true"
+    >
+      <rect x="6" y="6" width="12" height="12" rx="2" />
     </svg>
   );
 }
@@ -247,12 +260,33 @@ function AssistantBubble({ message }: { message: ChatMessage }) {
   );
 }
 
+function LoadingBubble({
+  phase,
+}: {
+  phase: "retrieving" | "generating" | null;
+}) {
+  const label =
+    phase === "retrieving"
+      ? "Octalve Smart is checking Octalve websites and services…"
+      : "Octalve Smart is writing your answer…";
+
+  return (
+    <div
+      className="max-w-[92%] rounded-[24px] rounded-tl-md px-5 py-4 text-slate-900"
+      style={{ backgroundColor: UI_COLORS.chipBg }}
+    >
+      <p className="text-[15px] leading-7 sm:text-base sm:leading-8">{label}</p>
+    </div>
+  );
+}
+
 export default function OctalveSmartWindow() {
   const {
     isOpen,
     closeChat,
     startNewChat,
     sendMessage,
+    stopGenerating,
     chatInput,
     setChatInput,
     messages,
@@ -260,6 +294,7 @@ export default function OctalveSmartWindow() {
     isLoading,
     mode,
     sources,
+    streamStatus,
   } = useOctalveSmart();
 
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
@@ -290,7 +325,7 @@ export default function OctalveSmartWindow() {
       behavior: "smooth",
       block: "end",
     });
-  }, [isOpen, messages, isLoading]);
+  }, [isOpen, messages, isLoading, streamStatus]);
 
   const modeLabel = useMemo(() => {
     if (mode === "website-first") return "Website-first";
@@ -380,40 +415,37 @@ export default function OctalveSmartWindow() {
             )}
 
             <div className="space-y-6">
-              {messages.map((message) => (
-                <div
-                  key={message.id}
-                  className={`flex ${
-                    message.role === "user" ? "justify-end" : "justify-start"
-                  }`}
-                >
-                  {message.role === "user" ? (
-                    <div
-                      className="max-w-[80%] rounded-[24px] rounded-tr-md px-5 py-4 text-white"
-                      style={{ backgroundColor: UI_COLORS.green }}
-                    >
-                      <p className="whitespace-pre-wrap text-[15px] leading-7 sm:text-base sm:leading-8">
-                        {message.content}
-                      </p>
-                    </div>
-                  ) : (
-                    <AssistantBubble message={message} />
-                  )}
-                </div>
-              ))}
+              {messages.map((message, index) => {
+                const isStreamingPlaceholder =
+                  message.role === "assistant" &&
+                  !message.content.trim() &&
+                  isLoading &&
+                  index === messages.length - 1;
 
-              {isLoading && (
-                <div className="flex justify-start">
+                return (
                   <div
-                    className="max-w-[92%] rounded-[24px] rounded-tl-md px-5 py-4 text-slate-900"
-                    style={{ backgroundColor: UI_COLORS.chipBg }}
+                    key={message.id}
+                    className={`flex ${
+                      message.role === "user" ? "justify-end" : "justify-start"
+                    }`}
                   >
-                    <p className="text-[15px] leading-7 sm:text-base sm:leading-8">
-                      Octalve Smart is checking our services and infrastructure…
-                    </p>
+                    {message.role === "user" ? (
+                      <div
+                        className="max-w-[80%] rounded-[24px] rounded-tr-md px-5 py-4 text-white"
+                        style={{ backgroundColor: UI_COLORS.green }}
+                      >
+                        <p className="whitespace-pre-wrap text-[15px] leading-7 sm:text-base sm:leading-8">
+                          {message.content}
+                        </p>
+                      </div>
+                    ) : isStreamingPlaceholder ? (
+                      <LoadingBubble phase={streamStatus} />
+                    ) : (
+                      <AssistantBubble message={message} />
+                    )}
                   </div>
-                </div>
-              )}
+                );
+              })}
 
               <div ref={messagesEndRef} />
             </div>
@@ -450,7 +482,11 @@ export default function OctalveSmartWindow() {
               </div>
 
               <p className="hidden text-xs text-slate-500 md:block">
-                Ask about websites, branding, cloud, systems, or AI automation.
+                {streamStatus === "retrieving"
+                  ? "Reading Octalve websites…"
+                  : streamStatus === "generating"
+                    ? "Streaming live answer…"
+                    : "Ask about websites, branding, cloud, systems, or AI automation."}
               </p>
             </div>
 
@@ -473,15 +509,26 @@ export default function OctalveSmartWindow() {
               <div className="mt-4 flex items-center justify-between gap-4">
                 <p className="text-xs text-slate-500">Press Enter to send</p>
 
-                <button
-                  onClick={() => void sendMessage()}
-                  disabled={isLoading}
-                  className="inline-flex h-12 w-12 items-center justify-center rounded-full text-white disabled:opacity-60"
-                  style={{ backgroundColor: UI_COLORS.darkButton }}
-                  aria-label="Send chat message"
-                >
-                  <SendIcon />
-                </button>
+                {isLoading ? (
+                  <button
+                    onClick={stopGenerating}
+                    className="inline-flex items-center gap-2 rounded-full border px-4 py-3 text-sm font-medium text-slate-900 transition hover:bg-slate-50"
+                    style={{ borderColor: UI_COLORS.border }}
+                    aria-label="Stop generating"
+                  >
+                    <StopIcon />
+                    Stop
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => void sendMessage()}
+                    className="inline-flex h-12 w-12 items-center justify-center rounded-full text-white"
+                    style={{ backgroundColor: UI_COLORS.darkButton }}
+                    aria-label="Send chat message"
+                  >
+                    <SendIcon />
+                  </button>
+                )}
               </div>
             </div>
           </div>

@@ -65,20 +65,22 @@ const STOP_WORDS = new Set([
   "please",
 ]);
 
-const CACHE_TTL_MS = Number(process.env.OCTALVE_CRAWL_TTL_MS ?? 1000 * 60 * 5);
-const FETCH_TIMEOUT_MS = Number(process.env.OCTALVE_FETCH_TIMEOUT_MS ?? 8000);
-const MAX_SITEMAP_FILES = Number(process.env.OCTALVE_MAX_SITEMAP_FILES ?? 10);
-const MAX_URLS_PER_SITE = Number(process.env.OCTALVE_MAX_URLS_PER_SITE ?? 18);
+const CACHE_TTL_MS = Number(process.env.OCTALVE_CRAWL_TTL_MS ?? 1000 * 60 * 60);
+const FETCH_TIMEOUT_MS = Number(process.env.OCTALVE_FETCH_TIMEOUT_MS ?? 6000);
+const MAX_SITEMAP_FILES = Number(process.env.OCTALVE_MAX_SITEMAP_FILES ?? 8);
+const MAX_URLS_PER_SITE = Number(process.env.OCTALVE_MAX_URLS_PER_SITE ?? 8);
 const MAX_DISCOVERED_SITES = Number(
-  process.env.OCTALVE_MAX_DISCOVERED_SITES ?? 8,
+  process.env.OCTALVE_MAX_DISCOVERED_SITES ?? 2,
 );
 const MAX_CHUNKS_PER_SITE = Number(
-  process.env.OCTALVE_MAX_CHUNKS_PER_SITE ?? 250,
+  process.env.OCTALVE_MAX_CHUNKS_PER_SITE ?? 120,
 );
 
 declare global {
   // eslint-disable-next-line no-var
   var __octalve_site_cache__: Map<string, CachedEntry> | undefined;
+  // eslint-disable-next-line no-var
+  var __octalve_site_refreshes__: Map<string, Promise<CachedEntry>> | undefined;
 }
 
 const siteCache =
@@ -86,6 +88,13 @@ const siteCache =
 
 if (!global.__octalve_site_cache__) {
   global.__octalve_site_cache__ = siteCache;
+}
+
+const siteRefreshes =
+  global.__octalve_site_refreshes__ ?? new Map<string, Promise<CachedEntry>>();
+
+if (!global.__octalve_site_refreshes__) {
+  global.__octalve_site_refreshes__ = siteRefreshes;
 }
 
 function unique<T>(items: T[]) {
@@ -590,14 +599,7 @@ function pathFromUrl(url: string) {
   return parsed.pathname === "" ? "/" : parsed.pathname;
 }
 
-async function fetchSiteChunks(source: SourceConfig) {
-  const cacheKey = source.baseUrl;
-  const cached = siteCache.get(cacheKey);
-
-  if (cached && cached.expiresAt > Date.now()) {
-    return cached;
-  }
-
+async function buildSiteEntry(source: SourceConfig): Promise<CachedEntry> {
   const inventory = await discoverSiteInventory(source.baseUrl);
 
   const pages = await Promise.allSettled(
@@ -618,35 +620,42 @@ async function fetchSiteChunks(source: SourceConfig) {
     discoveredSiteBaseUrls: inventory.discoveredSiteBaseUrls,
   };
 
-  siteCache.set(cacheKey, entry);
+  siteCache.set(source.baseUrl, entry);
   return entry;
 }
 
-export async function retrieveWebsiteContext(query: string) {
-  const seedSites = getSeedSites();
-  const queue = [...seedSites];
-  const visitedBaseUrls = new Set<string>();
-  const allChunks: PageChunk[] = [];
+function refreshSiteChunks(source: SourceConfig) {
+  const existing = siteRefreshes.get(source.baseUrl);
+  if (existing) return existing;
 
-  while (queue.length > 0 && visitedBaseUrls.size < MAX_DISCOVERED_SITES) {
-    const current = queue.shift();
-    if (!current || visitedBaseUrls.has(current.baseUrl)) continue;
+  const refreshPromise = buildSiteEntry(source).finally(() => {
+    siteRefreshes.delete(source.baseUrl);
+  });
 
-    visitedBaseUrls.add(current.baseUrl);
+  siteRefreshes.set(source.baseUrl, refreshPromise);
+  return refreshPromise;
+}
 
-    const result = await fetchSiteChunks(current);
-    allChunks.push(...result.chunks);
+async function fetchSiteChunks(source: SourceConfig) {
+  const cached = siteCache.get(source.baseUrl);
 
-    for (const discoveredBaseUrl of result.discoveredSiteBaseUrls) {
-      if (visitedBaseUrls.has(discoveredBaseUrl)) continue;
-      if (!isOctalveOwnedUrl(discoveredBaseUrl)) continue;
-
-      queue.push({
-        label: makeSiteLabel(discoveredBaseUrl),
-        baseUrl: discoveredBaseUrl,
-      });
+  if (cached) {
+    if (cached.expiresAt <= Date.now()) {
+      void refreshSiteChunks(source);
     }
+    return cached;
   }
+
+  return await refreshSiteChunks(source);
+}
+
+export async function retrieveWebsiteContext(query: string) {
+  const seedSites = getSeedSites().slice(0, MAX_DISCOVERED_SITES);
+
+  const results = await Promise.all(
+    seedSites.map((site) => fetchSiteChunks(site)),
+  );
+  const allChunks = results.flatMap((result) => result.chunks);
 
   const ranked = allChunks
     .map((chunk) => ({
@@ -655,7 +664,7 @@ export async function retrieveWebsiteContext(query: string) {
     }))
     .filter((chunk) => chunk.score > 0)
     .sort((a, b) => b.score - a.score)
-    .slice(0, 8);
+    .slice(0, 6);
 
   const context = ranked
     .map(
@@ -679,7 +688,7 @@ export async function retrieveWebsiteContext(query: string) {
     });
   }
 
-  const sources = [...sourceMap.values()].slice(0, 8);
+  const sources = [...sourceMap.values()].slice(0, 6);
 
   return {
     context,

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { generateAnswer } from "@/lib/ai/answer";
+import { generateAnswerStream } from "@/lib/ai/answer";
 import { retrieveWebsiteContext } from "@/lib/ai/retrieve";
 
 export const runtime = "nodejs";
@@ -65,17 +65,6 @@ const STRATEGY_PROMPTS = [
   "Can Octalve help me create a growth plan?",
   "I need strategy before branding and website design",
 ];
-
-function jsonResponse(data: unknown, status = 200) {
-  return NextResponse.json(data, {
-    status,
-    headers: {
-      "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
-      Pragma: "no-cache",
-      Expires: "0",
-    },
-  });
-}
 
 function normalizeMessages(input: unknown): ChatMessage[] {
   if (!Array.isArray(input)) return [];
@@ -181,6 +170,14 @@ function getSmartPrompts(text: string) {
   }
 }
 
+function toSseFrame(event: string, payload: unknown) {
+  return `event: ${event}\ndata: ${JSON.stringify(payload)}\n\n`;
+}
+
+function userFacingErrorMessage() {
+  return "Octalve Smart could not complete the live AI response right now. Please try again in a moment.";
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = (await request.json()) as { messages?: unknown };
@@ -191,35 +188,104 @@ export async function POST(request: NextRequest) {
       .find((message) => message.role === "user");
 
     if (!latestUserMessage?.content) {
-      return jsonResponse({ error: "A user message is required." }, 400);
+      return NextResponse.json(
+        { error: "A user message is required." },
+        { status: 400 },
+      );
     }
 
     const retrievalQuery = buildRetrievalQuery(messages);
+    const encoder = new TextEncoder();
 
-    const retrieval = await retrieveWebsiteContext(retrievalQuery);
-    const answer = await generateAnswer({
-      messages,
-      context: retrieval.context,
-      strongMatch: retrieval.strongMatch,
+    const stream = new ReadableStream<Uint8Array>({
+      async start(controller) {
+        const send = (event: string, payload: unknown) => {
+          controller.enqueue(encoder.encode(toSseFrame(event, payload)));
+        };
+
+        const close = () => {
+          try {
+            controller.close();
+          } catch {
+            // ignore close errors
+          }
+        };
+
+        let retrieval = {
+          context: "",
+          sources: [] as Awaited<
+            ReturnType<typeof retrieveWebsiteContext>
+          >["sources"],
+          strongMatch: false,
+        };
+
+        try {
+          send("status", { phase: "retrieving" });
+
+          try {
+            retrieval = await retrieveWebsiteContext(retrievalQuery);
+          } catch (retrievalError) {
+            console.error("[api/chat] retrieval error:", retrievalError);
+          }
+
+          send("meta", {
+            sources: retrieval.sources,
+            mode: retrieval.strongMatch ? "website-first" : "fallback-guided",
+            prompts: getSmartPrompts(latestUserMessage.content),
+          });
+
+          send("status", { phase: "generating" });
+
+          let wroteAnyText = false;
+
+          for await (const chunk of generateAnswerStream({
+            messages,
+            context: retrieval.context,
+            strongMatch: retrieval.strongMatch,
+          })) {
+            if (!chunk) continue;
+
+            wroteAnyText = true;
+            send("delta", { text: chunk });
+          }
+
+          if (!wroteAnyText) {
+            send("error", {
+              message:
+                "Octalve Smart finished without returning text. Please try again.",
+            });
+          }
+
+          send("done", { ok: true });
+          close();
+        } catch (error) {
+          console.error("[api/chat] POST stream error:", error);
+
+          send("error", {
+            message: userFacingErrorMessage(),
+          });
+          send("done", { ok: false });
+          close();
+        }
+      },
     });
 
-    return jsonResponse({
-      answer:
-        answer?.trim() ||
-        "I can help you identify the right Octalve service, model, or solution for your business needs.",
-      sources: retrieval.sources,
-      mode: retrieval.strongMatch ? "website-first" : "fallback-guided",
-      prompts: getSmartPrompts(latestUserMessage.content),
+    return new Response(stream, {
+      headers: {
+        "Content-Type": "text/event-stream; charset=utf-8",
+        "Cache-Control": "no-cache, no-transform",
+        Connection: "keep-alive",
+        "X-Accel-Buffering": "no",
+      },
     });
   } catch (error) {
-    console.error("[api/chat] POST error:", error);
+    console.error("[api/chat] POST setup error:", error);
 
-    return jsonResponse({
-      answer:
-        "I’m having trouble reaching Octalve Smart right now. I can still help you with branding, websites, systems, cloud infrastructure, AI chatbots, and business strategy.",
-      sources: [],
-      mode: "fallback-guided",
-      prompts: DEFAULT_PROMPTS,
-    });
+    return NextResponse.json(
+      {
+        error: "Unable to start Octalve Smart.",
+      },
+      { status: 500 },
+    );
   }
 }

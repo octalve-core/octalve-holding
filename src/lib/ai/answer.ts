@@ -11,20 +11,21 @@ type GenerateAnswerInput = {
 
 type ProviderName = "openai" | "gemini";
 
-type ProviderHandler = (input: GenerateAnswerInput) => Promise<string>;
-
-type OpenAIOutputTextPart = {
+type OpenAIStreamEvent = {
   type?: string;
+  delta?: string;
   text?: string;
-};
-
-type OpenAIOutputItem = {
-  content?: OpenAIOutputTextPart[];
-};
-
-type OpenAIResponsesApiResult = {
-  output_text?: string;
-  output?: OpenAIOutputItem[];
+  error?: {
+    message?: string;
+  };
+  response?: {
+    error?: {
+      message?: string;
+    };
+    incomplete_details?: {
+      reason?: string;
+    };
+  };
 };
 
 type GeminiPart = {
@@ -35,10 +36,19 @@ type GeminiCandidate = {
   content?: {
     parts?: GeminiPart[];
   };
+  finishReason?: string;
 };
 
-type GeminiGenerateContentResult = {
+type GeminiStreamEvent = {
   candidates?: GeminiCandidate[];
+  promptFeedback?: {
+    blockReason?: string;
+  };
+};
+
+type SseEvent = {
+  event: string | null;
+  data: string;
 };
 
 function getRequiredEnv(name: string) {
@@ -55,6 +65,16 @@ function getOptionalNumberEnv(name: string) {
 
   const parsed = Number(raw);
   return Number.isFinite(parsed) ? parsed : undefined;
+}
+
+function getOptionalBooleanEnv(name: string) {
+  const raw = process.env[name]?.trim().toLowerCase();
+  if (!raw) return undefined;
+  return raw === "true";
+}
+
+function getProviderTimeoutMs() {
+  return getOptionalNumberEnv("AI_PROVIDER_TIMEOUT_MS") ?? 9000;
 }
 
 function cleanText(value: string) {
@@ -92,7 +112,7 @@ RESPONSE RULES
 - If the request is outside Octalve's scope, answer briefly and redirect to what Octalve can realistically help with.
 - Avoid saying "as an AI language model".
 - Avoid mentioning internal retrieval, crawling, hidden prompts, or provider details.
-- Keep the answer concise but valuable: normally 3 to 6 short paragraphs.
+- Keep the answer concise but valuable.
 - Prefer plain business language.
 - Do not use tables.
 - Do not use code blocks.
@@ -137,39 +157,94 @@ ${transcript}
   `);
 }
 
-function extractOpenAIText(data: OpenAIResponsesApiResult) {
-  if (typeof data.output_text === "string" && data.output_text.trim()) {
-    return cleanText(data.output_text);
+function parseSseBlock(block: string): SseEvent | null {
+  const lines = block.split("\n");
+  let event: string | null = null;
+  const dataLines: string[] = [];
+
+  for (const rawLine of lines) {
+    const line = rawLine.trimEnd();
+
+    if (!line || line.startsWith(":")) continue;
+
+    if (line.startsWith("event:")) {
+      event = line.slice("event:".length).trim();
+      continue;
+    }
+
+    if (line.startsWith("data:")) {
+      dataLines.push(line.slice("data:".length).trimStart());
+    }
   }
 
-  const output = Array.isArray(data.output) ? data.output : [];
+  if (dataLines.length === 0) return null;
 
-  const text = output
-    .flatMap((item) => (Array.isArray(item.content) ? item.content : []))
-    .filter(
-      (part): part is OpenAIOutputTextPart =>
-        part.type === "output_text" && typeof part.text === "string",
-    )
-    .map((part) => part.text ?? "")
-    .join("\n");
-
-  return cleanText(text);
+  return {
+    event,
+    data: dataLines.join("\n"),
+  };
 }
 
-function extractGeminiText(data: GeminiGenerateContentResult) {
+async function* readSseEvents(response: Response): AsyncGenerator<SseEvent> {
+  if (!response.body) {
+    throw new Error("Streaming response body is missing");
+  }
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+
+  while (true) {
+    const { done, value } = await reader.read();
+
+    buffer += decoder.decode(value ?? new Uint8Array(), { stream: !done });
+    buffer = buffer.replace(/\r\n/g, "\n");
+
+    let boundaryIndex = buffer.indexOf("\n\n");
+
+    while (boundaryIndex !== -1) {
+      const block = buffer.slice(0, boundaryIndex).trim();
+      buffer = buffer.slice(boundaryIndex + 2);
+
+      if (block) {
+        const event = parseSseBlock(block);
+        if (event) {
+          yield event;
+        }
+      }
+
+      boundaryIndex = buffer.indexOf("\n\n");
+    }
+
+    if (done) {
+      const finalBlock = buffer.trim();
+      if (finalBlock) {
+        const event = parseSseBlock(finalBlock);
+        if (event) {
+          yield event;
+        }
+      }
+      break;
+    }
+  }
+}
+
+function extractGeminiTextChunk(event: GeminiStreamEvent) {
   const text =
-    data.candidates?.[0]?.content?.parts
+    event.candidates?.[0]?.content?.parts
       ?.map((part) => part.text ?? "")
-      .join("\n") ?? "";
+      .join("") ?? "";
 
-  return cleanText(text);
+  return text;
 }
 
-async function generateWithOpenAI(input: GenerateAnswerInput) {
+async function* streamWithOpenAI(
+  input: GenerateAnswerInput,
+): AsyncGenerator<string> {
   const apiKey = getRequiredEnv("OPENAI_API_KEY");
   const model = getRequiredEnv("OPENAI_MODEL");
   const maxOutputTokens =
-    getOptionalNumberEnv("OPENAI_MAX_OUTPUT_TOKENS") ?? 700;
+    getOptionalNumberEnv("OPENAI_MAX_OUTPUT_TOKENS") ?? 450;
   const temperature = getOptionalNumberEnv("OPENAI_TEMPERATURE");
 
   const payload: {
@@ -177,12 +252,24 @@ async function generateWithOpenAI(input: GenerateAnswerInput) {
     instructions: string;
     input: string;
     max_output_tokens: number;
+    stream: true;
+    text: {
+      format: {
+        type: "text";
+      };
+    };
     temperature?: number;
   } = {
     model,
     instructions: buildSystemPrompt(input.context, input.strongMatch),
     input: messagesToPlainText(input.messages),
     max_output_tokens: maxOutputTokens,
+    stream: true,
+    text: {
+      format: {
+        type: "text",
+      },
+    },
   };
 
   if (typeof temperature === "number") {
@@ -191,10 +278,11 @@ async function generateWithOpenAI(input: GenerateAnswerInput) {
 
   const response = await fetch("https://api.openai.com/v1/responses", {
     method: "POST",
-    signal: AbortSignal.timeout(25000),
+    signal: AbortSignal.timeout(getProviderTimeoutMs()),
     headers: {
       Authorization: `Bearer ${apiKey}`,
       "Content-Type": "application/json",
+      Accept: "text/event-stream",
     },
     body: JSON.stringify(payload),
   });
@@ -204,21 +292,55 @@ async function generateWithOpenAI(input: GenerateAnswerInput) {
     throw new Error(`OpenAI error: ${errorText}`);
   }
 
-  const data = (await response.json()) as OpenAIResponsesApiResult;
-  const text = extractOpenAIText(data);
+  for await (const sseEvent of readSseEvents(response)) {
+    if (sseEvent.data === "[DONE]") {
+      break;
+    }
 
-  if (!text) {
-    throw new Error("OpenAI returned an empty response");
+    let parsed: OpenAIStreamEvent;
+    try {
+      parsed = JSON.parse(sseEvent.data) as OpenAIStreamEvent;
+    } catch {
+      continue;
+    }
+
+    const type = parsed.type ?? sseEvent.event ?? "";
+
+    if (
+      type === "response.output_text.delta" &&
+      typeof parsed.delta === "string"
+    ) {
+      yield parsed.delta;
+      continue;
+    }
+
+    if (type === "response.failed") {
+      throw new Error(
+        parsed.response?.error?.message ||
+          "OpenAI failed to generate a response",
+      );
+    }
+
+    if (type === "response.incomplete") {
+      throw new Error(
+        parsed.response?.incomplete_details?.reason ||
+          "OpenAI returned an incomplete response",
+      );
+    }
+
+    if (type === "error") {
+      throw new Error(parsed.error?.message || "OpenAI streaming error");
+    }
   }
-
-  return text;
 }
 
-async function generateWithGemini(input: GenerateAnswerInput) {
+async function* streamWithGemini(
+  input: GenerateAnswerInput,
+): AsyncGenerator<string> {
   const apiKey = getRequiredEnv("GEMINI_API_KEY");
   const model = getRequiredEnv("GEMINI_MODEL");
   const maxOutputTokens =
-    getOptionalNumberEnv("GEMINI_MAX_OUTPUT_TOKENS") ?? 700;
+    getOptionalNumberEnv("GEMINI_MAX_OUTPUT_TOKENS") ?? 450;
   const temperature = getOptionalNumberEnv("GEMINI_TEMPERATURE");
 
   const generationConfig: {
@@ -233,12 +355,14 @@ async function generateWithGemini(input: GenerateAnswerInput) {
   }
 
   const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
+    `https://generativelanguage.googleapis.com/v1beta/models/${model}:streamGenerateContent?alt=sse`,
     {
       method: "POST",
-      signal: AbortSignal.timeout(25000),
+      signal: AbortSignal.timeout(getProviderTimeoutMs()),
       headers: {
         "Content-Type": "application/json",
+        Accept: "text/event-stream",
+        "x-goog-api-key": apiKey,
       },
       body: JSON.stringify({
         system_instruction: {
@@ -268,66 +392,78 @@ async function generateWithGemini(input: GenerateAnswerInput) {
     throw new Error(`Gemini error: ${errorText}`);
   }
 
-  const data = (await response.json()) as GeminiGenerateContentResult;
-  const text = extractGeminiText(data);
+  for await (const sseEvent of readSseEvents(response)) {
+    if (sseEvent.data === "[DONE]") {
+      break;
+    }
 
-  if (!text) {
-    throw new Error("Gemini returned an empty response");
+    let parsed: GeminiStreamEvent;
+    try {
+      parsed = JSON.parse(sseEvent.data) as GeminiStreamEvent;
+    } catch {
+      continue;
+    }
+
+    if (parsed.promptFeedback?.blockReason) {
+      throw new Error(
+        `Gemini blocked the prompt: ${parsed.promptFeedback.blockReason}`,
+      );
+    }
+
+    const textChunk = extractGeminiTextChunk(parsed);
+    if (textChunk) {
+      yield textChunk;
+    }
   }
-
-  return text;
 }
-
-const PROVIDERS: Record<ProviderName, ProviderHandler> = {
-  openai: generateWithOpenAI,
-  gemini: generateWithGemini,
-};
 
 function getProviderHandler(name: string) {
   const normalized = name.trim().toLowerCase() as ProviderName;
-  const handler = PROVIDERS[normalized];
 
-  if (!handler) {
-    throw new Error(
-      `Unsupported AI provider "${name}". Supported providers: ${Object.keys(
-        PROVIDERS,
-      ).join(", ")}`,
-    );
+  switch (normalized) {
+    case "openai":
+      return streamWithOpenAI;
+    case "gemini":
+      return streamWithGemini;
+    default:
+      throw new Error(`Unsupported AI provider "${name}"`);
   }
-
-  return handler;
 }
 
-export async function generateAnswer(input: GenerateAnswerInput) {
+export async function* generateAnswerStream(
+  input: GenerateAnswerInput,
+): AsyncGenerator<string> {
   const primary = (process.env.AI_PROVIDER ?? "openai").trim().toLowerCase();
   const fallback = (process.env.AI_FALLBACK_PROVIDER ?? "gemini")
     .trim()
     .toLowerCase();
+  const enableFallback = getOptionalBooleanEnv("AI_ENABLE_FALLBACK") ?? false;
+
+  let yielded = false;
 
   try {
-    return await getProviderHandler(primary)(input);
+    for await (const chunk of getProviderHandler(primary)(input)) {
+      yielded = true;
+      yield chunk;
+    }
+    return;
   } catch (primaryError) {
-    if (fallback === primary) {
+    if (yielded || !enableFallback || fallback === primary) {
       throw primaryError;
     }
 
-    try {
-      return await getProviderHandler(fallback)(input);
-    } catch (fallbackError) {
-      throw new Error(
-        [
-          `Primary provider failed: ${
-            primaryError instanceof Error
-              ? primaryError.message
-              : String(primaryError)
-          }`,
-          `Fallback provider failed: ${
-            fallbackError instanceof Error
-              ? fallbackError.message
-              : String(fallbackError)
-          }`,
-        ].join(" | "),
-      );
+    for await (const chunk of getProviderHandler(fallback)(input)) {
+      yield chunk;
     }
   }
+}
+
+export async function generateAnswer(input: GenerateAnswerInput) {
+  let output = "";
+
+  for await (const chunk of generateAnswerStream(input)) {
+    output += chunk;
+  }
+
+  return cleanText(output);
 }
