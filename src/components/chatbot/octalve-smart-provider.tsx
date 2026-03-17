@@ -64,7 +64,6 @@ const DEFAULT_PROMPTS = [
   "Which Octalve model fits my business?",
   "Tell me about Octalve Suite",
   "Can Octalve build an AI chatbot for my website?",
-  "I need branding and website design",
 ];
 
 const INITIAL_MESSAGES: ChatMessage[] = [
@@ -75,6 +74,13 @@ const INITIAL_MESSAGES: ChatMessage[] = [
       "Welcome to Octalve Smart. Tell me what you are trying to build, fix, improve, or automate, and I will guide you to the right Octalve solution.",
   },
 ];
+
+const CANONICAL_HEADINGS = [
+  "What this usually means",
+  "How Octalve can help",
+  "What result to expect",
+  "Recommended next step",
+] as const;
 
 const OctalveSmartContext = createContext<OctalveSmartContextValue | null>(
   null,
@@ -106,6 +112,127 @@ function parseSseBlock(block: string): SseEvent | null {
     event,
     data: dataLines.join("\n"),
   };
+}
+
+function normalizeHeading(block: string) {
+  const cleaned = block
+    .replace(/^\*\*/, "")
+    .replace(/\*\*$/, "")
+    .replace(/:$/, "")
+    .trim();
+
+  const canonical = CANONICAL_HEADINGS.find(
+    (heading) => heading.toLowerCase() === cleaned.toLowerCase(),
+  );
+
+  return canonical ?? null;
+}
+
+function getSectionBody(content: string, targetHeading: string) {
+  const blocks = content
+    .split(/\n{2,}/)
+    .map((block) => block.trim())
+    .filter(Boolean);
+
+  let active = false;
+  const collected: string[] = [];
+
+  for (const block of blocks) {
+    const heading = normalizeHeading(block);
+
+    if (heading) {
+      if (active) break;
+      active = heading.toLowerCase() === targetHeading.toLowerCase();
+      continue;
+    }
+
+    if (active) {
+      collected.push(block);
+    }
+  }
+
+  return collected.join("\n\n").trim();
+}
+
+function stripMarkdown(value: string) {
+  return value
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, "$1")
+    .replace(/\*\*([^*]+)\*\*/g, "$1")
+    .replace(/`([^`]+)`/g, "$1")
+    .replace(/^CTA:\s*/i, "")
+    .trim();
+}
+
+function extractQuotedPhrases(value: string) {
+  const matches = [
+    ...value.matchAll(/"([^"]{6,100})"/g),
+    ...value.matchAll(/“([^”]{6,100})”/g),
+  ];
+
+  return matches.map((match) => match[1].trim());
+}
+
+function extractSuggestedPromptsFromAnswer(content: string) {
+  const recommendationBody =
+    getSectionBody(content, "Recommended next step") || content;
+
+  const candidates: string[] = [];
+
+  const addCandidate = (value: string) => {
+    const cleaned = stripMarkdown(value)
+      .replace(/^(-|•|\d+\.)\s*/, "")
+      .replace(/^Reply with:\s*/i, "")
+      .replace(/^Choose one:\s*/i, "")
+      .replace(/^You can say:\s*/i, "")
+      .trim()
+      .replace(/^["“]|["”]$/g, "");
+
+    if (cleaned.length < 6 || cleaned.length > 100) return;
+
+    if (
+      !candidates.some((item) => item.toLowerCase() === cleaned.toLowerCase())
+    ) {
+      candidates.push(cleaned);
+    }
+  };
+
+  const lines = recommendationBody
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean);
+
+  for (const line of lines) {
+    if (/^CTA:\s*/i.test(line)) continue;
+
+    if (/^(-|•|\d+\.)\s+/.test(line)) {
+      addCandidate(line);
+      continue;
+    }
+
+    if (
+      /^(Reply with|Choose one|You can say):/i.test(line) &&
+      line.includes(":")
+    ) {
+      const value = line.split(":").slice(1).join(":");
+      const pieces = value
+        .split(/,|\|/)
+        .map((item) => item.trim())
+        .filter(Boolean);
+
+      if (pieces.length > 0) {
+        pieces.forEach(addCandidate);
+        continue;
+      }
+    }
+
+    if (/\?$/.test(stripMarkdown(line))) {
+      addCandidate(line);
+    }
+  }
+
+  extractQuotedPhrases(recommendationBody).forEach(addCandidate);
+
+  return candidates.slice(0, 4);
 }
 
 export function OctalveSmartProvider({
@@ -211,6 +338,8 @@ export function OctalveSmartProvider({
     };
 
     const replaceAssistantText = (text: string) => {
+      streamedText = text;
+
       setMessages((prev) =>
         prev.map((message) =>
           message.id === assistantMessageId
@@ -339,6 +468,11 @@ export function OctalveSmartProvider({
         if (done) {
           break;
         }
+      }
+
+      const extractedPrompts = extractSuggestedPromptsFromAnswer(streamedText);
+      if (extractedPrompts.length >= 2) {
+        setSuggestions(extractedPrompts);
       }
     } catch (error) {
       if (requestController.signal.aborted) {

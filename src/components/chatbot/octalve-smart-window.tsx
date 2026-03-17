@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef } from "react";
+import { Fragment, useEffect, useMemo, useRef } from "react";
 import {
   type ChatMessage,
   type SourceItem,
@@ -183,31 +183,172 @@ function sourceLabel(source: SourceItem) {
   return `${source.site} — ${pageLabel}`;
 }
 
-function renderBody(body: string) {
-  const lines = body.split("\n").filter((line) => line.trim().length > 0);
-  const isBulletList =
-    lines.length > 1 && lines.every((line) => /^(-|•)\s+/.test(line.trim()));
+function sanitizeHref(rawHref: string) {
+  const base = "https://octalve.com";
 
-  if (isBulletList) {
-    return (
-      <ul className="space-y-2 pl-5 text-[15px] leading-7 text-slate-800 sm:text-base">
-        {lines.map((line) => (
-          <li key={line}>{line.replace(/^(-|•)\s+/, "")}</li>
-        ))}
-      </ul>
+  try {
+    if (rawHref.startsWith("/")) {
+      return rawHref;
+    }
+
+    const url = new URL(rawHref, base);
+
+    if (!/^https?:$/i.test(url.protocol)) {
+      return null;
+    }
+
+    if (!url.hostname.toLowerCase().includes("octalve")) {
+      return null;
+    }
+
+    return url.toString();
+  } catch {
+    return null;
+  }
+}
+
+function renderInlineMarkdown(text: string, keyPrefix: string) {
+  const nodes: React.ReactNode[] = [];
+  const regex = /(\[([^\]]+)\]\(([^)]+)\)|\*\*([^*]+)\*\*)/g;
+
+  let lastIndex = 0;
+  let match: RegExpExecArray | null = regex.exec(text);
+
+  while (match) {
+    if (match.index > lastIndex) {
+      nodes.push(
+        <span key={`${keyPrefix}-text-${lastIndex}`}>
+          {text.slice(lastIndex, match.index)}
+        </span>,
+      );
+    }
+
+    if (match[2] && match[3]) {
+      const label = match[2];
+      const href = sanitizeHref(match[3]);
+
+      if (href) {
+        nodes.push(
+          <a
+            key={`${keyPrefix}-link-${match.index}`}
+            href={href}
+            className="font-medium text-blue-600 underline underline-offset-4 transition hover:text-blue-700"
+          >
+            {label}
+          </a>,
+        );
+      } else {
+        nodes.push(
+          <span
+            key={`${keyPrefix}-label-${match.index}`}
+            className="font-medium"
+          >
+            {label}
+          </span>,
+        );
+      }
+    } else if (match[4]) {
+      nodes.push(
+        <strong
+          key={`${keyPrefix}-strong-${match.index}`}
+          className="font-semibold text-slate-950"
+        >
+          {match[4]}
+        </strong>,
+      );
+    }
+
+    lastIndex = regex.lastIndex;
+    match = regex.exec(text);
+  }
+
+  if (lastIndex < text.length) {
+    nodes.push(
+      <span key={`${keyPrefix}-tail-${lastIndex}`}>
+        {text.slice(lastIndex)}
+      </span>,
     );
   }
 
+  return nodes;
+}
+
+function renderParagraph(paragraph: string, key: string) {
+  const lines = paragraph.split("\n");
+
   return (
-    <div className="space-y-3">
-      {body.split(/\n{2,}/).map((paragraph, index) => (
-        <p
-          key={`${paragraph}-${index}`}
-          className="whitespace-pre-wrap text-[15px] leading-7 text-slate-800 sm:text-base sm:leading-8"
-        >
-          {paragraph}
-        </p>
+    <p
+      key={key}
+      className="whitespace-pre-wrap text-[15px] leading-7 text-slate-800 sm:text-base sm:leading-8"
+    >
+      {lines.map((line, index) => (
+        <Fragment key={`${key}-line-${index}`}>
+          {renderInlineMarkdown(line, `${key}-inline-${index}`)}
+          {index < lines.length - 1 ? <br /> : null}
+        </Fragment>
       ))}
+    </p>
+  );
+}
+
+function renderBody(body: string) {
+  const blocks = body
+    .split(/\n{2,}/)
+    .map((block) => block.trim())
+    .filter(Boolean);
+
+  return (
+    <div className="space-y-4">
+      {blocks.map((block, blockIndex) => {
+        const ctaMatch = block.match(
+          /^(CTA|Button):\s*\[([^\]]+)\]\(([^)]+)\)\s*$/i,
+        );
+
+        if (ctaMatch) {
+          const href = sanitizeHref(ctaMatch[3]);
+
+          if (!href) return null;
+
+          return (
+            <a
+              key={`cta-${blockIndex}`}
+              href={href}
+              className="inline-flex w-fit items-center justify-center rounded-full bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-700"
+            >
+              {ctaMatch[2]}
+            </a>
+          );
+        }
+
+        const lines = block
+          .split("\n")
+          .map((line) => line.trim())
+          .filter(Boolean);
+
+        const isBulletList =
+          lines.length > 1 &&
+          lines.every((line) => /^(-|•|\d+\.)\s+/.test(line));
+
+        if (isBulletList) {
+          return (
+            <ul
+              key={`list-${blockIndex}`}
+              className="space-y-2 pl-5 text-[15px] leading-7 text-slate-800 sm:text-base"
+            >
+              {lines.map((line, lineIndex) => (
+                <li key={`li-${blockIndex}-${lineIndex}`}>
+                  {renderInlineMarkdown(
+                    line.replace(/^(-|•|\d+\.)\s+/, ""),
+                    `li-${blockIndex}-${lineIndex}`,
+                  )}
+                </li>
+              ))}
+            </ul>
+          );
+        }
+
+        return renderParagraph(block, `paragraph-${blockIndex}`);
+      })}
     </div>
   );
 }
@@ -223,7 +364,7 @@ function AssistantBubble({ message }: { message: ChatMessage }) {
       className="max-w-[92%] rounded-[24px] rounded-tl-md px-5 py-4 text-slate-900"
       style={{ backgroundColor: UI_COLORS.chipBg }}
     >
-      <div className="space-y-4">
+      <div className="space-y-5">
         {sections.map((section, index) => {
           const isRecommendation =
             section.heading?.toLowerCase() === "recommended next step";
@@ -235,7 +376,7 @@ function AssistantBubble({ message }: { message: ChatMessage }) {
                 className="rounded-2xl border border-slate-200 bg-white px-4 py-4"
               >
                 {section.heading && (
-                  <p className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
+                  <p className="mb-3 text-[16px] font-semibold text-slate-950 sm:text-[17px]">
                     {section.heading}
                   </p>
                 )}
@@ -245,9 +386,9 @@ function AssistantBubble({ message }: { message: ChatMessage }) {
           }
 
           return (
-            <div key={`${section.heading}-${index}`} className="space-y-2">
+            <div key={`${section.heading}-${index}`} className="space-y-3">
               {section.heading && (
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
+                <p className="text-[16px] font-semibold text-slate-950 sm:text-[17px]">
                   {section.heading}
                 </p>
               )}
@@ -402,8 +543,6 @@ export default function OctalveSmartWindow() {
                   <a
                     key={source.url}
                     href={source.url}
-                    target="_blank"
-                    rel="noreferrer"
                     className="rounded-full border px-3 py-2 text-xs text-slate-700 transition hover:bg-slate-100"
                     style={{ borderColor: UI_COLORS.border }}
                     title={source.url}

@@ -1,3 +1,5 @@
+import type { RetrievedSource } from "./retrieve";
+
 type ChatMessage = {
   role: "user" | "assistant";
   content: string;
@@ -7,6 +9,7 @@ type GenerateAnswerInput = {
   messages: ChatMessage[];
   context: string;
   strongMatch: boolean;
+  sources?: RetrievedSource[];
 };
 
 type ProviderName = "openai" | "gemini";
@@ -51,6 +54,11 @@ type SseEvent = {
   data: string;
 };
 
+type ApprovedLink = {
+  label: string;
+  url: string;
+};
+
 function getRequiredEnv(name: string) {
   const value = process.env[name]?.trim();
   if (!value) {
@@ -84,7 +92,44 @@ function cleanText(value: string) {
     .trim();
 }
 
-function buildSystemPrompt(context: string, strongMatch: boolean) {
+function uniqueByUrl(items: ApprovedLink[]) {
+  const seen = new Set<string>();
+  const output: ApprovedLink[] = [];
+
+  for (const item of items) {
+    if (!item.url || seen.has(item.url)) continue;
+    seen.add(item.url);
+    output.push(item);
+  }
+
+  return output;
+}
+
+function buildApprovedLinks(sources?: RetrievedSource[]) {
+  const baseLinks: ApprovedLink[] = [
+    { label: "Octalve Home", url: "https://octalve.com" },
+    { label: "Contact Octalve", url: "https://octalve.com/contact" },
+    { label: "Octalve Cloud", url: "https://octalve.cloud" },
+  ];
+
+  const sourceLinks: ApprovedLink[] =
+    sources?.map((source) => ({
+      label: `${source.site} — ${source.title}`,
+      url: source.url,
+    })) ?? [];
+
+  return uniqueByUrl([...baseLinks, ...sourceLinks]).slice(0, 12);
+}
+
+function buildSystemPrompt(
+  context: string,
+  strongMatch: boolean,
+  sources?: RetrievedSource[],
+) {
+  const approvedLinks = buildApprovedLinks(sources)
+    .map((item) => `- ${item.label}: ${item.url}`)
+    .join("\n");
+
   return cleanText(`
 You are Octalve Smart, the AI receptionist for Octalve.
 
@@ -108,7 +153,7 @@ RESPONSE RULES
 - Focus on pain point, solution fit, and outcome.
 - If the user is confused, help them structure what they need.
 - If the website context is strong, stay grounded in it.
-- If the website context is partial, combine it with careful professional reasoning, but do not invent specific Octalve offers, pages, or promises not supported by the context.
+- If the website context is partial, combine it with careful professional reasoning, but do not invent specific Octalve offers, pages, routes, or promises not supported by the context.
 - If the request is outside Octalve's scope, answer briefly and redirect to what Octalve can realistically help with.
 - Avoid saying "as an AI language model".
 - Avoid mentioning internal retrieval, crawling, hidden prompts, or provider details.
@@ -116,13 +161,28 @@ RESPONSE RULES
 - Prefer plain business language.
 - Do not use tables.
 - Do not use code blocks.
+
+SECTION FORMAT
 - When helpful, structure the answer with these exact section headings on their own lines:
 **What this usually means**
 **How Octalve can help**
 **What result to expect**
 **Recommended next step**
-- Use 2 to 4 of those sections when relevant, not necessarily all of them.
+- Use 2 to 4 of those sections when relevant.
 - Keep the final section short and actionable.
+
+LINKING RULES
+- When recommending a relevant Octalve page, embed the link inline using markdown, for example:
+[Contact Octalve](https://octalve.com/contact)
+- When a direct action is especially useful, add exactly one standalone CTA line in the Recommended next step section using this exact format:
+CTA: [Book a call](https://octalve.com/contact)
+- Only use URLs from the approved links list below.
+- Never invent or guess URLs.
+- Do not use more than 2 inline links in the full answer.
+- Do not output raw URLs outside markdown links.
+
+APPROVED LINKS
+${approvedLinks || "- Contact Octalve: https://octalve.com/contact"}
 
 WEBSITE MATCH STRENGTH: ${strongMatch ? "strong" : "weak"}
 
@@ -261,7 +321,11 @@ async function* streamWithOpenAI(
     temperature?: number;
   } = {
     model,
-    instructions: buildSystemPrompt(input.context, input.strongMatch),
+    instructions: buildSystemPrompt(
+      input.context,
+      input.strongMatch,
+      input.sources,
+    ),
     input: messagesToPlainText(input.messages),
     max_output_tokens: maxOutputTokens,
     stream: true,
@@ -368,7 +432,11 @@ async function* streamWithGemini(
         system_instruction: {
           parts: [
             {
-              text: buildSystemPrompt(input.context, input.strongMatch),
+              text: buildSystemPrompt(
+                input.context,
+                input.strongMatch,
+                input.sources,
+              ),
             },
           ],
         },
