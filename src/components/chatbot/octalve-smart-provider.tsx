@@ -17,12 +17,19 @@ export type SourceItem = {
   path: string;
 };
 
+export type CtaItem = {
+  label: string;
+  url: string;
+  description: string;
+};
+
 export type StreamStatus = "retrieving" | "generating" | null;
 
 type ChatStreamMeta = {
   sources?: SourceItem[];
   mode?: string;
   prompts?: string[];
+  cta?: CtaItem | null;
 };
 
 type ChatStreamDelta = {
@@ -56,6 +63,7 @@ type OctalveSmartContextValue = {
   isLoading: boolean;
   mode: string | null;
   sources: SourceItem[];
+  cta: CtaItem | null;
   streamStatus: StreamStatus;
 };
 
@@ -74,13 +82,6 @@ const INITIAL_MESSAGES: ChatMessage[] = [
       "Welcome to Octalve Smart. Tell me what you are trying to build, fix, improve, or automate, and I will guide you to the right Octalve solution.",
   },
 ];
-
-const CANONICAL_HEADINGS = [
-  "What this usually means",
-  "How Octalve can help",
-  "What result to expect",
-  "Recommended next step",
-] as const;
 
 const OctalveSmartContext = createContext<OctalveSmartContextValue | null>(
   null,
@@ -114,52 +115,11 @@ function parseSseBlock(block: string): SseEvent | null {
   };
 }
 
-function normalizeHeading(block: string) {
-  const cleaned = block
-    .replace(/^\*\*/, "")
-    .replace(/\*\*$/, "")
-    .replace(/:$/, "")
-    .trim();
-
-  const canonical = CANONICAL_HEADINGS.find(
-    (heading) => heading.toLowerCase() === cleaned.toLowerCase(),
-  );
-
-  return canonical ?? null;
-}
-
-function getSectionBody(content: string, targetHeading: string) {
-  const blocks = content
-    .split(/\n{2,}/)
-    .map((block) => block.trim())
-    .filter(Boolean);
-
-  let active = false;
-  const collected: string[] = [];
-
-  for (const block of blocks) {
-    const heading = normalizeHeading(block);
-
-    if (heading) {
-      if (active) break;
-      active = heading.toLowerCase() === targetHeading.toLowerCase();
-      continue;
-    }
-
-    if (active) {
-      collected.push(block);
-    }
-  }
-
-  return collected.join("\n\n").trim();
-}
-
 function stripMarkdown(value: string) {
   return value
     .replace(/\[([^\]]+)\]\(([^)]+)\)/g, "$1")
     .replace(/\*\*([^*]+)\*\*/g, "$1")
     .replace(/`([^`]+)`/g, "$1")
-    .replace(/^CTA:\s*/i, "")
     .trim();
 }
 
@@ -173,17 +133,19 @@ function extractQuotedPhrases(value: string) {
 }
 
 function extractSuggestedPromptsFromAnswer(content: string) {
-  const recommendationBody =
-    getSectionBody(content, "Recommended next step") || content;
-
   const candidates: string[] = [];
+  const blocks = content
+    .split(/\n{2,}/)
+    .map((block) => block.trim())
+    .filter(Boolean);
 
   const addCandidate = (value: string) => {
     const cleaned = stripMarkdown(value)
       .replace(/^(-|•|\d+\.)\s*/, "")
       .replace(/^Reply with:\s*/i, "")
-      .replace(/^Choose one:\s*/i, "")
       .replace(/^You can say:\s*/i, "")
+      .replace(/^Next step:\s*/i, "")
+      .replace(/^Recommended next step:\s*/i, "")
       .trim()
       .replace(/^["“]|["”]$/g, "");
 
@@ -196,41 +158,35 @@ function extractSuggestedPromptsFromAnswer(content: string) {
     }
   };
 
-  const lines = recommendationBody
-    .split("\n")
-    .map((line) => line.trim())
-    .filter(Boolean);
+  for (const block of blocks) {
+    const lines = block
+      .split("\n")
+      .map((line) => line.trim())
+      .filter(Boolean);
 
-  for (const line of lines) {
-    if (/^CTA:\s*/i.test(line)) continue;
-
-    if (/^(-|•|\d+\.)\s+/.test(line)) {
-      addCandidate(line);
-      continue;
-    }
-
-    if (
-      /^(Reply with|Choose one|You can say):/i.test(line) &&
-      line.includes(":")
-    ) {
-      const value = line.split(":").slice(1).join(":");
-      const pieces = value
-        .split(/,|\|/)
-        .map((item) => item.trim())
-        .filter(Boolean);
-
-      if (pieces.length > 0) {
-        pieces.forEach(addCandidate);
-        continue;
+    for (const line of lines) {
+      if (/^(-|•|\d+\.)\s+/.test(line)) {
+        addCandidate(line);
       }
-    }
 
-    if (/\?$/.test(stripMarkdown(line))) {
-      addCandidate(line);
+      if (/\?$/.test(stripMarkdown(line))) {
+        addCandidate(line);
+      }
+
+      if (
+        /^(Reply with|You can say|Next step|Recommended next step):/i.test(line)
+      ) {
+        const value = line.split(":").slice(1).join(":");
+        value
+          .split(/,|\|/)
+          .map((item) => item.trim())
+          .filter(Boolean)
+          .forEach(addCandidate);
+      }
     }
   }
 
-  extractQuotedPhrases(recommendationBody).forEach(addCandidate);
+  extractQuotedPhrases(content).forEach(addCandidate);
 
   return candidates.slice(0, 4);
 }
@@ -247,6 +203,7 @@ export function OctalveSmartProvider({
   const [isLoading, setIsLoading] = useState(false);
   const [mode, setMode] = useState<string | null>(null);
   const [sources, setSources] = useState<SourceItem[]>([]);
+  const [cta, setCta] = useState<CtaItem | null>(null);
   const [streamStatus, setStreamStatus] = useState<StreamStatus>(null);
 
   const messagesRef = useRef(messages);
@@ -271,6 +228,7 @@ export function OctalveSmartProvider({
     setIsLoading(false);
     setMode(null);
     setSources([]);
+    setCta(null);
     setStreamStatus(null);
   }
 
@@ -316,6 +274,7 @@ export function OctalveSmartProvider({
     setChatInput("");
     setIsLoading(true);
     setStreamStatus("retrieving");
+    setCta(null);
 
     const requestController = new AbortController();
     abortRef.current = requestController;
@@ -413,6 +372,7 @@ export function OctalveSmartProvider({
                     Array.isArray(meta.sources) ? meta.sources.slice(0, 8) : [],
                   );
                   setMode(typeof meta.mode === "string" ? meta.mode : null);
+                  setCta(meta.cta ?? null);
 
                   if (Array.isArray(meta.prompts) && meta.prompts.length > 0) {
                     setSuggestions(meta.prompts.slice(0, 6));
@@ -520,6 +480,7 @@ export function OctalveSmartProvider({
     setChatInput("");
     setMode(null);
     setSources([]);
+    setCta(null);
     setStreamStatus(null);
 
     window.setTimeout(() => {
@@ -543,6 +504,7 @@ export function OctalveSmartProvider({
         isLoading,
         mode,
         sources,
+        cta,
         streamStatus,
       }}
     >

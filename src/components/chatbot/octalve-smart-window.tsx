@@ -300,26 +300,6 @@ function renderBody(body: string) {
   return (
     <div className="space-y-4">
       {blocks.map((block, blockIndex) => {
-        const ctaMatch = block.match(
-          /^(CTA|Button):\s*\[([^\]]+)\]\(([^)]+)\)\s*$/i,
-        );
-
-        if (ctaMatch) {
-          const href = sanitizeHref(ctaMatch[3]);
-
-          if (!href) return null;
-
-          return (
-            <a
-              key={`cta-${blockIndex}`}
-              href={href}
-              className="inline-flex w-fit items-center justify-center rounded-full bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-700"
-            >
-              {ctaMatch[2]}
-            </a>
-          );
-        }
-
         const lines = block
           .split("\n")
           .map((line) => line.trim())
@@ -361,41 +341,20 @@ function AssistantBubble({ message }: { message: ChatMessage }) {
 
   return (
     <div
-      className="max-w-[92%] rounded-[24px] rounded-tl-md px-5 py-4 text-slate-900"
+      className="max-w-[92%] rounded-[28px] rounded-tl-md px-6 py-5 text-slate-900"
       style={{ backgroundColor: UI_COLORS.chipBg }}
     >
       <div className="space-y-5">
-        {sections.map((section, index) => {
-          const isRecommendation =
-            section.heading?.toLowerCase() === "recommended next step";
-
-          if (isRecommendation) {
-            return (
-              <div
-                key={`${section.heading}-${index}`}
-                className="rounded-2xl border border-slate-200 bg-white px-4 py-4"
-              >
-                {section.heading && (
-                  <p className="mb-3 text-[16px] font-semibold text-slate-950 sm:text-[17px]">
-                    {section.heading}
-                  </p>
-                )}
-                <div className="text-slate-900">{renderBody(section.body)}</div>
-              </div>
-            );
-          }
-
-          return (
-            <div key={`${section.heading}-${index}`} className="space-y-3">
-              {section.heading && (
-                <p className="text-[16px] font-semibold text-slate-950 sm:text-[17px]">
-                  {section.heading}
-                </p>
-              )}
-              {renderBody(section.body)}
-            </div>
-          );
-        })}
+        {sections.map((section, index) => (
+          <div key={`${section.heading}-${index}`} className="space-y-3">
+            {section.heading && (
+              <p className="text-[16px] font-semibold text-slate-950 sm:text-[17px]">
+                {section.heading}
+              </p>
+            )}
+            {renderBody(section.body)}
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -413,7 +372,7 @@ function LoadingBubble({
 
   return (
     <div
-      className="max-w-[92%] rounded-[24px] rounded-tl-md px-5 py-4 text-slate-900"
+      className="max-w-[92%] rounded-[28px] rounded-tl-md px-6 py-5 text-slate-900"
       style={{ backgroundColor: UI_COLORS.chipBg }}
     >
       <p className="text-[15px] leading-7 sm:text-base sm:leading-8">{label}</p>
@@ -435,6 +394,7 @@ export default function OctalveSmartWindow() {
     isLoading,
     mode,
     sources,
+    cta,
     streamStatus,
   } = useOctalveSmart();
 
@@ -466,7 +426,7 @@ export default function OctalveSmartWindow() {
       behavior: "smooth",
       block: "end",
     });
-  }, [isOpen, messages, isLoading, streamStatus]);
+  }, [isOpen, messages, isLoading, streamStatus, cta]);
 
   const modeLabel = useMemo(() => {
     if (mode === "website-first") return "Website-first";
@@ -536,7 +496,7 @@ export default function OctalveSmartWindow() {
 
       <div className="flex min-h-0 flex-1 flex-col">
         <div className="min-h-0 flex-1 overflow-y-auto">
-          <div className="mx-auto max-w-[920px] px-4 py-6 sm:px-6 md:py-8">
+          <div className="mx-auto max-w-[980px] px-4 py-6 sm:px-6 md:py-8">
             {sources.length > 0 && (
               <div className="mb-6 flex flex-wrap gap-2">
                 {sources.slice(0, 4).map((source) => (
@@ -586,6 +546,25 @@ export default function OctalveSmartWindow() {
                 );
               })}
 
+              {cta && !isLoading && (
+                <div className="flex justify-start">
+                  <div className="max-w-[92%] rounded-[26px] border border-slate-200 bg-white px-5 py-5 shadow-sm">
+                    <p className="text-sm font-semibold text-slate-950">
+                      Recommended next action
+                    </p>
+                    <p className="mt-2 text-sm leading-6 text-slate-600">
+                      {cta.description}
+                    </p>
+                    <a
+                      href={cta.url}
+                      className="mt-4 inline-flex items-center justify-center rounded-full bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-700"
+                    >
+                      {cta.label}
+                    </a>
+                  </div>
+                </div>
+              )}
+
               <div ref={messagesEndRef} />
             </div>
           </div>
@@ -599,7 +578,7 @@ export default function OctalveSmartWindow() {
             backdropFilter: "blur(14px)",
           }}
         >
-          <div className="mx-auto max-w-[920px]">
+          <div className="mx-auto max-w-[980px]">
             <div className="mb-4 flex items-center justify-between gap-4">
               <div className="overflow-x-auto pb-1 hide-scrollbar">
                 <div className="flex w-max min-w-full gap-3">

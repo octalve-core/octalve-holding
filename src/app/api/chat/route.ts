@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { generateAnswerStream } from "@/lib/ai/answer";
 import { retrieveWebsiteContext } from "@/lib/ai/retrieve";
+import { selectPrimaryCta } from "@/lib/ai/octalve-links";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -86,7 +87,7 @@ function detectIntent(text: string) {
   }
 
   if (
-    /\b(suite|model|models|system|workflow|operations|crm|process)\b/.test(
+    /\b(suite|model|models|system|workflow|operations|crm|process|vault)\b/.test(
       value,
     )
   ) {
@@ -293,6 +294,7 @@ export async function POST(request: NextRequest) {
     }
 
     const retrievalQuery = buildRetrievalQuery(messages);
+    const intent = detectIntent(latestUserMessage.content);
     const encoder = new TextEncoder();
 
     const stream = new ReadableStream<Uint8Array>({
@@ -330,6 +332,10 @@ export async function POST(request: NextRequest) {
             sources: retrieval.sources,
             mode: retrieval.strongMatch ? "website-first" : "fallback-guided",
             prompts: getSmartPrompts(latestUserMessage.content),
+            cta: selectPrimaryCta({
+              intent,
+              sources: retrieval.sources,
+            }),
           });
 
           send("status", { phase: "generating" });
