@@ -224,7 +224,11 @@ export default function Hero() {
           <div className="mt-12 text-center">
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-900">
               Get Started,{" "}
-              <span style={{ color: HERO_COLORS.green }}>Scroll Down</span>
+              <span>
+                <a href="#models" style={{ color: HERO_COLORS.green }}>
+                  Scroll Down
+                </a>
+              </span>
             </p>
           </div>
         </div>

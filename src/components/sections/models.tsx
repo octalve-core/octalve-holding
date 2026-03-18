@@ -247,6 +247,7 @@ export default function Models() {
 
   return (
     <section
+      id="models"
       className="px-4 py-16 sm:px-6 md:py-20"
       style={{ backgroundColor: MODEL_COLORS.pageBg }}
     >
