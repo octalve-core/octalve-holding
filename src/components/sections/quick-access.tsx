@@ -49,21 +49,21 @@ const tractionStats = [
 const quickCards: QuickCard[] = [
   {
     id: 1,
-    title: "Website Portfolio",
-    href: "/",
+    title: "Octalve Consult",
+    href: "/models/consult",
     desktopImage: quick1Desktop,
     mobileImage: quick1Mobile,
   },
   {
     id: 2,
-    title: "Branding Portfolio",
-    href: "/",
+    title: "Octalve Suite",
+    href: "/models/suite",
     desktopImage: quick2Desktop,
     mobileImage: quick2Mobile,
   },
   {
     id: 3,
-    title: "Strategy Portfolio",
+    title: "PayHx",
     href: "/",
     desktopImage: quick3Desktop,
     mobileImage: quick3Mobile,

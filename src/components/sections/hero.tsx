@@ -4,10 +4,10 @@ import { useEffect, useMemo, useState } from "react";
 import { useOctalveSmart } from "@/components/chatbot/octalve-smart-provider";
 
 const HERO_COLORS = {
-  red: "#EF4444",
-  blue: "#3B82F6",
-  yellow: "#F59E0B",
-  green: "#22C55E",
+  red: "#E61525",
+  blue: "#0064E0",
+  yellow: "#29BE3E",
+  green: "#FC7E24",
   pageBg: "#F8FAFC",
   white: "#FFFFFF",
   border: "#E5E7EB",

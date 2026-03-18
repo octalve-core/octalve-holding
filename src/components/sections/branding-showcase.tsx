@@ -38,7 +38,7 @@ const brandingCards: ShowcaseCard[] = [
     title: "Designed to stand out.",
     description:
       "Selected branding work built to help businesses communicate clearly, look premium, and position with confidence.",
-    href: "/portfolio/branding",
+    href: "/models/suite",
     image: brand1,
   },
   {
@@ -47,7 +47,7 @@ const brandingCards: ShowcaseCard[] = [
     title: "Advanced. Inside and out.",
     description:
       "From logo systems to visual direction and campaign assets, explore branding projects shaped for clarity and growth.",
-    href: "/portfolio/branding",
+    href: "/models/suite",
     image: brand2,
   },
 ];
@@ -123,7 +123,7 @@ function BrandingCard({
               color: SECTION_COLORS.primaryBtnText,
             }}
           >
-            View Projects
+            Visit Suite
           </Link>
 
           <button

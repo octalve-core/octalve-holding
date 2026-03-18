@@ -7,10 +7,10 @@ import { usePathname } from "next/navigation";
 import octalveLogo from "@/assets/logos/octalve.png";
 
 const NAV_COLORS = {
-  red: "#EF4444",
-  blue: "#3B82F6",
-  yellow: "#F59E0B",
-  green: "#22C55E",
+  red: "#E61525",
+  blue: "#0064E0",
+  yellow: "#29BE3E",
+  green: "#FC7E24",
   topBarBg: "#0F3D33",
   headerBg: "#F8FAFC",
   textDark: "#0F172A",
