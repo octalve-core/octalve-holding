@@ -1,11 +1,15 @@
 import Link from "next/link";
 
 import ModelShell from "@/components/models/shared/model-shell";
+import VaultHero from "./components/vault-hero";
+// import VaultFaq from "./components/vault-faq";
 
 import VaultProductCard from "./components/vault-product-card";
 import { VaultStripNav } from "./components/vault-strip-nav";
 import { vaultProducts } from "./data/vault-products";
 import { vaultUi } from "./lib/vault-ui";
+import VaultFaq from "./components/vault-faq";
+import { i } from "framer-motion/client";
 
 export default function VaultPage() {
   const featuredProducts = vaultProducts
@@ -15,8 +19,8 @@ export default function VaultPage() {
   return (
     <ModelShell>
       <VaultStripNav />
-
-      <section className="px-4 py-16 sm:px-6 md:py-20">
+      <VaultHero />
+      {/* <section className="px-4 py-16 sm:px-6 md:py-20">
         <div className="mx-auto max-w-[1200px]">
           <p className="text-sm font-medium uppercase tracking-[0.16em] text-blue-600">
             Digital Products / Templates / Resources
@@ -32,9 +36,9 @@ export default function VaultPage() {
             templates and guides to launch kits and resource bundles.
           </p>
         </div>
-      </section>
+      </section> */}
 
-      <section className="px-4 pb-16 sm:px-6">
+      <section className="px-4 pt-16 pb-16 sm:px-6">
         <div className="mx-auto grid max-w-[1200px] gap-5 md:grid-cols-2 xl:grid-cols-4">
           {[
             "Business Plan Templates",
@@ -92,6 +96,7 @@ export default function VaultPage() {
           </div>
         </div>
       </section>
+      <VaultFaq />
     </ModelShell>
   );
 }

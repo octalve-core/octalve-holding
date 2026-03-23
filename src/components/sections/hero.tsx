@@ -16,10 +16,10 @@ const HERO_COLORS = {
 };
 
 const rotatingWords = [
-  { text: "Strategy", color: "#3B82F6" },
-  { text: "Branding", color: "#EF4444" },
-  { text: "Websites", color: "#22C55E" },
-  { text: "Systems", color: "#F59E0B" },
+  { text: "Strategy", color: "#0064E0" },
+  { text: "Branding", color: "#E61525" },
+  { text: "Websites", color: "#FC7E24" },
+  { text: "Systems", color: "#29BE3E" },
 ];
 
 function SendIcon() {
