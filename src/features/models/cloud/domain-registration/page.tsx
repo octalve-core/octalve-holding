@@ -2,10 +2,10 @@ import ModelShell from "@/components/models/shared/model-shell";
 import { CloudStripNav } from "../components/cloud-strip-nav";
 
 import Hero from "./components/Hero";
-import Overview from "./components/Overview";
+// import Overview from "./components/Overview";
 import Plans from "./components/Plans";
-import Review from "./components/Review";
-import Benefit from "./components/Benefit";
+// import Review from "./components/Review";
+// import Benefit from "./components/Benefit";
 import CTA from "./components/CTA";
 
 export default function DomainRegistrationPage() {
@@ -13,10 +13,10 @@ export default function DomainRegistrationPage() {
     <ModelShell>
       <CloudStripNav />
       <Hero />
-      <Overview />
+      {/* <Overview /> */}
       <Plans />
-      <Review />
-      <Benefit />
+      {/* <Review /> */}
+      {/* <Benefit /> */}
       <CTA />
     </ModelShell>
   );

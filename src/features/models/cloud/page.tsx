@@ -5,8 +5,12 @@ import Hero from "./home/components/Hero";
 import Overview from "./home/components/Overview";
 import Plans from "./home/components/Plans";
 import Review from "./home/components/Review";
-import Benefit from "./home/components/Benefit";
+// import Benefit from "./home/components/Benefit";
 import CTA from "./home/components/CTA";
+import CloudFaq from "./home/components/Faqs";
+// import EmailCard from "@/components/EmailCard";
+import EmailShowcase from "./home/components/EmailCard";
+import MigrationCta from "./home/components/Migrationcta";
 
 export default function CloudPage() {
   return (
@@ -14,9 +18,12 @@ export default function CloudPage() {
       <CloudStripNav />
       <Hero />
       <Overview />
-      <Plans />
       <Review />
-      <Benefit />
+      <EmailShowcase />
+      <MigrationCta />
+      {/* <Benefit /> */}
+      <Plans />
+      <CloudFaq />
       <CTA />
     </ModelShell>
   );
