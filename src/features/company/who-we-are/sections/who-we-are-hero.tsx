@@ -12,7 +12,7 @@ export function WhoWeAreHero() {
         preload="auto"
         aria-hidden="true"
       >
-        <source src="/assets/videos/who-we-are-hero.mp4" type="video/mp4" />
+        <source src="/videos/hero.mp4" type="video/mp4" />
       </video>
 
       <div className="absolute inset-0 bg-black/45" />

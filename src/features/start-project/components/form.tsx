@@ -8,9 +8,7 @@ export default function StartProjectForm() {
               Project brief form
             </h2>
             <p className="mt-4 max-w-xl text-base leading-7 text-slate-600">
-              This is a simple frontend demo form for now. Later, you can
-              connect it to email, database storage, CRM, Notion, Airtable, or
-              your own backend workflow.
+              ----
             </p>
           </div>
 

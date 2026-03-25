@@ -43,12 +43,14 @@ const models = [
   },
   {
     title: "Consult",
-    description: "Strategy, advisory, and transformation support.",
+    description:
+      "Strategy, advisory, and transformation support, when you need it, how you need it.",
     href: "/models/consult",
   },
   {
     title: "Lab",
-    description: "Product experimentation, prototyping, and innovation.",
+    description:
+      "We design tech solutions users love, investors can't resist, and builders are proud of.",
     href: "/models/lab",
   },
   {

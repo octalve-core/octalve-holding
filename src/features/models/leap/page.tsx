@@ -2,9 +2,10 @@ import ModelShell from "@/components/models/shared/model-shell";
 import LeapFaq from "./components/leap-faq";
 import LeapHero from "./components/leap-hero";
 import LeapOverview from "./components/leap-overview";
-import LeapResults from "./components/leap-results";
+// import LeapResults from "./components/leap-results";
 import LeapTestimonial from "./components/leap-testimonial";
 import LeapWhy from "./components/leap-why";
+import LeapPricing from "./components/leap-pricing";
 
 export default function LeapPage() {
   return (
@@ -12,7 +13,8 @@ export default function LeapPage() {
       <LeapHero />
       <LeapOverview />
       <LeapWhy />
-      <LeapResults />
+      <LeapPricing />
+      {/* <LeapResults /> */}
       <LeapTestimonial />
       <LeapFaq />
     </ModelShell>

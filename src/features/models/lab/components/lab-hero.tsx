@@ -33,17 +33,16 @@ export default function LabHero() {
 
   return (
     <section className="relative isolate overflow-hidden bg-[#020714] px-4 py-10 sm:px-6 sm:py-10 md:py-6 lg:px-8 lg:py-8">
-      <div className="absolute inset-0">
+      {/* <div className="absolute inset-0">
         <div
           className="absolute inset-0"
           style={{
             background: `
-              radial-gradient(circle at 50% 8%, rgba(0,100,224,0.20) 0%, rgba(0,100,224,0.10) 16%, rgba(0,100,224,0.03) 34%, transparent 56%),
-              linear-gradient(180deg, #07101f 0%, #030815 48%, #020714 100%)
-            `,
+      radial-gradient(circle at 50% 8%, rgba(224, 20, 20, 0.20) 0%, rgba(224, 20, 20, 0.10) 16%, rgba(224, 20, 20, 0.03) 34%, transparent 56%),
+      linear-gradient(180deg, #160707 0%, #0c0303 48%, #0a0202 100%)
+    `,
           }}
         />
-
         <div
           className="absolute inset-0 opacity-[0.12]"
           style={{
@@ -76,6 +75,56 @@ export default function LabHero() {
 
         <div className="absolute left-[10%] top-[22%] h-28 w-28 rounded-full bg-[#E61525]/[0.06] blur-3xl md:h-40 md:w-40" />
         <div className="absolute right-[10%] top-[20%] h-28 w-28 rounded-full bg-[#FC7E24]/[0.05] blur-3xl md:h-40 md:w-40" />
+      </div> */}
+
+      <div className="absolute inset-0">
+        {/* Base Background & Top Glow */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background: `
+        radial-gradient(circle at 50% 8%, rgba(224, 20, 20, 0.20) 0%, rgba(224, 20, 20, 0.10) 16%, rgba(224, 20, 20, 0.03) 34%, transparent 56%),
+        linear-gradient(180deg, #160707 0%, #0c0303 48%, #0a0202 100%)
+      `,
+          }}
+        />
+
+        {/* Dot Pattern Layer */}
+        <div
+          className="absolute inset-0 opacity-[0.12]"
+          style={{
+            backgroundImage:
+              "radial-gradient(rgba(255,255,255,0.8) 0.8px, transparent 0.8px)",
+            backgroundSize: "26px 26px",
+            maskImage:
+              "linear-gradient(to bottom, rgba(255,255,255,0.85), rgba(255,255,255,0.18))",
+            WebkitMaskImage:
+              "linear-gradient(to bottom, rgba(255,255,255,0.85), rgba(255,255,255,0.18))",
+          }}
+        />
+
+        {/* Grid Pattern Layer */}
+        <div
+          className="absolute inset-0 opacity-[0.08]"
+          style={{
+            backgroundImage: `
+        linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)
+      `,
+            backgroundSize: "72px 72px",
+            maskImage:
+              "linear-gradient(to bottom, rgba(255,255,255,0.65), rgba(255,255,255,0.06))",
+            WebkitMaskImage:
+              "linear-gradient(to bottom, rgba(255,255,255,0.65), rgba(255,255,255,0.06))",
+          }}
+        />
+
+        {/* Main Top Center Glow - FIXED: Changed from Blue (#0064E0) to Red (#E61525) */}
+        <div className="absolute left-1/2 top-0 h-[240px] w-[72%] -translate-x-1/2 rounded-full bg-[#E61525]/[0.12] blur-3xl sm:h-[300px] md:h-[360px]" />
+
+        {/* Side Accent Glows */}
+        <div className="absolute left-[10%] top-[22%] h-28 w-28 rounded-full bg-[#E61525]/[0.06] blur-3xl md:h-40 md:w-40" />
+        <div className="absolute right-[10%] top-[20%] h-28 w-28 rounded-full bg-[#FC7E24]/[0.05] blur-3xl md:h-40 md:w-40" />
       </div>
 
       <div className="relative z-10 mx-auto max-w-[1200px]">
@@ -94,7 +143,7 @@ export default function LabHero() {
             <span
               className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-medium text-white"
               style={{
-                background: brand.blue,
+                background: brand.red,
                 boxShadow: "0 8px 18px rgba(0,100,224,0.26)",
               }}
             >
@@ -126,10 +175,10 @@ export default function LabHero() {
 
           <div className="mt-8 flex w-full max-w-md flex-col items-center justify-center gap-4 sm:mt-10 sm:max-w-none sm:flex-row">
             <a
-              href="#"
+              href="/contact"
               className="inline-flex min-h-[52px] w-full items-center justify-center rounded-full px-7 text-sm font-medium text-white transition-transform duration-300 hover:-translate-y-0.5 sm:w-auto"
               style={{
-                background: brand.blue,
+                background: brand.red,
                 boxShadow:
                   "0 10px 24px rgba(0,100,224,0.24), inset 0 1px 0 rgba(255,255,255,0.16)",
               }}
@@ -138,7 +187,7 @@ export default function LabHero() {
             </a>
 
             <a
-              href="#"
+              href="/start-project"
               className="inline-flex min-h-[52px] w-full items-center justify-center rounded-full border px-7 text-sm font-medium text-white/88 transition-colors duration-300 hover:bg-white/[0.04] sm:w-auto"
               style={{
                 borderColor: "rgba(255,255,255,0.10)",
@@ -146,7 +195,7 @@ export default function LabHero() {
                 backdropFilter: "blur(10px)",
               }}
             >
-              View Capabilities
+              Get Started
             </a>
           </div>
 

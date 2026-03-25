@@ -5,16 +5,22 @@ import LabOverview from "./components/lab-overview";
 // import LabResults from "./components/lab-results";
 import LabTestimonial from "./components/lab-testimonial";
 import LabWhy from "./components/lab-why";
-import LabWeb from "./components/lab-web";
+// import LabWeb from "./components/lab-web";
+import BrandingCard from "./components/lab-card";
+import LabServicesStack from "./components/lab-services-stack";
+import LabBranding from "./components/lab-branding";
 
 export default function LabPage() {
   return (
     <ModelShell>
       <LabHero />
       <LabOverview />
+      <LabServicesStack />
       <LabWhy />
       {/* <LabResults /> */}
-      <LabWeb />
+      <LabBranding />
+      <BrandingCard />
+      {/* <LabWeb /> */}
       <LabTestimonial />
       <LabFaq />
     </ModelShell>
