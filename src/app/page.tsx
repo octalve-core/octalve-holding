@@ -10,6 +10,7 @@ import NewsletterCTA from "@/components/sections/newsletter-cta";
 import NewsletterFormShell from "@/components/forms/newsletter-form-shell";
 import Footer from "@/components/layout/footer";
 import HomeWelcomePopup from "@/components/home/home-welcome-popup";
+import HomeCta from "@/components/sections/home-cta";
 
 export default function Home() {
   return (
@@ -22,6 +23,7 @@ export default function Home() {
       <FeaturedProjects />
       <BrandingShowcase />
       <Partners />
+      <HomeCta />
       <Testimonials />
       <NewsletterCTA formSlot={<NewsletterFormShell />} />
       <Footer />

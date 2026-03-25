@@ -8,6 +8,7 @@ import SuitePortfolio from "./components/suite-portfolio";
 import SuiteTestimonials from "./components/suite-testimonials";
 import SuiteWhy from "./components/suite-why";
 import SuiteSecondaryHeader from "@/components/suite/SuiteSecondaryHeader";
+import SuiteCta from "./components/suite-cta";
 
 export default function SuitePage() {
   return (
@@ -21,6 +22,7 @@ export default function SuitePage() {
       <SuiteFaq />
       <SuitePortfolio />
       <SuiteLivePortfolio />
+      <SuiteCta />
     </ModelShell>
   );
 }

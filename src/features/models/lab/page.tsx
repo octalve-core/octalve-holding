@@ -9,6 +9,7 @@ import LabWhy from "./components/lab-why";
 import BrandingCard from "./components/lab-card";
 import LabServicesStack from "./components/lab-services-stack";
 import LabBranding from "./components/lab-branding";
+import LabCta from "./components/lab-cta";
 
 export default function LabPage() {
   return (
@@ -22,6 +23,7 @@ export default function LabPage() {
       <BrandingCard />
       {/* <LabWeb /> */}
       <LabTestimonial />
+      <LabCta />
       <LabFaq />
     </ModelShell>
   );
