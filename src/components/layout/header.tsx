@@ -725,13 +725,13 @@ export default function Header() {
                   Emergency Line
                 </p>
                 <p className="mt-2 text-sm font-semibold text-white">
-                  +234 800 000 0000
+                  +234 807 345 9090
                 </p>
                 <p
                   className="mt-1 text-sm"
                   style={{ color: NAV_COLORS.mobileSoft }}
                 >
-                  hello@octalve.com
+                  info@octalve.com
                 </p>
               </div>
             </div>

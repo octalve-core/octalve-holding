@@ -7,6 +7,7 @@ import Plans from "./components/Plans";
 // import Review from "./components/Review";
 // import Benefit from "./components/Benefit";
 import CTA from "./components/CTA";
+import DomainFaq from "./components/domain-faq";
 
 export default function DomainRegistrationPage() {
   return (
@@ -17,6 +18,7 @@ export default function DomainRegistrationPage() {
       <Plans />
       {/* <Review /> */}
       {/* <Benefit /> */}
+      <DomainFaq />
       <CTA />
     </ModelShell>
   );

@@ -7,6 +7,7 @@ import Plans from "./components/Plans";
 // import Review from "./components/Review";
 // import Benefit from "./components/Benefit";
 import CTA from "./components/CTA";
+import HostingFaq from "./components/hosting-faq";
 
 export default function WebHostingPage() {
   return (
@@ -17,6 +18,7 @@ export default function WebHostingPage() {
       <Plans />
       {/* <Review /> */}
       {/* <Benefit /> */}
+      <HostingFaq />
       <CTA />
     </ModelShell>
   );

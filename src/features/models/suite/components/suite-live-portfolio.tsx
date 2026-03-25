@@ -1,276 +1,282 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { liveProjects, type LiveProject } from "../suite-data";
+import { useEffect, useMemo, useRef, useState } from "react";
 
-function ArrowRight() {
-  return <span aria-hidden="true">›</span>;
-}
+type PortfolioItem = {
+  id: string;
+  label: string;
+  href: string;
+  videoSrc: string;
+};
 
-function DeviceIcon({ kind }: { kind: "desktop" | "tablet" | "mobile" }) {
-  if (kind === "tablet") {
-    return (
-      <svg
-        width="18"
-        height="18"
-        viewBox="0 0 24 24"
-        fill="none"
-        aria-hidden="true"
-      >
-        <rect
-          x="6"
-          y="3"
-          width="12"
-          height="18"
-          rx="2"
-          stroke="currentColor"
-          strokeWidth="2.2"
-        />
-        <path
-          d="M10 18h4"
-          stroke="currentColor"
-          strokeWidth="2.2"
-          strokeLinecap="round"
-        />
-      </svg>
-    );
-  }
+const SLIDE_DURATION = 30_000;
 
-  if (kind === "mobile") {
-    return (
-      <svg
-        width="18"
-        height="18"
-        viewBox="0 0 24 24"
-        fill="none"
-        aria-hidden="true"
-      >
-        <rect
-          x="8"
-          y="2.5"
-          width="8"
-          height="19"
-          rx="2"
-          stroke="currentColor"
-          strokeWidth="2.2"
-        />
-        <path
-          d="M11 19h2"
-          stroke="currentColor"
-          strokeWidth="2.2"
-          strokeLinecap="round"
-        />
-      </svg>
-    );
-  }
+const items: PortfolioItem[] = [
+  {
+    id: "dsfinc",
+    label: "DSF Inc Org",
+    href: "https://dsfinc.org/",
+    videoSrc: "/videos/lab/dsfinc.webm",
+  },
+  {
+    id: "emprofit",
+    label: "Emprofit",
+    href: "https://emprofitsolution.com/",
+    videoSrc: "/videos/lab/emprofit.webm",
+  },
+  {
+    id: "gotooeasy",
+    label: "Gotooeasy",
+    href: "https://ghotat.com/",
+    videoSrc: "/videos/lab/gotooeasy.webm",
+  },
+  {
+    id: "mayport",
+    label: "Mayport Oil & Gas",
+    href: "https://mayportoilandgas.com/",
+    videoSrc: "/videos/lab/mayport.webm",
+  },
+  {
+    id: "mobileeducator",
+    label: "Mobile Educator",
+    href: "https://thenigerianmobileeducator.com/",
+    videoSrc: "/videos/lab/mobileeducator.webm",
+  },
+  {
+    id: "nspee",
+    label: "NSPEE Org.",
+    href: "https://nspee.org/",
+    videoSrc: "/videos/lab/nspee.webm",
+  },
+  {
+    id: "safedeenhq",
+    label: "Safedeen HQ",
+    href: "https://safedeenhq.com/",
+    videoSrc: "/videos/lab/safedeenhq.webm",
+  },
+];
 
-  return (
-    <svg
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      fill="none"
-      aria-hidden="true"
-    >
-      <path
-        d="M4 5h16a2 2 0 012 2v9a2 2 0 01-2 2H4a2 2 0 01-2-2V7a2 2 0 012-2z"
-        stroke="currentColor"
-        strokeWidth="2.2"
-        strokeLinecap="round"
-      />
-      <path
-        d="M8 21h8"
-        stroke="currentColor"
-        strokeWidth="2.2"
-        strokeLinecap="round"
-      />
-      <path
-        d="M10 18v3"
-        stroke="currentColor"
-        strokeWidth="2.2"
-        strokeLinecap="round"
-      />
-      <path
-        d="M14 18v3"
-        stroke="currentColor"
-        strokeWidth="2.2"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
+export default function LivePreviewCard() {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const touchStartX = useRef<number | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
 
-function LivePreviewCard({
-  project,
-  index,
-}: {
-  project: LiveProject;
-  index: number;
-}) {
-  const [expanded, setExpanded] = useState(index === 0);
-  const [device, setDevice] = useState<"desktop" | "tablet" | "mobile">(
-    "desktop",
-  );
+  const currentItem = useMemo(() => items[currentIndex], [currentIndex]);
 
-  const widthMap = {
-    desktop: 1120,
-    tablet: 820,
-    mobile: 420,
+  const goNext = () => {
+    setCurrentIndex((prev) => (prev + 1) % items.length);
   };
 
-  const hostname = useMemo(() => {
-    try {
-      return new URL(project.url).hostname.replace("www.", "");
-    } catch {
-      return project.url;
+  const goPrev = () => {
+    setCurrentIndex((prev) => (prev - 1 + items.length) % items.length);
+  };
+
+  const goTo = (index: number) => {
+    setCurrentIndex(index);
+  };
+
+  useEffect(() => {
+    if (isPaused || items.length <= 1) return;
+
+    const timer = setTimeout(() => {
+      goNext();
+    }, SLIDE_DURATION);
+
+    return () => clearTimeout(timer);
+  }, [currentIndex, isPaused]);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    video.load();
+
+    const playVideo = async () => {
+      try {
+        video.currentTime = 0;
+        await video.play();
+      } catch {
+        // browser may delay autoplay until media is ready
+      }
+    };
+
+    playVideo();
+  }, [currentIndex]);
+
+  const togglePause = async () => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    if (isPaused) {
+      setIsPaused(false);
+      try {
+        await video.play();
+      } catch {}
+    } else {
+      setIsPaused(true);
+      video.pause();
     }
-  }, [project.url]);
+  };
+
+  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    touchStartX.current = e.touches[0]?.clientX ?? null;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (touchStartX.current === null) return;
+
+    const endX = e.changedTouches[0]?.clientX ?? 0;
+    const diff = touchStartX.current - endX;
+
+    if (diff > 50) goNext();
+    if (diff < -50) goPrev();
+
+    touchStartX.current = null;
+  };
 
   return (
-    <article className="overflow-hidden rounded-3xl bg-white shadow-sm ring-1 ring-slate-200 transition hover:shadow-md">
-      <div className="p-6">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div className="min-w-0">
-            <h3 className="text-xl font-medium text-slate-900">
-              {project.title}
-            </h3>
-            <p className="mt-1 text-sm text-slate-500">{project.subtitle}</p>
+    <section className="w-full bg-[#ffffff] px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
+      <div className="mx-auto max-w-7xl">
+        <div className="mx-auto mb-8 max-w-3xl text-center sm:mb-10">
+          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#2563eb]">
+            Lab / Web
+          </p>
 
-            <a
-              href={project.url}
-              target="_blank"
-              rel="noreferrer"
-              className="mt-2 inline-flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-700"
-            >
-              {hostname}
-            </a>
+          <h2 className="mt-3 text-3xl font-semibold leading-tight tracking-tight text-[#0f172a] sm:text-4xl lg:text-6xl">
+            Explore websites we’ve designed and built
+          </h2>
 
-            <div className="mt-4 flex flex-wrap gap-2">
-              {project.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="inline-flex items-center rounded-full bg-slate-50 px-3 py-1 text-xs font-medium text-slate-700 ring-1 ring-slate-200"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
-          </div>
+          <p className="mx-auto mt-3 max-w-2xl text-sm leading-6 text-[#475569] sm:text-base">
+            Clean design, smart structure, and conversion-focused web
+            experiences built for modern businesses.
+          </p>
+        </div>
 
-          <div className="flex flex-col gap-3 sm:items-end">
-            <div className="flex items-center gap-2 rounded-2xl bg-slate-50 p-2 ring-1 ring-black/5">
-              {(["desktop", "tablet", "mobile"] as const).map((kind) => (
-                <button
-                  key={kind}
-                  onClick={() => setDevice(kind)}
-                  className={`inline-flex h-10 w-10 items-center justify-center rounded-full transition ${
-                    device === kind
-                      ? "bg-slate-900 text-white shadow-sm"
-                      : "bg-white text-slate-700 ring-1 ring-slate-200 hover:bg-slate-50"
-                  }`}
-                  aria-label={`${kind} view`}
-                >
-                  <DeviceIcon kind={kind} />
-                </button>
-              ))}
-            </div>
-
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setExpanded((prev) => !prev)}
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-slate-900 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:opacity-90"
+        <div
+          className="relative mx-auto max-w-6xl"
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+        >
+          <div className="relative overflow-hidden rounded-[24px] bg-[#000000] shadow-[0_20px_80px_rgba(15,23,42,0.16)] sm:rounded-[30px]">
+            <div className="relative aspect-[16/10] w-full sm:aspect-[16/9] lg:aspect-[16/7]">
+              <video
+                key={currentItem.id}
+                ref={videoRef}
+                className="h-full w-full object-cover"
+                muted
+                playsInline
+                autoPlay
+                preload="auto"
+                onEnded={goNext}
               >
-                {expanded ? "Close Preview" : "Open Preview"}
+                <source src={currentItem.videoSrc} type="video/webm" />
+              </video>
+
+              <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-black/10 to-black/5" />
+
+              <div className="absolute left-4 top-4 z-10 sm:left-6 sm:top-6">
+                <div className="rounded-full border border-white/15 bg-black/35 px-3 py-1.5 text-xs font-medium text-white backdrop-blur-md sm:text-sm">
+                  {currentItem.label}
+                </div>
+              </div>
+
+              <div className="absolute bottom-4 left-4 z-10 sm:bottom-6 sm:left-6">
+                <a
+                  href={currentItem.href}
+                  rel="nofollow"
+                  className="inline-flex items-center justify-center rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:scale-[1.02] hover:bg-blue-700"
+                >
+                  Visit website
+                </a>
+              </div>
+
+              <button
+                type="button"
+                onClick={togglePause}
+                aria-label={isPaused ? "Play video" : "Pause video"}
+                className="absolute bottom-4 right-4 z-10 inline-flex h-14 w-14 items-center justify-center rounded-full border border-white/50 bg-black/20 text-white backdrop-blur-md transition hover:bg-black/30 sm:bottom-6 sm:right-6"
+              >
+                {isPaused ? (
+                  <span className="ml-0.5 text-lg">▶</span>
+                ) : (
+                  <span className="text-lg">❚❚</span>
+                )}
               </button>
 
-              <a
-                href={project.url}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-4 py-2.5 text-sm font-medium text-slate-900 ring-1 ring-slate-200 shadow-sm hover:bg-slate-50"
+              <button
+                type="button"
+                onClick={goPrev}
+                aria-label="Previous project"
+                className="absolute left-3 top-1/2 z-10 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-black/25 text-white backdrop-blur-md transition hover:bg-black/35 sm:flex"
               >
-                Open site <ArrowRight />
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
+                ‹
+              </button>
 
-      {expanded ? (
-        <div className="border-t border-slate-200 bg-white">
-          <div className="px-4 pb-6 sm:px-6">
-            <div className="py-4 text-xs font-medium text-slate-500">
-              If the site blocks embeds, use “Open site”.
-            </div>
+              <button
+                type="button"
+                onClick={goNext}
+                aria-label="Next project"
+                className="absolute right-3 top-1/2 z-10 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-black/25 text-white backdrop-blur-md transition hover:bg-black/35 sm:flex"
+              >
+                ›
+              </button>
 
-            <div className="rounded-t-[28px] bg-slate-900 px-5 py-3 shadow-sm">
-              <div className="flex items-center gap-2">
-                <span className="h-2.5 w-2.5 rounded-full bg-red-400" />
-                <span className="h-2.5 w-2.5 rounded-full bg-yellow-400" />
-                <span className="h-2.5 w-2.5 rounded-full bg-green-400" />
-
-                <div className="ml-3 hidden h-7 max-w-[46vw] flex-1 overflow-hidden text-ellipsis whitespace-nowrap rounded-full bg-white/10 px-4 text-[12px] font-medium text-white/80 sm:block">
-                  {project.url}
-                </div>
-              </div>
-            </div>
-
-            <div className="rounded-b-[28px] bg-slate-950 p-3 shadow-[0_20px_80px_rgba(2,6,23,0.25)]">
-              <div className="overflow-hidden rounded-[20px] bg-white ring-1 ring-white/10">
-                <div className="bg-slate-100/60 p-3 sm:p-4">
-                  <div
-                    className="mx-auto overflow-hidden rounded-[16px] bg-white shadow-sm ring-1 ring-slate-200"
-                    style={{ width: `${widthMap[device]}px`, maxWidth: "100%" }}
+              <div className="absolute left-0 right-0 top-0 z-10 flex gap-2 p-3 sm:p-4">
+                {items.map((item, index) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    aria-label={`Go to ${item.label}`}
+                    onClick={() => goTo(index)}
+                    className="relative h-1.5 flex-1 overflow-hidden rounded-full bg-white/20"
                   >
-                    <iframe
-                      title={`${project.title} preview`}
-                      src={project.url}
-                      className="w-full bg-white"
-                      style={{ height: "74vh", minHeight: "640px" }}
-                      loading="lazy"
-                      referrerPolicy="no-referrer-when-downgrade"
+                    <span
+                      className={`absolute inset-y-0 left-0 rounded-full bg-white transition-all duration-300 ${
+                        index === currentIndex ? "w-full" : "w-0"
+                      }`}
+                      style={{
+                        animation:
+                          index === currentIndex && !isPaused
+                            ? `labWebProgress ${SLIDE_DURATION}ms linear forwards`
+                            : "none",
+                      }}
                     />
-                  </div>
-                </div>
+                  </button>
+                ))}
               </div>
             </div>
+          </div>
 
-            <div className="mx-auto h-4 w-[86%] rounded-b-[18px] bg-slate-200 shadow-sm" />
-            <div className="mx-auto -mt-1 h-2 w-[32%] rounded-b-[999px] bg-slate-300" />
+          <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
+            {items.map((item, index) => (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => goTo(index)}
+                className={`rounded-full px-3 py-1.5 text-xs font-medium transition sm:text-sm ${
+                  index === currentIndex
+                    ? "bg-[#2563eb] text-white"
+                    : "bg-white text-[#475569] ring-1 ring-[#e2e8f0]"
+                }`}
+              >
+                {item.label}
+              </button>
+            ))}
           </div>
         </div>
-      ) : null}
-    </article>
-  );
-}
-
-export default function SuiteLivePortfolio() {
-  return (
-    <section id="live-portfolio" className="bg-white">
-      <div className="mx-auto max-w-7xl px-5 py-14 sm:px-6 sm:py-16 lg:py-24">
-        <div>
-          <p className="text-sm font-medium tracking-[0.22em] text-slate-500">
-            LIVE PORTFOLIO
-          </p>
-          <h2 className="mt-3 text-3xl font-medium tracking-[-0.04em] text-slate-900 sm:text-4xl">
-            Featured Website Portfolio
-          </h2>
-          <p className="mt-3 max-w-2xl text-base leading-8 text-slate-600">
-            A selection of our recent website projects across various
-            industries.
-          </p>
-        </div>
-
-        <div className="mt-10 grid gap-8 sm:mt-12 lg:grid-cols-2">
-          {liveProjects.map((project, index) => (
-            <LivePreviewCard
-              key={project.title}
-              project={project}
-              index={index}
-            />
-          ))}
-        </div>
       </div>
+
+      <style jsx>{`
+        @keyframes labWebProgress {
+          from {
+            width: 0%;
+          }
+          to {
+            width: 100%;
+          }
+        }
+      `}</style>
     </section>
   );
 }
