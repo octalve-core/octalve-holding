@@ -342,10 +342,10 @@ export default function Models() {
           <p className="text-base text-slate-500">
             Explore the ecosystem.{" "}
             <Link
-              href="/models"
-              className="font-medium text-green-600 underline underline-offset-4"
+              href="/models/one"
+              className="font-medium !text-green-600 underline underline-offset-4"
             >
-              Browse all models
+              Browse all Products
             </Link>
           </p>
         </div>

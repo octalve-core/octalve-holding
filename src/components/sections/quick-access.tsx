@@ -241,7 +241,7 @@ export default function QuickAccess() {
 
   return (
     <section
-      className="px-4 py-16 sm:px-6 md:py-20"
+      className="px-4 py-2 sm:px-6 md:py-1"
       style={{ backgroundColor: SECTION_COLORS.pageBg }}
     >
       <div className="mx-auto max-w-[1360px]">

@@ -5,12 +5,16 @@ import ConsultOverview from "./components/consult-overview";
 import ConsultResults from "./components/consult-results";
 import ConsultTestimonial from "./components/consult-testimonial";
 import ConsultWhy from "./components/consult-why";
+import ConsultSteps from "./components/consult-steps";
+import ConsultPackages from "./components/consult-package";
 
 export default function ConsultPage() {
   return (
     <ModelShell>
       <ConsultHero />
       <ConsultOverview />
+      <ConsultSteps />
+      <ConsultPackages />
       <ConsultWhy />
       <ConsultResults />
       <ConsultTestimonial />
