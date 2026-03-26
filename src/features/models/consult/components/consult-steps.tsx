@@ -297,7 +297,7 @@ export default function ConsultSteps() {
     >
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
         <div className="mx-auto max-w-3xl text-center">
-          <h2 className="text-3xl font-bold leading-tight tracking-tight text-black sm:text-4xl lg:text-5xl">
+          <h2 className="text-3xl font-medium leading-tight tracking-tight text-black sm:text-4xl lg:text-5xl">
             Move from confusion to clarity in three focused steps
           </h2>
           <p className="mx-auto mt-5 max-w-2xl text-base leading-8 text-slate-600 sm:text-lg">
@@ -332,7 +332,7 @@ export default function ConsultSteps() {
                       <div className="flex items-start gap-4">
                         <div className="relative z-10 mt-1 flex flex-col items-center">
                           <div
-                            className="flex h-8 w-8 items-center justify-center rounded-full border text-sm font-bold transition-all duration-500"
+                            className="flex h-8 w-8 items-center justify-center rounded-full border text-sm font-medium transition-all duration-500"
                             style={{
                               borderColor: isActive
                                 ? "#FACC15"
@@ -351,11 +351,11 @@ export default function ConsultSteps() {
                         </div>
 
                         <div className="flex-1 pb-1">
-                          <div className="inline-flex rounded-full border border-white/14 bg-white/8 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-white/90 sm:text-[11px]">
+                          <div className="inline-flex rounded-full border border-white/14 bg-white/8 px-3 py-1 text-[10px] font-medium uppercase tracking-[0.18em] text-white/90 sm:text-[11px]">
                             {step.tag}
                           </div>
 
-                          <h3 className="mt-3 text-2xl font-semibold leading-tight text-white transition-opacity duration-300 sm:text-[2rem]">
+                          <h3 className="mt-3 text-2xl font-medium leading-tight text-white transition-opacity duration-300 sm:text-[2rem]">
                             {step.title}
                           </h3>
 
@@ -373,7 +373,7 @@ export default function ConsultSteps() {
                             >
                               <Link
                                 href="/contact"
-                                className="inline-flex items-center gap-2 rounded-md px-5 py-3 text-sm font-semibold text-slate-950 transition hover:opacity-95"
+                                className="inline-flex items-center gap-2 rounded-md px-5 py-3 text-sm font-medium text-slate-950 transition hover:opacity-95"
                                 style={{ backgroundColor: "#FACC15" }}
                               >
                                 Book Now

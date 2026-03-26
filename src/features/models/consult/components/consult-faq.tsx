@@ -11,7 +11,7 @@ const BRAND = {
   text: "#334155",
   ink: "#0F172A",
   border: "#E6EAF2",
-  lilac: "#E8DFF6",
+  lilac: "#2A006D",
 };
 
 type FaqItem = {
@@ -95,7 +95,7 @@ export default function ConsultFaq() {
                 key={item.question}
                 className="overflow-hidden rounded-[18px] border bg-white transition-all duration-300"
                 style={{
-                  borderColor: isOpen ? `${BRAND.blue}55` : BRAND.border,
+                  borderColor: isOpen ? `${BRAND.lilac}55` : BRAND.border,
                   boxShadow: isOpen
                     ? "0 18px 48px rgba(0, 100, 224, 0.08)"
                     : "0 8px 24px rgba(15, 23, 42, 0.04)",
@@ -109,7 +109,7 @@ export default function ConsultFaq() {
                   <div className="pr-4">
                     <div
                       className="text-lg font-medium leading-7 sm:text-[1.35rem]"
-                      style={{ color: isOpen ? BRAND.blue : BRAND.ink }}
+                      style={{ color: isOpen ? BRAND.lilac : BRAND.ink }}
                     >
                       {index + 1}. {item.question}
                     </div>
@@ -118,14 +118,14 @@ export default function ConsultFaq() {
                   <span
                     className="mt-1 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border transition-transform duration-300"
                     style={{
-                      borderColor: isOpen ? `${BRAND.blue}30` : BRAND.border,
-                      backgroundColor: isOpen ? `${BRAND.blue}12` : "#FFFFFF",
+                      borderColor: isOpen ? `${BRAND.lilac}30` : BRAND.border,
+                      backgroundColor: isOpen ? `${BRAND.lilac}12` : "#FFFFFF",
                       transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
                     }}
                   >
                     <ChevronDown
                       className="h-4 w-4"
-                      style={{ color: isOpen ? BRAND.blue : BRAND.ink }}
+                      style={{ color: isOpen ? BRAND.lilac : BRAND.ink }}
                     />
                   </span>
                 </button>
