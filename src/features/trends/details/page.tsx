@@ -44,7 +44,7 @@ export default function TrendDetailsPage({ slug }: TrendDetailsPageProps) {
 
             <Link
               href="/trends"
-              className="inline-flex rounded-full border border-slate-300 bg-white px-5 py-2.5 text-sm font-semibold text-black transition hover:border-slate-400"
+              className="inline-flex rounded-full bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700 hover:scale-[1.02]"
             >
               Back to trends
             </Link>
@@ -128,7 +128,7 @@ export default function TrendDetailsPage({ slug }: TrendDetailsPageProps) {
 
               <Link
                 href="/start-project"
-                className="inline-flex rounded-full border border-slate-300 bg-white px-6 py-3 text-sm font-semibold text-black transition hover:border-slate-400"
+                className="inline-flex items-center justify-center rounded-full border border-[#0064E0] bg-white px-6 py-3 text-base font-bold !text-[#0064E0] transition hover:scale-105 hover:bg-[#0064E0]/5"
               >
                 Start a project
               </Link>

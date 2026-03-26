@@ -5,12 +5,13 @@ export default function CareerApplicationForm() {
         <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr]">
           <div>
             <h2 className="text-3xl font-semibold tracking-[-0.02em] text-slate-950 sm:text-4xl">
-              Career application form
+              Build what matters with Octalve.
             </h2>
+
             <p className="mt-4 max-w-xl text-base leading-7 text-slate-600">
-              This is a clean frontend demo form for now. Later, you can connect
-              it to email, a database, Notion, Airtable, a recruiter workflow,
-              or your internal dashboard.
+              We are looking for thoughtful people who can solve real problems,
+              communicate clearly, and help build brands, products, systems, and
+              meaningful experiences that move ideas forward.
             </p>
 
             <div className="mt-8 space-y-4">
@@ -19,8 +20,9 @@ export default function CareerApplicationForm() {
                   Who should apply
                 </h3>
                 <p className="mt-2 text-sm leading-6 text-slate-600">
-                  Designers, developers, strategists, marketers, writers,
-                  operators, and people who can think clearly and execute well.
+                  Designers, developers, strategists, marketers, operators,
+                  writers, and practical builders who care about quality,
+                  clarity, and execution.
                 </p>
               </div>
 
@@ -29,8 +31,9 @@ export default function CareerApplicationForm() {
                   What matters to us
                 </h3>
                 <p className="mt-2 text-sm leading-6 text-slate-600">
-                  Strong thinking, practical skill, honesty, communication,
-                  ownership, and the ability to build with clarity.
+                  Strong thinking, clean execution, ownership, honesty,
+                  collaboration, and the ability to create work that is useful,
+                  thoughtful, and effective.
                 </p>
               </div>
             </div>
@@ -45,7 +48,7 @@ export default function CareerApplicationForm() {
                 <input
                   type="text"
                   placeholder="Your full name"
-                  className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm outline-none transition focus:border-[#0064E0]"
+                  className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-black outline-none transition placeholder:text-black/35 focus:border-[#0064E0] focus:ring-4 focus:ring-[#0064E0]/10"
                 />
               </div>
 
@@ -56,7 +59,7 @@ export default function CareerApplicationForm() {
                 <input
                   type="email"
                   placeholder="you@example.com"
-                  className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm outline-none transition focus:border-[#0064E0]"
+                  className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-black outline-none transition placeholder:text-black/35 focus:border-[#0064E0] focus:ring-4 focus:ring-[#0064E0]/10"
                 />
               </div>
 
@@ -67,7 +70,7 @@ export default function CareerApplicationForm() {
                 <input
                   type="tel"
                   placeholder="+234..."
-                  className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm outline-none transition focus:border-[#0064E0]"
+                  className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-black outline-none transition placeholder:text-black/35 focus:border-[#0064E0] focus:ring-4 focus:ring-[#0064E0]/10"
                 />
               </div>
 
@@ -75,15 +78,15 @@ export default function CareerApplicationForm() {
                 <label className="mb-2 block text-sm font-medium text-slate-900">
                   Role applying for
                 </label>
-                <select className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm outline-none transition focus:border-[#0064E0]">
-                  <option>Designer</option>
-                  <option>Frontend Developer</option>
-                  <option>Backend Developer</option>
-                  <option>Product Manager</option>
-                  <option>Brand Strategist</option>
-                  <option>Marketing / Growth</option>
-                  <option>Operations</option>
-                  <option>Other</option>
+                <select className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-black outline-none transition focus:border-[#0064E0] focus:ring-4 focus:ring-[#0064E0]/10">
+                  <option className="text-black">Designer</option>
+                  <option className="text-black">Frontend Developer</option>
+                  <option className="text-black">Backend Developer</option>
+                  <option className="text-black">Product Manager</option>
+                  <option className="text-black">Brand Strategist</option>
+                  <option className="text-black">Marketing / Growth</option>
+                  <option className="text-black">Operations</option>
+                  <option className="text-black">Other</option>
                 </select>
               </div>
 
@@ -94,7 +97,7 @@ export default function CareerApplicationForm() {
                 <input
                   type="url"
                   placeholder="https://..."
-                  className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm outline-none transition focus:border-[#0064E0]"
+                  className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-black outline-none transition placeholder:text-black/35 focus:border-[#0064E0] focus:ring-4 focus:ring-[#0064E0]/10"
                 />
               </div>
 
@@ -105,7 +108,7 @@ export default function CareerApplicationForm() {
                 <textarea
                   rows={5}
                   placeholder="Tell us briefly about your experience, strengths, and relevant work..."
-                  className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm outline-none transition focus:border-[#0064E0]"
+                  className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-black outline-none transition placeholder:text-black/35 focus:border-[#0064E0] focus:ring-4 focus:ring-[#0064E0]/10"
                 />
               </div>
 
@@ -116,7 +119,7 @@ export default function CareerApplicationForm() {
                 <textarea
                   rows={5}
                   placeholder="Tell us why you are interested and what value you believe you can bring..."
-                  className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm outline-none transition focus:border-[#0064E0]"
+                  className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-black outline-none transition placeholder:text-black/35 focus:border-[#0064E0] focus:ring-4 focus:ring-[#0064E0]/10"
                 />
               </div>
 
@@ -124,11 +127,11 @@ export default function CareerApplicationForm() {
                 <label className="mb-2 block text-sm font-medium text-slate-900">
                   Availability
                 </label>
-                <select className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm outline-none transition focus:border-[#0064E0]">
-                  <option>Immediate</option>
-                  <option>Within 2 weeks</option>
-                  <option>Within 1 month</option>
-                  <option>Flexible</option>
+                <select className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-black outline-none transition focus:border-[#0064E0] focus:ring-4 focus:ring-[#0064E0]/10">
+                  <option className="text-black">Immediate</option>
+                  <option className="text-black">Within 2 weeks</option>
+                  <option className="text-black">Within 1 month</option>
+                  <option className="text-black">Flexible</option>
                 </select>
               </div>
 
@@ -136,11 +139,11 @@ export default function CareerApplicationForm() {
                 <label className="mb-2 block text-sm font-medium text-slate-900">
                   Work preference
                 </label>
-                <select className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm outline-none transition focus:border-[#0064E0]">
-                  <option>Remote</option>
-                  <option>Hybrid</option>
-                  <option>On-site</option>
-                  <option>Flexible</option>
+                <select className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-black outline-none transition focus:border-[#0064E0] focus:ring-4 focus:ring-[#0064E0]/10">
+                  <option className="text-black">Remote</option>
+                  <option className="text-black">Hybrid</option>
+                  <option className="text-black">On-site</option>
+                  <option className="text-black">Flexible</option>
                 </select>
               </div>
             </div>

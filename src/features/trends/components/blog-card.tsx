@@ -47,7 +47,7 @@ export default function BlogCard({ post }: BlogCardProps) {
 
           <Link
             href={`/trends/${post.slug}`}
-            className="inline-flex rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-black transition hover:border-slate-400 hover:bg-slate-50"
+            className="inline-flex rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-700 hover:scale-[1.02]"
           >
             Read more
           </Link>
