@@ -10,6 +10,7 @@ import BrandingCard from "./components/lab-card";
 import LabServicesStack from "./components/lab-services-stack";
 import LabBranding from "./components/lab-branding";
 import LabCta from "./components/lab-cta";
+import LabPricingPackages from "./components/lab-package";
 
 export default function LabPage() {
   return (
@@ -22,6 +23,7 @@ export default function LabPage() {
       <LabBranding />
       <BrandingCard />
       {/* <LabWeb /> */}
+      <LabPricingPackages />
       <LabTestimonial />
       <LabCta />
       <LabFaq />

@@ -4,6 +4,7 @@ const CONTACT_ITEMS = [
   {
     id: "location",
     title: "Location:",
+    // value: "AP Plaza, No. 1 Aguiyi Ironsi Street Maitama, Opposite Transcorp Hilton, Abuja.",
     value: "Wuye, Abuja, Nigeria.",
     bg: "bg-red-500",
     icon: (

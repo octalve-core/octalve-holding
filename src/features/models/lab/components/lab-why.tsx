@@ -32,7 +32,7 @@ const stats: WhyStat[] = [
 export default function WhyLab() {
   return (
     <section className="bg-[#F8FAFC] px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
-      <div className="mx-auto max-w-[1420px] rounded-[34px] bg-[#8F2A34] px-5 py-10 sm:px-8 sm:py-14 lg:rounded-[40px] lg:px-12 lg:py-16">
+      <div className="mx-auto max-w-[1420px] rounded-[34px] bg-[#cb0314] px-5 py-10 sm:px-8 sm:py-14 lg:rounded-[40px] lg:px-12 lg:py-16">
         <div className="mx-auto max-w-[980px] text-center">
           <h2 className="text-3xl font-semibold tracking-[-0.04em] text-white sm:text-4xl lg:text-6xl">
             Why businesses choose Octalve Lab

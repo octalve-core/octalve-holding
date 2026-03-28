@@ -131,7 +131,7 @@ export default function LeapHero() {
 
           <div className="mt-8 flex w-full max-w-md flex-col items-center justify-center gap-4 sm:mt-10 sm:max-w-none sm:flex-row">
             <a
-              href="/contact"
+              href="#leap"
               className="inline-flex min-h-[52px] w-full items-center justify-center rounded-full px-7 text-sm font-medium text-white transition-transform duration-300 hover:-translate-y-0.5 sm:w-auto"
               style={{
                 background: brand.green,

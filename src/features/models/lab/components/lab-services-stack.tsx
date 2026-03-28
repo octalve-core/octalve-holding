@@ -134,7 +134,7 @@ const services: ServiceCard[] = [
       "Campaign traffic is expensive, so every click should have a clear destination. We build focused landing pages that align offer, message, and action, helping you capture more leads and improve campaign performance.",
     icon: MousePointerClick,
     bg: "#200908",
-    text: "#ffffff",
+    text: "#FFFFFF",
     softText: "#A4A4A4",
   },
   {
@@ -144,70 +144,73 @@ const services: ServiceCard[] = [
       "Generic tools often create more friction than efficiency. We help design and build custom digital systems around your workflow so your operations become more aligned, more efficient, and easier to scale.",
     icon: MonitorSmartphone,
     bg: "#E61525",
-    text: "#ffffff",
-    softText: "#ffffff",
+    text: "#FFFFFF",
+    softText: "#FFFFFF",
   },
 ];
 
 function ServiceIcon({ Icon }: { Icon: LucideIcon }) {
   return (
-    <div className="flex h-20 w-20 items-center justify-center rounded-[24px] bg-white sm:h-24 sm:w-24">
-      <Icon className="h-10 w-10 text-[#E61525] sm:h-12 sm:w-12" />
+    <div className="flex h-18 w-18 items-center justify-center rounded-[22px] bg-white sm:h-20 sm:w-20 lg:h-24 lg:w-24">
+      <Icon className="h-9 w-9 text-[#E61525] sm:h-10 sm:w-10 lg:h-12 lg:w-12" />
     </div>
   );
 }
 
 export default function LabServicesStack() {
   return (
-    <section className="bg-[#F8FAFC] px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
+    <section
+      id="lab"
+      className="bg-[#F8FAFC] px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24"
+    >
       <div className="mx-auto max-w-[980px]">
-        <div className="mx-auto max-w-[820px] text-center">
-          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#E61525]">
+        <div className="mx-auto max-w-[860px] text-center">
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#E61525] sm:text-sm">
             Octalve Lab Services
           </p>
 
-          <h2 className="mt-3 text-4xl font-medium leading-[1.02] tracking-[-0.05em] text-[#0F172A] sm:text-5xl lg:text-6xl">
+          <h2 className="mt-3 text-3xl font-medium leading-[1.02] tracking-[-0.05em] text-[#0F172A] sm:text-5xl lg:text-6xl">
             Design and development services
             <span className="block text-[#E61525]">
               built to drive real business value
             </span>
           </h2>
 
-          <p className="mx-auto mt-5 max-w-3xl text-base leading-8 text-slate-600 sm:text-lg">
+          <p className="mx-auto mt-5 max-w-3xl text-sm leading-7 text-slate-600 sm:text-base sm:leading-8 lg:text-lg">
             We help businesses look sharper, work smarter, and convert better
             through focused digital design and product execution.
           </p>
         </div>
 
-        <div className="mt-12 space-y-5 sm:space-y-6">
+        <div className="mt-24 space-y-5 sm:mt-24 sm:space-y-6 lg:mt-28">
           {services.map((service, index) => {
             const Icon = service.icon;
 
             return (
               <div
                 key={service.id}
-                className="sticky top-24 rounded-[28px] border"
+                className="sticky top-44 rounded-[26px] border sm:top-40 sm:rounded-[28px] lg:top-48"
                 style={{
                   backgroundColor: service.bg,
                   borderColor: "rgba(15,23,42,0.06)",
                   zIndex: index + 1,
                 }}
               >
-                <div className="grid items-center gap-8 px-6 py-7 sm:px-8 sm:py-9 lg:grid-cols-[1.45fr_0.55fr] lg:gap-10 lg:px-10 lg:py-10">
+                <div className="grid items-center gap-7 px-5 py-6 sm:px-8 sm:py-8 lg:grid-cols-[1.45fr_0.55fr] lg:gap-10 lg:px-10 lg:py-10">
                   <div className="max-w-[640px]">
                     <div className="inline-flex rounded-full bg-white/80 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">
                       Service {String(service.id).padStart(2, "0")}
                     </div>
 
                     <h3
-                      className="mt-5 text-3xl font-semibold leading-[1.02] tracking-[-0.04em] sm:text-4xl"
+                      className="mt-4 text-2xl font-semibold leading-[1.04] tracking-[-0.04em] sm:mt-5 sm:text-3xl lg:text-4xl"
                       style={{ color: service.text }}
                     >
                       {service.title}
                     </h3>
 
                     <p
-                      className="mt-5 max-w-[60ch] text-base leading-8 sm:text-lg"
+                      className="mt-4 text-sm leading-7 sm:mt-5 sm:text-base sm:leading-8 lg:text-lg"
                       style={{ color: service.softText }}
                     >
                       {service.content}

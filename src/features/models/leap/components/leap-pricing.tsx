@@ -95,7 +95,7 @@ const PACKAGES: LeapPackage[] = [
     highlights: [
       "CAC Certificate + TIN",
       "Letterhead + ID Card",
-      "Business Cards",
+      "Business Cards (100 copies)",
       "Sales Record Book",
     ],
     details: [
@@ -105,7 +105,7 @@ const PACKAGES: LeapPackage[] = [
       "Letter Head Papers (5)",
       "ID Card",
       "CAC Frame",
-      "Glittering Business Cards",
+      "Glittering Business Cards (100 Copies)",
       "Sales Record Book",
       "Employer-Employee Documents",
       "Bank Contacts for Account Opening",
@@ -160,6 +160,8 @@ const PACKAGES: LeapPackage[] = [
       "Letter Head Papers (5 Copies)",
       "Iron Company Seal",
       "Business Bank Contacts",
+      "Board Resolution Template",
+      "Reference Letter to banks",
       "Offer Letter",
       "Memo of Acceptance",
       "Free Nationwide Delivery",
@@ -346,7 +348,10 @@ export default function LeapPricingPackages() {
 
   return (
     <>
-      <section className="bg-[#F5F8F6] px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
+      <section
+        id="leap"
+        className="bg-[#F5F8F6] px-4 py-16 sm:px-6 sm:py-20 lg:px-8"
+      >
         <div className="mx-auto max-w-7xl">
           <div className="mx-auto max-w-3xl text-center">
             <span className="inline-flex items-center rounded-full border border-[#29BE3E]/20 bg-[#29BE3E]/8 px-4 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-[#29BE3E]">

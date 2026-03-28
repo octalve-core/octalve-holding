@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type Testimonial = {
   id: number;
@@ -92,6 +92,10 @@ const CARD_THEMES = [
   },
 ];
 
+const GAP_PX = 24;
+const AUTO_SCROLL_SPEED = 26;
+const MANUAL_SCROLL_SPEED = 1200;
+
 function getInitials(name: string) {
   return name
     .split(" ")
@@ -105,25 +109,6 @@ function getCardsPerView(width: number) {
   if (width < 768) return 1;
   if (width < 1180) return 2;
   return 3;
-}
-
-function chunkTestimonials(items: Testimonial[], size: number) {
-  const chunks: (Testimonial | null)[][] = [];
-
-  for (let i = 0; i < items.length; i += size) {
-    const group = items.slice(i, i + size);
-
-    if (group.length < size) {
-      chunks.push([
-        ...group,
-        ...Array.from({ length: size - group.length }, () => null),
-      ]);
-    } else {
-      chunks.push(group);
-    }
-  }
-
-  return chunks;
 }
 
 function ArrowLeft() {
@@ -206,32 +191,130 @@ function PlaceholderAvatar({
   );
 }
 
-function TestimonialsCarousel({ cardsPerView }: { cardsPerView: number }) {
-  const [page, setPage] = useState(0);
+function TestimonialsCarousel() {
+  const viewportRef = useRef<HTMLDivElement | null>(null);
+  const trackRef = useRef<HTMLDivElement | null>(null);
+  const middleSetRef = useRef<HTMLDivElement | null>(null);
+
+  const offsetRef = useRef(0);
+  const manualShiftRef = useRef(0);
+  const animationFrameRef = useRef<number | null>(null);
+  const lastTimeRef = useRef<number | null>(null);
+  const pausedRef = useRef(false);
+
   const [isPaused, setIsPaused] = useState(false);
-
-  const pages = useMemo(() => {
-    return chunkTestimonials(testimonials, cardsPerView);
-  }, [cardsPerView]);
-
-  const totalPages = pages.length;
+  const [cardsPerView, setCardsPerView] = useState(3);
+  const [cardWidth, setCardWidth] = useState(0);
 
   useEffect(() => {
-    if (isPaused || totalPages <= 1) return;
+    pausedRef.current = isPaused;
+  }, [isPaused]);
 
-    const timer = window.setInterval(() => {
-      setPage((prev) => (prev + 1) % totalPages);
-    }, 4000);
+  useEffect(() => {
+    const viewport = viewportRef.current;
+    if (!viewport) return;
 
-    return () => window.clearInterval(timer);
-  }, [isPaused, totalPages]);
+    const updateLayout = () => {
+      const width = viewport.clientWidth;
+      const nextCardsPerView = getCardsPerView(width);
+      const nextCardWidth =
+        (width - GAP_PX * (nextCardsPerView - 1)) / nextCardsPerView;
 
-  const next = () => {
-    setPage((prev) => (prev + 1) % totalPages);
+      setCardsPerView((prev) =>
+        prev === nextCardsPerView ? prev : nextCardsPerView,
+      );
+      setCardWidth((prev) =>
+        Math.abs(prev - nextCardWidth) < 0.5 ? prev : nextCardWidth,
+      );
+    };
+
+    updateLayout();
+
+    const observer = new ResizeObserver(updateLayout);
+    observer.observe(viewport);
+
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const middleSet = middleSetRef.current;
+    const track = trackRef.current;
+
+    if (!middleSet || !track || cardWidth <= 0) return;
+
+    const setWidth = middleSet.scrollWidth;
+    offsetRef.current = -setWidth;
+    track.style.transform = `translate3d(${offsetRef.current}px, 0, 0)`;
+  }, [cardWidth, cardsPerView]);
+
+  useEffect(() => {
+    const tick = (time: number) => {
+      const track = trackRef.current;
+      const middleSet = middleSetRef.current;
+
+      if (!track || !middleSet) {
+        animationFrameRef.current = window.requestAnimationFrame(tick);
+        return;
+      }
+
+      const setWidth = middleSet.scrollWidth;
+
+      if (!setWidth) {
+        animationFrameRef.current = window.requestAnimationFrame(tick);
+        return;
+      }
+
+      if (lastTimeRef.current === null) {
+        lastTimeRef.current = time;
+      }
+
+      const delta = (time - lastTimeRef.current) / 1000;
+      lastTimeRef.current = time;
+
+      if (!pausedRef.current) {
+        offsetRef.current -= AUTO_SCROLL_SPEED * delta;
+      }
+
+      if (Math.abs(manualShiftRef.current) > 0.1) {
+        const manualDelta =
+          Math.sign(manualShiftRef.current) *
+          Math.min(
+            Math.abs(manualShiftRef.current),
+            MANUAL_SCROLL_SPEED * delta,
+          );
+
+        offsetRef.current += manualDelta;
+        manualShiftRef.current -= manualDelta;
+      }
+
+      while (offsetRef.current <= -2 * setWidth) {
+        offsetRef.current += setWidth;
+      }
+
+      while (offsetRef.current >= 0) {
+        offsetRef.current -= setWidth;
+      }
+
+      track.style.transform = `translate3d(${offsetRef.current}px, 0, 0)`;
+      animationFrameRef.current = window.requestAnimationFrame(tick);
+    };
+
+    animationFrameRef.current = window.requestAnimationFrame(tick);
+
+    return () => {
+      if (animationFrameRef.current !== null) {
+        window.cancelAnimationFrame(animationFrameRef.current);
+      }
+      lastTimeRef.current = null;
+    };
+  }, []);
+
+  const movePrev = () => {
+    manualShiftRef.current += cardWidth + GAP_PX;
   };
 
-  const prev = () => {
-    setPage((prev) => (prev - 1 + totalPages) % totalPages);
+  const moveNext = () => {
+    manualShiftRef.current -= cardWidth + GAP_PX;
   };
 
   return (
@@ -239,86 +322,81 @@ function TestimonialsCarousel({ cardsPerView }: { cardsPerView: number }) {
       className="mt-10"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
+      onFocusCapture={() => setIsPaused(true)}
+      onBlurCapture={() => setIsPaused(false)}
     >
-      <div className="overflow-hidden">
+      <div ref={viewportRef} className="overflow-hidden">
         <div
-          className="flex transition-transform duration-700 ease-out"
-          style={{
-            transform: `translateX(-${page * 100}%)`,
-          }}
+          ref={trackRef}
+          className="flex gap-6 will-change-transform"
+          style={{ transform: "translate3d(0, 0, 0)" }}
         >
-          {pages.map((pageItems, pageIndex) => (
-            <div key={pageIndex} className="w-full shrink-0">
-              <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-                {pageItems.map((item, index) => {
-                  if (!item) {
-                    return (
-                      <div
-                        key={`empty-${pageIndex}-${index}`}
-                        className="hidden xl:block"
-                      />
-                    );
-                  }
+          {[0, 1, 2].map((copyIndex) => (
+            <div
+              key={copyIndex}
+              ref={copyIndex === 1 ? middleSetRef : null}
+              className="flex shrink-0 gap-6"
+            >
+              {testimonials.map((item) => {
+                const theme = CARD_THEMES[(item.id - 1) % CARD_THEMES.length];
 
-                  const theme = CARD_THEMES[(item.id - 1) % CARD_THEMES.length];
-
-                  return (
-                    <article
-                      key={item.id}
-                      className="flex min-h-[420px] flex-col rounded-[28px] border p-7 shadow-[0_12px_30px_rgba(15,23,42,0.04)] sm:p-9"
-                      style={{
-                        backgroundColor: theme.bg,
-                        borderColor: theme.border,
-                      }}
+                return (
+                  <article
+                    key={`${copyIndex}-${item.id}`}
+                    className="flex min-h-[420px] shrink-0 flex-col rounded-[28px] border p-7 shadow-[0_12px_30px_rgba(15,23,42,0.04)] sm:p-9"
+                    style={{
+                      width: `${cardWidth}px`,
+                      backgroundColor: theme.bg,
+                      borderColor: theme.border,
+                    }}
+                  >
+                    <p
+                      className="text-[27px] leading-none"
+                      style={{ color: theme.text }}
+                      aria-hidden="true"
                     >
-                      <p
-                        className="text-[27px] leading-none"
-                        style={{ color: theme.text }}
-                        aria-hidden="true"
-                      >
-                        “
-                      </p>
+                      “
+                    </p>
 
-                      <blockquote
-                        className="mt-5 text-[1.04rem] leading-9"
-                        style={{ color: theme.text }}
-                      >
-                        {item.quote}
-                      </blockquote>
+                    <blockquote
+                      className="mt-5 text-[1.02rem] leading-8 sm:text-[1.04rem] sm:leading-9"
+                      style={{ color: theme.text }}
+                    >
+                      {item.quote}
+                    </blockquote>
 
-                      <div className="mt-auto flex items-center gap-4 pt-8">
-                        <PlaceholderAvatar
-                          initials={getInitials(item.name)}
-                          text={theme.text}
-                        />
+                    <div className="mt-auto flex items-center gap-4 pt-8">
+                      <PlaceholderAvatar
+                        initials={getInitials(item.name)}
+                        text={theme.text}
+                      />
 
-                        <div>
-                          <h3
-                            className="text-xl font-semibold leading-tight"
-                            style={{ color: theme.text }}
-                          >
-                            {item.name}
-                          </h3>
+                      <div>
+                        <h3
+                          className="text-lg font-semibold leading-tight sm:text-xl"
+                          style={{ color: theme.text }}
+                        >
+                          {item.name}
+                        </h3>
 
-                          <p
-                            className="mt-1 text-base leading-7"
-                            style={{ color: theme.subtext }}
-                          >
-                            {item.role} • {item.company}
-                          </p>
+                        <p
+                          className="mt-1 text-sm leading-6 sm:text-base sm:leading-7"
+                          style={{ color: theme.subtext }}
+                        >
+                          {item.role} • {item.company}
+                        </p>
 
-                          <p
-                            className="text-base leading-7"
-                            style={{ color: theme.subtext }}
-                          >
-                            {item.location}
-                          </p>
-                        </div>
+                        <p
+                          className="text-sm leading-6 sm:text-base sm:leading-7"
+                          style={{ color: theme.subtext }}
+                        >
+                          {item.location}
+                        </p>
                       </div>
-                    </article>
-                  );
-                })}
-              </div>
+                    </div>
+                  </article>
+                );
+              })}
             </div>
           ))}
         </div>
@@ -327,31 +405,17 @@ function TestimonialsCarousel({ cardsPerView }: { cardsPerView: number }) {
       <div className="mt-8 flex items-center justify-center gap-3">
         <button
           type="button"
-          onClick={prev}
-          aria-label="Previous testimonials"
+          onClick={movePrev}
+          aria-label="Move testimonials backward"
           className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-[#D7EAD9] bg-white text-slate-900 transition hover:bg-[#F5FBF6]"
         >
           <ArrowLeft />
         </button>
 
-        <div className="flex items-center gap-2">
-          {Array.from({ length: totalPages }).map((_, index) => (
-            <button
-              key={index}
-              type="button"
-              aria-label={`Go to testimonial page ${index + 1}`}
-              onClick={() => setPage(index)}
-              className={`h-2.5 rounded-full transition-all duration-300 ${
-                page === index ? "w-8 bg-[#29BE3E]" : "w-2.5 bg-slate-300"
-              }`}
-            />
-          ))}
-        </div>
-
         <button
           type="button"
-          onClick={next}
-          aria-label="Next testimonials"
+          onClick={moveNext}
+          aria-label="Move testimonials forward"
           className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-[#D7EAD9] bg-white text-slate-900 transition hover:bg-[#F5FBF6]"
         >
           <ArrowRight />
@@ -362,22 +426,6 @@ function TestimonialsCarousel({ cardsPerView }: { cardsPerView: number }) {
 }
 
 export default function LeapTestimonial() {
-  const [cardsPerView, setCardsPerView] = useState(3);
-
-  useEffect(() => {
-    const updateLayout = () => {
-      const nextCardsPerView = getCardsPerView(window.innerWidth);
-      setCardsPerView((prev) =>
-        prev === nextCardsPerView ? prev : nextCardsPerView,
-      );
-    };
-
-    updateLayout();
-    window.addEventListener("resize", updateLayout);
-
-    return () => window.removeEventListener("resize", updateLayout);
-  }, []);
-
   return (
     <section className="bg-[#F8FBF8] px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
       <div className="mx-auto max-w-[1440px]">
@@ -394,7 +442,7 @@ export default function LeapTestimonial() {
           </p>
         </div>
 
-        <TestimonialsCarousel key={cardsPerView} cardsPerView={cardsPerView} />
+        <TestimonialsCarousel />
       </div>
     </section>
   );
