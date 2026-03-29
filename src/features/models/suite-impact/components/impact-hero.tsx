@@ -24,49 +24,54 @@ function ArrowRight() {
 
 export default function ImpactHero() {
   return (
-    <section className="bg-white">
-      <div className="mx-auto max-w-7xl px-6 py-16 lg:py-24">
-        <div className="grid items-center gap-12 lg:grid-cols-2">
-          <div className="max-w-xl">
-            <h1 className="text-4xl font-medium tracking-[-0.04em] text-slate-900 sm:text-5xl">
-              <span className="text-slate-900">Donors trust</span>{" "}
+    <section className="bg-[#F6F6F4]">
+      <div className="mx-auto max-w-7xl px-5 py-14 sm:px-6 sm:py-16 lg:px-8 lg:py-24">
+        <div className="grid items-center gap-10 lg:grid-cols-[0.92fr_1.08fr] lg:gap-8 xl:gap-10">
+          <div className="max-w-2xl">
+            <h1 className="text-[2.65rem] font-medium leading-[0.98] tracking-[-0.06em] text-[#0F172A] sm:text-5xl lg:text-[3.0rem]">
+              <span className="text-[#0F172A]">Donors trust</span>{" "}
               <span style={{ color: IMPACT_COLORS.primary }}>Impact</span>{" "}
-              <span className="text-slate-900">&amp; Clarity.</span>
+              <span className="text-[#0F172A]">&amp; Clarity.</span>
             </h1>
 
-            <h2 className="mt-5 text-lg font-medium leading-relaxed text-slate-700">
+            <h2 className="mt-6 text-[1.3rem] font-medium leading-[1.35] text-[#334155] sm:text-[1.5rem]">
               Impact Suite combines donor trust, clarity, and digital structure
               in one place.
             </h2>
 
-            <p className="mt-1 text-lg leading-8 text-slate-700">
-              Stop piecing together freelancers and struggling with scattered
-              tools. We provide the brand identity, donation-ready website, and
-              credibility systems you need to present your organisation with
-              confidence.
+            <p className="mt-4 max-w-xl text-[1.02rem] leading-8 text-[#475569] sm:text-[1.12rem] sm:leading-9">
+              Many mission-driven organisations are doing meaningful work, but
+              weak presentation, outdated websites, and unclear digital systems
+              can reduce donor confidence. We help you build a clearer brand, a
+              donation-ready website, and a more credible online presence that
+              supports trust, partnerships, and long-term growth.
             </p>
 
-            <div className="mt-8 flex flex-wrap items-center gap-4">
+            <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
               <Link
                 href="/start-project"
-                className="inline-flex items-center justify-center gap-3 rounded-full bg-black px-7 py-4 text-sm font-medium text-white shadow-sm transition hover:bg-slate-900"
+                className="inline-flex min-h-[58px] items-center justify-center gap-3 rounded-full bg-black px-7 text-sm font-medium text-white transition hover:bg-[#111827] focus:outline-none focus:ring-4 focus:ring-black/10"
               >
                 Free 30-Min Strategy Call
-                <span className="grid h-8 w-8 place-items-center rounded-full bg-white/10">
+                <span className="grid h-9 w-9 place-items-center rounded-full bg-white/10">
                   <ArrowRight />
                 </span>
               </Link>
 
               <Link
-                href="/contact"
-                className="inline-flex items-center justify-center rounded-full bg-slate-100 px-7 py-4 text-sm font-medium text-slate-900 transition hover:bg-slate-200"
+                href="/suite/pricing"
+                className="inline-flex min-h-[58px] items-center justify-center rounded-full px-7 text-sm font-medium text-white transition hover:brightness-95 focus:outline-none focus:ring-4"
+                style={{
+                  backgroundColor: IMPACT_COLORS.primary,
+                  boxShadow: "0 10px 30px rgba(41,190,62,0.16)",
+                }}
               >
-                Get Started
+                Start Now
               </Link>
             </div>
 
-            <div className="mt-10 flex items-center gap-3 text-sm text-slate-700">
-              <span className="font-medium text-slate-900">Excellent</span>
+            <div className="mt-9 flex flex-wrap items-center gap-x-3 gap-y-3 text-sm text-[#475569]">
+              <span className="font-medium text-[#0F172A]">Excellent</span>
 
               <div
                 className="flex items-center gap-1"
@@ -75,7 +80,7 @@ export default function ImpactHero() {
                 {Array.from({ length: 5 }).map((_, index) => (
                   <span
                     key={index}
-                    className="grid h-6 w-6 place-items-center bg-emerald-500 text-white"
+                    className="grid h-7 w-7 place-items-center bg-[#22C55E] text-[0.85rem] text-white"
                   >
                     ★
                   </span>
@@ -84,49 +89,34 @@ export default function ImpactHero() {
 
               <span className="mx-1 text-slate-300">|</span>
 
-              <span className="inline-flex items-center gap-2 font-medium text-slate-900">
-                <span className="text-emerald-500">★</span>
+              <span className="inline-flex items-center gap-2 font-medium text-[#0F172A]">
+                <span className="text-[#22C55E]">★</span>
                 Trustpilot
               </span>
             </div>
           </div>
 
-          <div className="lg:justify-self-end">
-            <div className="relative overflow-hidden rounded-3xl bg-linear-to-br from-[#DFF9E4] via-white to-[#BFF0C8] p-6 shadow-[0_30px_80px_rgba(0,0,0,0.08)] ring-1 ring-black/5">
-              <div className="pointer-events-none absolute -left-24 -top-24 h-64 w-64 rounded-full bg-[#29BE3E]/20 blur-3xl" />
-              <div className="pointer-events-none absolute -bottom-24 -right-24 h-64 w-64 rounded-full bg-[#29BE3E]/25 blur-3xl" />
-
-              <div className="relative">
-                <div className="relative translate-x-2 rounded-2xl bg-white shadow-[0_30px_70px_rgba(0,0,0,0.18)] ring-1 ring-black/5 md:translate-x-10 md:translate-y-2">
-                  <div className="flex items-center gap-2 px-4 py-2">
-                    <span className="h-2.5 w-2.5 rounded-full bg-red-400" />
-                    <span className="h-2.5 w-2.5 rounded-full bg-yellow-400" />
-                    <span className="h-2.5 w-2.5 rounded-full bg-green-400" />
-                    <div className="ml-3 h-2 w-40 rounded bg-slate-100" />
-                  </div>
-
-                  <div className="rounded-b-2xl bg-[#F6FFF8] p-4 sm:p-5">
-                    <div className="relative mx-auto aspect-[16/10] w-full max-w-[620px] overflow-hidden rounded-xl bg-white ring-1 ring-[#29BE3E]/10">
-                      <Image
-                        src={impactAssets.impactHeroImage}
-                        alt="Impact Suite screenshot"
-                        fill
-                        className="object-contain object-center p-2"
-                        priority
-                      />
-                    </div>
-                  </div>
+          <div className="w-full lg:justify-self-stretch">
+            <div className="mx-auto w-full max-w-[740px] rounded-[34px] bg-[linear-gradient(135deg,#DFF9E4_0%,#F4FFF6_38%,#CFF4D7_100%)] p-3.5 shadow-[0_24px_70px_rgba(15,23,42,0.08)] ring-1 ring-black/5 sm:rounded-[38px] sm:p-4 lg:ml-auto lg:max-w-[760px] lg:p-5">
+              <div className="overflow-hidden rounded-[28px] bg-white/85 ring-1 ring-black/6 backdrop-blur-sm sm:rounded-[30px]">
+                <div className="flex items-center gap-2 border-b border-black/5 bg-[#F3F4F6] px-4 py-3">
+                  <span className="h-3 w-3 rounded-full bg-[#F87171]" />
+                  <span className="h-3 w-3 rounded-full bg-[#FBBF24]" />
+                  <span className="h-3 w-3 rounded-full bg-[#4ADE80]" />
+                  <div className="ml-3 h-2.5 w-24 rounded-full bg-slate-200 sm:w-40" />
                 </div>
 
-                <div className="pointer-events-none absolute bottom-6 left-6">
-                  <div className="flex items-end gap-3">
-                    <span
-                      className="h-12 w-2 rounded"
-                      style={{ backgroundColor: IMPACT_COLORS.primary }}
-                    />
-                    <div className="leading-none text-white drop-shadow-[0_10px_30px_rgba(0,0,0,0.35)]">
-                      <div className="text-2xl font-medium">Octalve</div>
-                      <div className="text-3xl font-medium">Impact</div>
+                <div className="relative aspect-[16/10] w-full bg-[#F7FFF8]">
+                  <div className="absolute inset-0 p-2 sm:p-3 lg:p-4">
+                    <div className="relative h-full w-full">
+                      <Image
+                        src={impactAssets.impactHeroImage}
+                        alt="Impact Suite hero preview"
+                        fill
+                        className="object-contain object-center"
+                        priority
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 760px"
+                      />
                     </div>
                   </div>
                 </div>
