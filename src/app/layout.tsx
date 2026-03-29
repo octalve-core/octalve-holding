@@ -27,6 +27,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { OctalveSmartProvider } from "@/components/chatbot/octalve-smart-provider";
 import ChatbotLauncher from "@/components/chatbot/chatbotLauncher";
+import WhatsAppButton from "@/components/whatsapp-button";
 
 export const metadata: Metadata = {
   title: "Octalve",
@@ -46,6 +47,7 @@ export default function RootLayout({
           {children}
           <ChatbotLauncher />
         </OctalveSmartProvider>
+        <WhatsAppButton />
       </body>
     </html>
   );

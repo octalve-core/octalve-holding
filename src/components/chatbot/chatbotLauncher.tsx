@@ -60,10 +60,10 @@ export default function ChatbotLauncher() {
           <Image
             src="/smarticon/octalvesmart.png"
             alt="Open Octalve Smart"
-            width={74}
-            height={74}
+            width={60}
+            height={60}
             priority
-            className="h-[68px] w-[68px] rounded-full object-contain shadow-[0_18px_44px_rgba(2,6,23,0.42)] sm:h-[74px] sm:w-[74px]"
+            className="h-[50px] w-[50px] rounded-full object-contain shadow-[0_18px_44px_rgba(2,6,23,0.42)] sm:h-[65px] sm:w-[65px]"
           />
         )}
       </button>
