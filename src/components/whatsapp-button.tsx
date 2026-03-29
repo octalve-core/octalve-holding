@@ -15,15 +15,15 @@ export default function WhatsAppButton() {
       rel="noopener noreferrer"
       aria-label="Chat with Octalve on WhatsApp"
       title="Chat with Octalve on WhatsApp"
-      className="group fixed bottom-5 left-5 z-[84] inline-flex h-[68px] w-[68px] items-center justify-center rounded-full bg-[#25D366] shadow-[0_18px_44px_rgba(37,211,102,0.32)] transition-all duration-200 hover:scale-[1.03] hover:bg-[#1ebe5d] active:scale-[0.98] sm:bottom-6 sm:left-6 sm:h-[74px] sm:w-[74px]"
+      className="fixed bottom-5 left-5 z-[84] inline-flex items-center justify-center transition-transform duration-200 hover:scale-[1.03] active:scale-[0.98] sm:bottom-6 sm:left-6"
     >
       <Image
         src="/smarticon/whatsapp.png"
         alt="WhatsApp"
-        width={60}
-        height={60}
+        width={54}
+        height={54}
         priority
-        className="h-13 w-12 object-contain sm:h-15 sm:w-14"
+        className="h-[45px] w-[45px] object-contain sm:h-[60px] sm:w-[60px]"
       />
     </a>
   );
