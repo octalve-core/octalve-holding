@@ -34,6 +34,7 @@ export default function SuiteTestimonials() {
 
   const mobileScrollRef = useRef<HTMLDivElement | null>(null);
   const scrollTimerRef = useRef<number | null>(null);
+  const hasMountedMobileRef = useRef(false);
 
   useEffect(() => {
     const update = () => {
@@ -57,7 +58,10 @@ export default function SuiteTestimonials() {
   }, [isPaused]);
 
   useEffect(() => {
-    if (!isMobile) return;
+    if (!isMobile) {
+      hasMountedMobileRef.current = false;
+      return;
+    }
 
     const container = mobileScrollRef.current;
     if (!container) return;
@@ -65,10 +69,17 @@ export default function SuiteTestimonials() {
     const child = container.children[activeIndex] as HTMLElement | undefined;
     if (!child) return;
 
-    child.scrollIntoView({
+    if (!hasMountedMobileRef.current) {
+      hasMountedMobileRef.current = true;
+      return;
+    }
+
+    const targetLeft =
+      child.offsetLeft - (container.clientWidth - child.clientWidth) / 2;
+
+    container.scrollTo({
+      left: Math.max(0, targetLeft),
       behavior: "smooth",
-      block: "nearest",
-      inline: "center",
     });
   }, [activeIndex, isMobile]);
 
@@ -100,8 +111,8 @@ export default function SuiteTestimonials() {
           }
         });
 
-        setActiveIndex(closestIndex);
-      }, 80);
+        setActiveIndex((prev) => (prev === closestIndex ? prev : closestIndex));
+      }, 100);
     };
 
     container.addEventListener("scroll", handleScroll, { passive: true });
@@ -132,7 +143,7 @@ export default function SuiteTestimonials() {
 
           <h2 className="mt-3 text-4xl font-medium tracking-[-0.04em] text-black md:text-5xl lg:text-6xl">
             Built for <span className="text-[#E61525]">Founders</span>. Made for{" "}
-            <span className="text-[#29BE3E]"> Impacts</span>.
+            <span className="text-[#29BE3E]">Impacts</span>.
           </h2>
         </div>
 
@@ -239,7 +250,7 @@ export default function SuiteTestimonials() {
         >
           <div
             ref={mobileScrollRef}
-            className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 touch-pan-x [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+            className="flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain pb-2 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
           >
             {testimonials.map((item, index) => {
               const bg =

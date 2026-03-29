@@ -1,26 +1,50 @@
 "use client";
 
-import Image, { StaticImageData } from "next/image";
-import { useEffect, useMemo, useState } from "react";
+import Image, { type StaticImageData } from "next/image";
+import { useEffect, useMemo, useRef, useState } from "react";
 
-const TESTIMONIAL_COLORS = {
-  bg: "#020202",
-  card: "#171717",
-  cardBorder: "rgba(255,255,255,0.06)",
-  text: "#F8FAFC",
-  muted: "#B3B3B3",
-  accent: "#00E676",
-  dot: "#5A5A5A",
-};
+import abraham from "@/assets/suite/client/abraham.png";
+import angel from "@/assets/suite/client/angel.png";
+import drRonke from "@/assets/suite/client/drronkenow.png";
+import halimah from "@/assets/suite/client/halimah.png";
+import micheal from "@/assets/suite/client/micheal.png";
+import prof from "@/assets/suite/client/prof.png";
+import sarah from "@/assets/suite/client/sarah.png";
+import victor from "@/assets/suite/client/victor.png";
+
+const AUTO_DELAY = 8000;
+
+const FALLBACK_BACKGROUNDS = [
+  "#D7EAF0",
+  "#D8D1C7",
+  "#EACFC7",
+  "#E7EEF6",
+  "#F1E4D8",
+  "#E6F3EA",
+  "#E8EEFA",
+  "#EAF4FF",
+];
+
+const QUOTE_COLORS = [
+  "#14A7C4",
+  "#BDA98F",
+  "#EF9B7D",
+  "#7AA7D9",
+  "#D49272",
+  "#58A66C",
+  "#7F8CE3",
+  "#6D9ED9",
+];
 
 type Testimonial = {
   id: number;
   quote: string;
   name: string;
-  role: string;
+  rolePrefix: string;
   company: string;
   location: string;
-  avatar?: StaticImageData; // future pattern
+  image: StaticImageData;
+  accentBg?: string;
 };
 
 const testimonials: Testimonial[] = [
@@ -29,244 +53,384 @@ const testimonials: Testimonial[] = [
     quote:
       "Octalve helped us refine our brand presence and deliver a clean, professional branding that actually supports enquiries. The process was structured, communication was clear, and they paid attention to details that matter for customer trust. Since launching, our online presentation looks more credible and easier for clients to interact with.",
     name: "Dr. Akerele Ronke",
-    role: "Founder",
+    rolePrefix: "Founder,",
     company: "SapphireQuest Travels and Tour",
     location: "Abuja",
+    image: drRonke,
   },
   {
     id: 2,
     quote:
       "Working with Octalve was a smooth experience from discovery to delivery. They didn’t just build a website—they built a system that reflects our organization and improves how we receive and manage enquiries. Their execution discipline and support after launch stood out.",
     name: "Prof. Rabiu Babatunde",
-    role: "Founder",
+    rolePrefix: "Founder,",
     company: "NSEE Org.",
     location: "Abuja",
+    image: prof,
   },
   {
     id: 3,
     quote:
       "Octalve delivered a modern brand look and a website that feels premium and conversion-focused. What impressed me most was how they guided us through the structure, content, and user journey instead of just designing pages. The result is a stronger digital presence that supports growth.",
     name: "Dr. Michael Ojo",
-    role: "Founder",
+    rolePrefix: "Founder,",
     company: "Gotooeasy Homes and Travels",
     location: "Lagos",
+    image: micheal,
   },
   {
     id: 4,
     quote:
       "Octalve brought clarity and quality to our brand logo and identity delivery. The logo is clean, aesthetic, and well organised, and their support approach is professional. I appreciated the speed, documentation, and how they made the entire process easy.",
     name: "Sarah A.",
-    role: "Founder",
+    rolePrefix: "Founder,",
     company: "IHHConsulting",
     location: "Canada",
+    image: sarah,
   },
   {
     id: 5,
     quote:
       "Octalve delivered a clean, professional brand direction and website experience that matches our industry standard. Their team was structured, responsive, and clear about timelines and deliverables. The final output improved how our company presents itself online and how enquiries are handled.",
     name: "Victor Emaka",
-    role: "MD",
+    rolePrefix: "MD,",
     company: "Mayport Oil and Gas",
     location: "Lagos",
+    image: victor,
   },
   {
     id: 6,
     quote:
       "Octalve approached our project with strong execution discipline. From brand clarity, structure and technical delivery, everything was handled professionally. Communication was consistent, and the final result was modern, fast, and easy to scale—exactly what we needed.",
     name: "Abraham Akinwale",
-    role: "Founder",
+    rolePrefix: "Founder,",
     company: "AIICOTECH",
     location: "USA",
+    image: abraham,
   },
   {
     id: 7,
     quote:
       "What stood out about Octalve was their ability to translate our ideas into a clear brand identity that supports conversion. They gave helpful guidance on structure and messaging, and their deployment support made launch smooth.",
     name: "Angel Akinwale",
-    role: "Founder",
+    rolePrefix: "Founder,",
     company: "DSF Inc.",
     location: "USA",
+    image: angel,
   },
   {
     id: 8,
     quote:
       "Octalve helped us build a strong digital foundation—branding, website structure, and technical setup. Their delivery was thoughtful and detail-oriented, and they made the process easy even when we had multiple moving parts. We’re satisfied with the quality and professionalism.",
     name: "Haleemah A.",
-    role: "Founder",
+    rolePrefix: "Founder,",
     company: "SafedeenHQ",
     location: "Lagos",
+    image: halimah,
   },
 ];
 
-function StarIcon() {
-  return (
-    <svg
-      width="22"
-      height="22"
-      viewBox="0 0 24 24"
-      fill="currentColor"
-      aria-hidden="true"
-    >
-      <path d="M12 3.8L14.55 8.97L20.25 9.8L16.12 13.83L17.1 19.5L12 16.82L6.9 19.5L7.88 13.83L3.75 9.8L9.45 8.97L12 3.8Z" />
-    </svg>
-  );
-}
+function getDesktopWindow(total: number, active: number) {
+  if (total <= 3) {
+    return Array.from({ length: total }, (_, index) => index);
+  }
 
-function getInitials(name: string) {
-  return name
-    .split(" ")
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase())
-    .join("");
-}
+  if (active === 0) return [0, 1, 2];
+  if (active === total - 1) return [total - 3, total - 2, total - 1];
 
-function TestimonialCard({ item }: { item: Testimonial }) {
-  return (
-    <article
-      className="min-h-[390px] rounded-[22px] border p-7 shadow-[0_20px_50px_rgba(0,0,0,0.20)]"
-      style={{
-        backgroundColor: TESTIMONIAL_COLORS.card,
-        borderColor: TESTIMONIAL_COLORS.cardBorder,
-      }}
-    >
-      <div className="flex items-center gap-1 text-[#FFD700]">
-        {Array.from({ length: 5 }).map((_, index) => (
-          <StarIcon key={index} />
-        ))}
-      </div>
-
-      <blockquote
-        className="mt-7 text-[19px] leading-[1.65] italic"
-        style={{ color: TESTIMONIAL_COLORS.text }}
-      >
-        “{item.quote}”
-      </blockquote>
-
-      <div className="mt-8 flex items-center gap-4">
-        <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-full bg-white/10">
-          {item.avatar ? (
-            <Image
-              src={item.avatar}
-              alt={item.name}
-              fill
-              className="object-cover"
-              sizes="64px"
-            />
-          ) : (
-            <div className="flex h-full w-full items-center justify-center text-lg font-semibold text-white/90">
-              {getInitials(item.name)}
-            </div>
-          )}
-        </div>
-
-        <div>
-          <h3 className="text-[20px] font-semibold text-white">{item.name}</h3>
-          <p
-            className="text-[15px]"
-            style={{ color: TESTIMONIAL_COLORS.muted }}
-          >
-            {item.role}, {item.company}
-          </p>
-          <p
-            className="text-[15px]"
-            style={{ color: TESTIMONIAL_COLORS.muted }}
-          >
-            {item.location}
-          </p>
-        </div>
-      </div>
-    </article>
-  );
+  return [active - 1, active, active + 1];
 }
 
 export default function Testimonials() {
-  const [page, setPage] = useState(0);
-  const [itemsPerView, setItemsPerView] = useState(3);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+
+  const mobileScrollRef = useRef<HTMLDivElement | null>(null);
+  const scrollTimerRef = useRef<number | null>(null);
+  const hasMountedMobileRef = useRef(false);
 
   useEffect(() => {
-    function handleResize() {
-      if (window.innerWidth < 768) {
-        setItemsPerView(1);
-      } else if (window.innerWidth < 1200) {
-        setItemsPerView(2);
-      } else {
-        setItemsPerView(3);
-      }
-    }
+    const update = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
 
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
   }, []);
 
-  const totalPages = Math.ceil(testimonials.length / itemsPerView);
+  useEffect(() => {
+    if (isPaused || testimonials.length <= 1) return;
+
+    const timer = window.setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % testimonials.length);
+    }, AUTO_DELAY);
+
+    return () => window.clearInterval(timer);
+  }, [isPaused]);
 
   useEffect(() => {
-    const interval = window.setInterval(() => {
-      setPage((prev) => (prev + 1) % totalPages);
-    }, 6000);
-
-    return () => window.clearInterval(interval);
-  }, [totalPages]);
-
-  useEffect(() => {
-    if (page > totalPages - 1) {
-      setPage(0);
+    if (!isMobile) {
+      hasMountedMobileRef.current = false;
+      return;
     }
-  }, [itemsPerView, page, totalPages]);
 
-  const visibleTestimonials = useMemo(() => {
-    const start = page * itemsPerView;
-    const sliced = testimonials.slice(start, start + itemsPerView);
+    const container = mobileScrollRef.current;
+    if (!container) return;
 
-    if (sliced.length === itemsPerView) return sliced;
+    const child = container.children[activeIndex] as HTMLElement | undefined;
+    if (!child) return;
 
-    const needed = itemsPerView - sliced.length;
-    return [...sliced, ...testimonials.slice(0, needed)];
-  }, [page, itemsPerView]);
+    if (!hasMountedMobileRef.current) {
+      hasMountedMobileRef.current = true;
+      return;
+    }
+
+    const targetLeft =
+      child.offsetLeft - (container.clientWidth - child.clientWidth) / 2;
+
+    container.scrollTo({
+      left: Math.max(0, targetLeft),
+      behavior: "smooth",
+    });
+  }, [activeIndex, isMobile]);
+
+  useEffect(() => {
+    if (!isMobile) return;
+
+    const container = mobileScrollRef.current;
+    if (!container) return;
+
+    const handleScroll = () => {
+      if (scrollTimerRef.current) {
+        window.clearTimeout(scrollTimerRef.current);
+      }
+
+      scrollTimerRef.current = window.setTimeout(() => {
+        const center = container.scrollLeft + container.clientWidth / 2;
+
+        let closestIndex = 0;
+        let closestDistance = Number.POSITIVE_INFINITY;
+
+        Array.from(container.children).forEach((child, index) => {
+          const el = child as HTMLElement;
+          const childCenter = el.offsetLeft + el.clientWidth / 2;
+          const distance = Math.abs(center - childCenter);
+
+          if (distance < closestDistance) {
+            closestDistance = distance;
+            closestIndex = index;
+          }
+        });
+
+        setActiveIndex((prev) => (prev === closestIndex ? prev : closestIndex));
+      }, 100);
+    };
+
+    container.addEventListener("scroll", handleScroll, { passive: true });
+
+    return () => {
+      container.removeEventListener("scroll", handleScroll);
+      if (scrollTimerRef.current) {
+        window.clearTimeout(scrollTimerRef.current);
+      }
+    };
+  }, [isMobile]);
+
+  const desktopItems = useMemo(() => {
+    const indexes = getDesktopWindow(testimonials.length, activeIndex);
+    return indexes.map((index) => ({
+      ...testimonials[index],
+      originalIndex: index,
+    }));
+  }, [activeIndex]);
 
   return (
-    <section
-      className="px-4 py-16 sm:px-6 md:py-20"
-      style={{ backgroundColor: TESTIMONIAL_COLORS.bg }}
-    >
-      <div className="mx-auto max-w-[1500px]">
+    <section className="w-full bg-white">
+      <div className="mx-auto max-w-7xl px-4 py-14 md:py-16">
         <div className="text-center">
-          <p
-            className="text-sm font-medium"
-            style={{ color: TESTIMONIAL_COLORS.accent }}
-          >
-            Testimonials
-          </p>
+          <div className="text-sm font-medium tracking-wide text-black/55">
+            100+ Founders
+          </div>
 
-          <h2 className="mt-4 text-4xl font-medium leading-[1.08] tracking-[-0.04em] text-white sm:text-5xl md:text-6xl">
-            Trusted by Growing Businesses
+          <h2 className="mt-3 text-4xl font-medium tracking-[-0.04em] text-black md:text-5xl lg:text-6xl">
+            Built for <span className="text-[#E61525]">Founders</span>. Made for{" "}
+            <span className="text-[#29BE3E]">Impacts</span>.
           </h2>
         </div>
 
-        <div className="mt-14 grid gap-8 xl:grid-cols-3 md:grid-cols-2">
-          {visibleTestimonials.map((item) => (
-            <TestimonialCard key={`${page}-${item.id}`} item={item} />
-          ))}
+        <div
+          className="mt-12 hidden items-stretch gap-5 md:flex lg:gap-6"
+          onMouseEnter={() => setIsPaused(true)}
+          onMouseLeave={() => setIsPaused(false)}
+        >
+          {desktopItems.map((item) => {
+            const isActive = item.originalIndex === activeIndex;
+            const bg =
+              item.accentBg ??
+              FALLBACK_BACKGROUNDS[
+                item.originalIndex % FALLBACK_BACKGROUNDS.length
+              ];
+            const quoteColor =
+              QUOTE_COLORS[item.originalIndex % QUOTE_COLORS.length];
+
+            if (isActive) {
+              return (
+                <article
+                  key={item.id}
+                  className="flex h-[520px] flex-1 overflow-hidden rounded-[40px] border border-black/10 px-7 py-7 transition-all duration-700 ease-out lg:px-9 lg:py-9"
+                  style={{ background: bg }}
+                >
+                  <div className="grid h-full w-full items-center gap-8 lg:grid-cols-[310px_minmax(0,1fr)] xl:grid-cols-[345px_minmax(0,1fr)]">
+                    <div className="relative h-[350px] self-center overflow-hidden rounded-[32px] border border-black/10 bg-white lg:h-[385px] xl:h-[410px]">
+                      <Image
+                        src={item.image}
+                        alt={item.name}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 1279px) 310px, 345px"
+                        priority={item.originalIndex === activeIndex}
+                      />
+                    </div>
+
+                    <div className="flex h-full min-w-0 flex-col justify-center">
+                      <div
+                        className="text-5xl leading-none lg:text-6xl"
+                        style={{ color: quoteColor }}
+                        aria-hidden="true"
+                      >
+                        “
+                      </div>
+
+                      <p className="mt-4 max-w-[540px] text-[1.12rem] font-medium leading-[1.52] tracking-[-0.015em] text-black/90 md:text-[1.18rem] lg:text-[1.24rem] xl:text-[1.34rem]">
+                        {item.quote}
+                      </p>
+
+                      <div className="mt-8">
+                        <div className="text-[1.18rem] font-medium leading-tight tracking-[-0.02em] text-black lg:text-[1.3rem]">
+                          {item.name}
+                        </div>
+
+                        <div className="mt-2 text-base leading-7 text-black/65">
+                          {item.rolePrefix}{" "}
+                          <span className="text-[#1664E2]">{item.company}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+              );
+            }
+
+            return (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => setActiveIndex(item.originalIndex)}
+                className="group relative h-[520px] w-[165px] shrink-0 overflow-hidden rounded-[36px] border border-black/10 transition-all duration-700 ease-out lg:w-[172px]"
+                aria-label={`Show testimonial from ${item.name}`}
+              >
+                <Image
+                  src={item.image}
+                  alt={item.name}
+                  fill
+                  className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                  sizes="172px"
+                />
+
+                <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-transparent" />
+
+                <div className="absolute bottom-6 left-6 z-10 flex h-[calc(100%-3rem)] items-end">
+                  <div className="[writing-mode:vertical-rl] rotate-180 text-left text-white">
+                    <div className="text-sm font-medium leading-5 text-white/80">
+                      {item.rolePrefix} {item.company}
+                    </div>
+                    <div className="mt-2 text-[1.05rem] font-medium leading-5 tracking-[-0.01em]">
+                      {item.name}
+                    </div>
+                  </div>
+                </div>
+              </button>
+            );
+          })}
         </div>
 
-        <div className="mt-10 flex items-center justify-center gap-3">
-          {Array.from({ length: totalPages }).map((_, index) => (
+        <div
+          className="mt-10 md:hidden"
+          onTouchStart={() => setIsPaused(true)}
+          onTouchEnd={() => setIsPaused(false)}
+        >
+          <div
+            ref={mobileScrollRef}
+            className="flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain pb-2 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+          >
+            {testimonials.map((item, index) => {
+              const bg =
+                item.accentBg ??
+                FALLBACK_BACKGROUNDS[index % FALLBACK_BACKGROUNDS.length];
+              const quoteColor = QUOTE_COLORS[index % QUOTE_COLORS.length];
+
+              return (
+                <article
+                  key={item.id}
+                  className="w-[88%] shrink-0 snap-center overflow-hidden rounded-[32px] border border-black/10"
+                  style={{ background: bg }}
+                >
+                  <div className="p-5">
+                    <div className="relative h-[280px] overflow-hidden rounded-[26px] border border-black/10 bg-white">
+                      <Image
+                        src={item.image}
+                        alt={item.name}
+                        fill
+                        className="object-cover"
+                        sizes="88vw"
+                      />
+                    </div>
+
+                    <div className="mt-6">
+                      <div
+                        className="text-5xl leading-none"
+                        style={{ color: quoteColor }}
+                        aria-hidden="true"
+                      >
+                        “
+                      </div>
+
+                      <p className="mt-3 text-[1.08rem] font-medium leading-8 tracking-[-0.01em] text-black/90">
+                        {item.quote}
+                      </p>
+
+                      <div className="mt-7">
+                        <div className="text-xl font-medium leading-tight text-black">
+                          {item.name}
+                        </div>
+                        <div className="mt-2 text-base leading-7 text-black/65">
+                          {item.rolePrefix}{" "}
+                          <span className="text-[#1664E2]">{item.company}</span>
+                        </div>
+                        <div className="text-sm leading-6 text-black/45">
+                          {item.location}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="mt-8 flex items-center justify-center gap-2">
+          {testimonials.map((_, index) => (
             <button
               key={index}
               type="button"
-              onClick={() => setPage(index)}
-              aria-label={`Go to testimonial page ${index + 1}`}
-              className={`h-3 rounded-full transition-all ${
-                page === index ? "w-10" : "w-3"
+              onClick={() => setActiveIndex(index)}
+              className={`h-2.5 rounded-full transition-all duration-300 ${
+                index === activeIndex ? "w-8 bg-black/80" : "w-2.5 bg-black/20"
               }`}
-              style={{
-                backgroundColor:
-                  page === index
-                    ? TESTIMONIAL_COLORS.accent
-                    : TESTIMONIAL_COLORS.dot,
-              }}
+              aria-label={`Go to testimonial ${index + 1}`}
             />
           ))}
         </div>
