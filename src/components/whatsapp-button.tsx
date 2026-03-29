@@ -15,7 +15,7 @@ export default function WhatsAppButton() {
       rel="noopener noreferrer"
       aria-label="Chat with Octalve on WhatsApp"
       title="Chat with Octalve on WhatsApp"
-      className="fixed bottom-5 left-5 z-[84] inline-flex items-center justify-center transition-transform duration-200 hover:scale-[1.03] active:scale-[0.98] sm:bottom-6 sm:left-6"
+      className="fixed bottom-5 left-5 z-[85] inline-flex items-center justify-center transition-transform duration-200 hover:scale-[1.03] active:scale-[0.98] sm:bottom-6 sm:left-6"
     >
       <Image
         src="/smarticon/whatsapp.png"
