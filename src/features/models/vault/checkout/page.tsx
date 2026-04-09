@@ -154,7 +154,7 @@ export default function VaultCheckoutPage() {
                     Delivery rule
                   </h3>
                   <p className="mt-2 text-sm leading-7 text-slate-700">
-                    Only the email used to complete payment should receive the
+                    Only the email used to complete payment will receive the
                     secure download access for each product purchased.
                   </p>
                 </div>

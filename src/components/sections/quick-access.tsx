@@ -3,6 +3,14 @@
 import Image, { StaticImageData } from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import {
+  Award,
+  Blocks,
+  BriefcaseBusiness,
+  Building2,
+  ShieldCheck,
+  type LucideIcon,
+} from "lucide-react";
 
 import quick1Desktop from "@/assets/portfolio/quick-1/desktop.jpg";
 import quick1Mobile from "@/assets/portfolio/quick-1/mobile.jpg";
@@ -13,9 +21,20 @@ import quick2Mobile from "@/assets/portfolio/quick-2/mobile.jpg";
 import quick3Desktop from "@/assets/portfolio/quick-3/desktop.jpg";
 import quick3Mobile from "@/assets/portfolio/quick-3/mobile.jpg";
 
+import quick4Desktop from "@/assets/portfolio/quick-4/desktop.jpg";
+import quick4Mobile from "@/assets/portfolio/quick-4/mobile.jpg";
+
 // Example for future cards
-// import quick3Desktop from "@/assets/portfolio/quick-4/desktop.jpg";
-// import quick3Mobile from "@/assets/portfolio/quick-4/mobile.jpg";
+// import quick5Desktop from "@/assets/portfolio/quick-5/desktop.jpg";
+// import quick5Mobile from "@/assets/portfolio/quick-5/mobile.jpg";
+
+const BRAND_COLORS = {
+  red: "#E61525",
+  blue: "#0064E0",
+  yellow: "#29BE3E",
+  green: "#FC7E24",
+  purple: "#2A006D",
+};
 
 const SECTION_COLORS = {
   pageBg: "#F8FAFC",
@@ -38,12 +57,52 @@ type QuickCard = {
   mobileImage: StaticImageData;
 };
 
-const tractionStats = [
-  { label: "Projects Delivered", value: "128+" },
-  { label: "Businesses Supported", value: "50+" },
-  { label: "Solutions Built", value: "100+" },
-  { label: "Industries Served", value: "21+" },
-  { label: "Client Satisfaction", value: "99%" },
+type TractionStat = {
+  label: string;
+  value: string;
+  icon: LucideIcon;
+  iconColor: string;
+};
+
+const tractionStats: TractionStat[] = [
+  {
+    label: "Projects Delivered",
+    value: "128+",
+    icon: BriefcaseBusiness,
+    iconColor: BRAND_COLORS.red,
+  },
+  {
+    label: "Businesses Supported",
+    value: "50+",
+    icon: Building2,
+    iconColor: BRAND_COLORS.blue,
+  },
+  {
+    label: "Solutions Built",
+    value: "100+",
+    icon: Blocks,
+    iconColor: BRAND_COLORS.yellow,
+  },
+  {
+    label: "2025 Awards",
+    value: "3",
+    icon: Award,
+    iconColor: BRAND_COLORS.green,
+  },
+
+  {
+    label: "Support Access",
+    value: "24/7",
+    icon: ShieldCheck,
+    iconColor: BRAND_COLORS.purple,
+  },
+
+  // {
+  //   label: "Client Satisfaction",
+  //   value: "99%",
+  //   icon: ShieldCheck,
+  //   iconColor: BRAND_COLORS.purple,
+  // },
 ];
 
 const quickCards: QuickCard[] = [
@@ -63,18 +122,26 @@ const quickCards: QuickCard[] = [
   },
   {
     id: 3,
-    title: "PayHx",
-    href: "/",
+    title: "Octalve Lab",
+    href: "/models/lab",
     desktopImage: quick3Desktop,
     mobileImage: quick3Mobile,
+  },
+
+  {
+    id: 4,
+    title: "PayHx",
+    href: "/",
+    desktopImage: quick4Desktop,
+    mobileImage: quick4Mobile,
   },
 
   // {
   //   id: 4,
   //   title: "Strategy Portfolio",
   //   href: "/portfolio/strategy",
-  //   desktopImage: quick3Desktop,
-  //   mobileImage: quick3Mobile,
+  //   desktopImage: quick5Desktop,
+  //   mobileImage: quick5Mobile,
   // },
 ];
 
@@ -188,45 +255,59 @@ export default function QuickAccess() {
   const sliderRef = useRef<HTMLDivElement | null>(null);
   const [isPaused, setIsPaused] = useState(false);
 
-  function getStepSize() {
+  function getCardPositions() {
     const container = sliderRef.current;
-    if (!container) return 0;
+    if (!container) return [];
 
-    const firstCard = container.children[0] as HTMLElement | undefined;
-    if (!firstCard) return 0;
+    return Array.from(container.children).map(
+      (child) => (child as HTMLElement).offsetLeft,
+    );
+  }
 
-    const styles = window.getComputedStyle(container);
-    const gap = parseFloat(styles.columnGap || styles.gap || "0");
+  function scrollToCard(targetLeft: number) {
+    const container = sliderRef.current;
+    if (!container) return;
 
-    return firstCard.offsetWidth + gap;
+    container.scrollTo({
+      left: targetLeft,
+      behavior: "smooth",
+    });
   }
 
   function scrollNext() {
     const container = sliderRef.current;
     if (!container) return;
 
-    const step = getStepSize();
-    const maxScrollLeft = container.scrollWidth - container.clientWidth;
-    const nearEnd = container.scrollLeft + step >= maxScrollLeft - 10;
+    const positions = getCardPositions();
+    if (!positions.length) return;
 
-    container.scrollTo({
-      left: nearEnd ? 0 : container.scrollLeft + step,
-      behavior: "smooth",
-    });
+    const current = container.scrollLeft;
+    const tolerance = 24;
+
+    const nextPosition = positions.find(
+      (position) => position > current + tolerance,
+    );
+
+    scrollToCard(nextPosition ?? positions[0]);
   }
 
   function scrollPrev() {
     const container = sliderRef.current;
     if (!container) return;
 
-    const step = getStepSize();
-    const maxScrollLeft = container.scrollWidth - container.clientWidth;
-    const nearStart = container.scrollLeft <= 10;
+    const positions = getCardPositions();
+    if (!positions.length) return;
 
-    container.scrollTo({
-      left: nearStart ? maxScrollLeft : container.scrollLeft - step,
-      behavior: "smooth",
-    });
+    const current = container.scrollLeft;
+    const tolerance = 24;
+
+    const previousPositions = positions.filter(
+      (position) => position < current - tolerance,
+    );
+
+    const prevPosition = previousPositions[previousPositions.length - 1];
+
+    scrollToCard(prevPosition ?? positions[positions.length - 1]);
   }
 
   useEffect(() => {
@@ -249,30 +330,49 @@ export default function QuickAccess() {
           className="grid grid-cols-2 gap-y-8 border-t pt-8 md:grid-cols-3 lg:grid-cols-5"
           style={{ borderColor: SECTION_COLORS.border }}
         >
-          {tractionStats.map((stat, index) => (
-            <div
-              key={stat.label}
-              className={`px-2 md:px-4 ${
-                index !== tractionStats.length - 1 ? "lg:border-r" : ""
-              }`}
-              style={{
-                borderColor:
-                  index !== tractionStats.length - 1
-                    ? SECTION_COLORS.border
-                    : "transparent",
-              }}
-            >
-              <p className="text-[11px] font-medium uppercase tracking-[0.22em] text-slate-600 sm:text-xs">
-                {stat.label}
-              </p>
-              <h3
-                className="mt-4 text-3xl font-medium tracking-[-0.04em] sm:text-4xl md:text-5xl"
-                style={{ color: SECTION_COLORS.statText }}
+          {tractionStats.map((stat, index) => {
+            const Icon = stat.icon;
+
+            return (
+              <div
+                key={stat.label}
+                className={`px-2 md:px-4 ${
+                  index !== tractionStats.length - 1 ? "lg:border-r" : ""
+                }`}
+                style={{
+                  borderColor:
+                    index !== tractionStats.length - 1
+                      ? SECTION_COLORS.border
+                      : "transparent",
+                }}
               >
-                {stat.value}
-              </h3>
-            </div>
-          ))}
+                <p className="text-[11px] font-medium uppercase tracking-[0.22em] text-slate-600 sm:text-xs">
+                  {stat.label}
+                </p>
+
+                <div className="mt-4 flex items-center gap-3">
+                  <span
+                    className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border"
+                    style={{
+                      color: stat.iconColor,
+                      borderColor: `${stat.iconColor}26`,
+                      backgroundColor: `${stat.iconColor}12`,
+                    }}
+                    aria-hidden="true"
+                  >
+                    <Icon className="h-5 w-5" strokeWidth={2} />
+                  </span>
+
+                  <h3
+                    className="text-3xl font-medium tracking-[-0.04em] sm:text-4xl md:text-5xl"
+                    style={{ color: SECTION_COLORS.statText }}
+                  >
+                    {stat.value}
+                  </h3>
+                </div>
+              </div>
+            );
+          })}
         </div>
 
         <div
