@@ -1,6 +1,7 @@
 "use client";
 
 import Image, { StaticImageData } from "next/image";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import frame1 from "@/assets/portfolio/frame1.png";
@@ -13,6 +14,8 @@ const SECTION_COLORS = {
   modalBg: "rgba(2, 11, 28, 0.82)",
   closeBg: "rgba(255,255,255,0.92)",
   closeText: "#0F172A",
+  ctaBg: "#0064E0",
+  ctaText: "#FFFFFF",
 };
 
 type ProjectFrame = {
@@ -77,7 +80,6 @@ function ProjectCard({
       />
 
       <div className="pointer-events-none absolute inset-0 rounded-[28px] bg-black/12 transition duration-300 group-hover:bg-black/18" />
-
       <div className="pointer-events-none absolute inset-0 rounded-[28px] shadow-[inset_0_-30px_80px_rgba(0,0,0,0.12)]" />
     </button>
   );
@@ -111,17 +113,32 @@ export default function FeaturedProjects() {
         style={{ backgroundColor: SECTION_COLORS.pageBg }}
       >
         <div className="mx-auto max-w-[1560px]">
-          <div className="mx-auto max-w-[900px] text-center">
-            <h2 className="text-4xl font-medium leading-[1.08] tracking-[-0.04em] text-black sm:text-5xl md:text-6xl">
-              Featured Projects
-            </h2>
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+            <div className="max-w-[900px] text-center lg:text-left">
+              <h2 className="text-3xl font-medium leading-[1.08] tracking-[-0.04em] text-black sm:text-3xl md:text-4xl">
+                Featured Projects
+              </h2>
 
-            <p
-              className="mx-auto mt-5 max-w-2xl text-base leading-8 sm:text-lg"
-              style={{ color: SECTION_COLORS.textSoft }}
-            >
-              Explore selected visual highlights from our project portfolio.
-            </p>
+              <p
+                className="mx-auto mt-5 max-w-2xl text-base leading-8 sm:text-lg lg:mx-0"
+                style={{ color: SECTION_COLORS.textSoft }}
+              >
+                Explore selected visual highlights from our project portfolio.
+              </p>
+            </div>
+
+            <div className="flex justify-center lg:justify-end">
+              <Link
+                href="/portfolio"
+                className="inline-flex items-center justify-center rounded-full px-6 py-3 text-sm font-semibold transition hover:scale-[1.02] hover:opacity-95"
+                style={{
+                  backgroundColor: SECTION_COLORS.ctaBg,
+                  color: SECTION_COLORS.ctaText,
+                }}
+              >
+                View Full Portfolio
+              </Link>
+            </div>
           </div>
 
           <div className="mt-14 grid gap-6 lg:grid-cols-2 lg:gap-10">

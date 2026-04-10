@@ -34,6 +34,7 @@ const suites = [
   { label: "Growth-Suite", href: "/suite/pricing" },
   { label: "Partner-Suite", href: "/contact" },
   { label: "Pricing", href: "/suite/pricing" },
+  { label: "Portfolio", href: "/portfolio" },
 ];
 
 const products = [

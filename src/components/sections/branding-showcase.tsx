@@ -32,7 +32,7 @@ const brandingCards: ShowcaseCard[] = [
   },
   {
     id: 2,
-    href: "https://mayport.co/", // replace if different
+    href: "https://mayportoilandgas.com/", // replace if different
     videoSrc: "/videos/lab/mayport.webm",
     buttonLabel: "Visit Website",
     ariaLabel: "Visit Mayport website",

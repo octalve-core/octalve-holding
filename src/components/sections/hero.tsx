@@ -225,7 +225,7 @@ export default function Hero() {
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-900">
               Get Started,{" "}
               <span>
-                <a href="#models" style={{ color: HERO_COLORS.green }}>
+                <a href="#start" style={{ color: HERO_COLORS.green }}>
                   Scroll Down
                 </a>
               </span>
