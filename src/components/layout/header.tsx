@@ -26,6 +26,20 @@ const NAV_COLORS = {
 
 const models = [
   {
+    title: "Consult",
+    description:
+      "Strategy, advisory, and transformation support, when you need it, how you need it.",
+    href: "/models/consult",
+  },
+
+  {
+    title: "Suite",
+    description:
+      "One platform. Zero stress. Launch with website, branding , and marketing tools in 14 days.",
+    href: "/models/suite",
+  },
+
+  {
     title: "One",
     description: "Building intelligent business solutions for SMEs.",
     href: "/models/one",
@@ -34,18 +48,6 @@ const models = [
     title: "Node",
     description: "The intersection of innovation and you.",
     href: "/models/node",
-  },
-  {
-    title: "Suite",
-    description:
-      "One platform. Zero stress. Launch with website, branding , and marketing tools in 14 days.",
-    href: "/models/suite",
-  },
-  {
-    title: "Consult",
-    description:
-      "Strategy, advisory, and transformation support, when you need it, how you need it.",
-    href: "/models/consult",
   },
   {
     title: "Lab",

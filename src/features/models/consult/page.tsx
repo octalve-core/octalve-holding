@@ -14,8 +14,8 @@ export default function ConsultPage() {
     <ModelShell>
       <ConsultHero />
       <ConsultOverview />
-      <ConsultPackages />
       <ConsultSteps />
+      <ConsultPackages />
       <ConsultCta />
       {/* <ConsultWhy /> */}
       {/* <ConsultResults /> */}

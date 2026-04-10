@@ -20,6 +20,7 @@ const rotatingWords = [
   { text: "Branding", color: "#E61525" },
   { text: "Websites", color: "#FC7E24" },
   { text: "Systems", color: "#29BE3E" },
+  { text: "Automation", color: "#5300D9" },
 ];
 
 function SendIcon() {

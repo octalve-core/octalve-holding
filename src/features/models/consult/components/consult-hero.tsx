@@ -6,6 +6,7 @@ import { ArrowRight, CheckCircle2 } from "lucide-react";
 const BRAND = {
   blue: "#0064E0",
   red: "#E61525",
+  purple: "#5300D9",
   green: "#29BE3E",
   orange: "#FC7E24",
   lilac: "#E8DFF6",
@@ -49,16 +50,16 @@ export default function ConsultHero() {
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <Link
-                href="/contact"
+                href="#booksession"
                 className="inline-flex items-center justify-center gap-2 rounded-sm px-6 py-4 text-sm font-semibold text-white transition hover:opacity-95"
-                style={{ backgroundColor: BRAND.blue }}
+                style={{ backgroundColor: BRAND.purple }}
               >
                 Book a Clarity Session
                 <ArrowRight className="h-4 w-4" />
               </Link>
 
               <Link
-                href="/models/consult"
+                href="#packages"
                 className="inline-flex items-center justify-center rounded-sm px-6 py-4 text-sm font-semibold text-white transition hover:opacity-95"
                 style={{
                   backgroundColor: BRAND.red,
