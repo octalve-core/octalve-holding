@@ -32,7 +32,12 @@ export const PRICING_COLORS = {
   light: "#F8FAFC",
   card: "#FFFFFF",
   soft: "#F8FAFC",
-};
+} as const;
+
+const WHATSAPP_NUMBER = "2348073459090";
+
+const createWhatsAppLink = (message: string): string =>
+  `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
 
 export const plans: Record<PlanKey, Plan> = {
   launch: {
@@ -40,10 +45,12 @@ export const plans: Record<PlanKey, Plan> = {
     name: "Launch Suite",
     price: 300000,
     periodLabel: "one-time",
-    cta: "/contact",
+    cta: createWhatsAppLink(
+      "Hello Octalve, I want to discuss Launch Suite and how you can help me launch with a strong brand, website, and digital presence.",
+    ),
     buttonClass: "bg-red-600 hover:bg-red-700",
     dotClass: "bg-red-600",
-    badge: "For new businesses",
+    badge: "For businesses",
     shortDescription:
       "Brand identity, website setup, and launch-ready content for businesses starting strong.",
   },
@@ -52,7 +59,9 @@ export const plans: Record<PlanKey, Plan> = {
     name: "Impact Suite",
     price: 320000,
     periodLabel: "one-time",
-    cta: "/contact",
+    cta: createWhatsAppLink(
+      "Hello Octalve, I want to discuss Impact Suite and how you can help us build donor trust, clarity, and a stronger digital presence.",
+    ),
     buttonClass: "bg-green-600 hover:bg-green-700",
     dotClass: "bg-green-600",
     badge: "Best for NGOs",
@@ -64,7 +73,9 @@ export const plans: Record<PlanKey, Plan> = {
     name: "Growth Suite",
     price: 120000,
     periodLabel: "monthly",
-    cta: "/contact",
+    cta: createWhatsAppLink(
+      "Hello Octalve, I want to discuss Growth Suite and how you can help us improve visibility, manage our funnel, and support business growth.",
+    ),
     buttonClass: "bg-blue-600 hover:bg-blue-700",
     dotClass: "bg-blue-600",
     badge: "Monthly support",

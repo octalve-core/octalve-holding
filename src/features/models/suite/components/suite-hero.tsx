@@ -87,20 +87,19 @@ export default function SuiteHero() {
           <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-14">
             <div className="space-y-6">
               <p className="text-sm font-medium text-white/70 md:text-base">
-                Based in Abuja (FCT) — built for Founders, Business Owners &
-                NGOs.
+                Built for Founders, Business Owners & NGOs.
               </p>
 
               <h1 className="text-4xl font-medium leading-tight tracking-[-0.04em] text-white md:text-5xl lg:text-6xl">
-                Octalve Suite™ for Abuja founders, businesses & NGOs.
+                Octalve Suite™ for founders, businesses & NGOs.
               </h1>
 
               <p className="max-w-xl text-base leading-8 text-white/75 md:text-lg">
-                Octalve Suite is an all-in-one production house designed to take
-                you from idea to market-ready. Whether you are a solo founder, a
-                growing business, or an NGO in Abuja, we help you launch faster
-                with strong brand identity, high-converting websites, content
-                systems, and ongoing support.
+                Octalve Suite is an all-in-one business launch solution designed
+                to take you from idea to market-ready. Whether you are a solo
+                founder, a growing business, or an NGO, we help you launch
+                faster with strong brand identity, high-converting websites,
+                content systems, and ongoing support.
                 <br className="hidden sm:block" />
                 Launch smarter, scale confidently, and manage everything in one
                 place with Octalve Suite™.
@@ -112,7 +111,7 @@ export default function SuiteHero() {
                   className="inline-flex items-center justify-center gap-2 rounded-full px-7 py-3 font-medium text-white shadow-sm transition hover:opacity-90"
                   style={{ background: SUITE_COLORS.primary }}
                 >
-                  Free 30min. Call <ArrowRight />
+                  Start with Suite <ArrowRight />
                 </button>
 
                 <Link
@@ -123,14 +122,14 @@ export default function SuiteHero() {
                 </Link>
               </div>
 
-              <div className="pt-1">
+              {/* <div className="pt-1">
                 <Link
                   href="/models/suite/impact"
                   className="text-sm font-medium text-white/80 underline underline-offset-4 hover:text-white"
                 >
-                  Explore Abuja services for founders & NGOs →
+                  Explore services for founders & NGOs →
                 </Link>
-              </div>
+              </div> */}
 
               <div className="flex items-center gap-3 pt-3">
                 <span className="text-sm font-medium text-white/90">
@@ -208,10 +207,10 @@ export default function SuiteHero() {
                 <div className="absolute bottom-6 right-10 z-30 md:bottom-10 md:right-16">
                   <div className="rounded-2xl border border-black/10 bg-[#f4efcc] px-5 py-4 shadow-sm">
                     <div className="text-lg font-medium text-black">
-                      Launch in Abuja
+                      Launch Smart
                     </div>
                     <div className="text-sm text-black/60">
-                      Scale across Nigeria
+                      Scale Confidently.
                     </div>
                   </div>
                 </div>
