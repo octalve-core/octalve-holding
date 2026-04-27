@@ -1,7 +1,7 @@
 "use client";
 
 import Script from "next/script";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   BriefcaseBusiness,
   CalendarDays,
@@ -18,6 +18,14 @@ import {
 } from "lucide-react";
 
 type StartProjectTab = "project" | "meeting" | "email" | "call";
+
+declare global {
+  interface Window {
+    Tally?: {
+      loadEmbeds?: () => void;
+    };
+  }
+}
 
 const TALLY_FORM_ID = "kd0kDj";
 const TALLY_EMBED_URL = `https://tally.so/embed/${TALLY_FORM_ID}?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1`;
@@ -133,14 +141,36 @@ function cn(...classes: Array<string | false | null | undefined>) {
   return classes.filter(Boolean).join(" ");
 }
 
+function reloadTallyEmbeds() {
+  if (typeof window === "undefined") return;
+
+  window.setTimeout(() => {
+    window.Tally?.loadEmbeds?.();
+  }, 80);
+}
+
 export default function StartProjectForm() {
   const [activeTab, setActiveTab] = useState<StartProjectTab>("project");
+
+  useEffect(() => {
+    if (activeTab === "project") {
+      reloadTallyEmbeds();
+    }
+  }, [activeTab]);
 
   return (
     <section
       id="project-form"
       className="bg-[linear-gradient(180deg,#F8FAFC_0%,#F3F7FD_100%)]"
     >
+      <Script
+        id="tally-embed-script"
+        src="https://tally.so/widgets/embed.js"
+        strategy="afterInteractive"
+        onLoad={reloadTallyEmbeds}
+        onReady={reloadTallyEmbeds}
+      />
+
       <div className="mx-auto max-w-[1280px] px-5 py-20 sm:px-6 lg:px-8 lg:py-24">
         <SectionHeader />
 
@@ -149,11 +179,11 @@ export default function StartProjectForm() {
         </div>
 
         <div className="mx-auto mt-8 max-w-5xl">
-          {activeTab === "project" && (
+          <div className={activeTab === "project" ? "block" : "hidden"}>
             <ProjectBriefPanel
               onSwitchToMeeting={() => setActiveTab("meeting")}
             />
-          )}
+          </div>
 
           {activeTab === "meeting" && (
             <MeetingPanel onSwitchToProject={() => setActiveTab("project")} />
@@ -395,15 +425,10 @@ function TallyProjectForm() {
       </div>
 
       <div className="bg-white p-2 sm:p-3">
-        <Script
-          id="tally-embed-script"
-          src="https://tally.so/widgets/embed.js"
-          strategy="lazyOnload"
-        />
-
         <iframe
+          src={TALLY_EMBED_URL}
           data-tally-src={TALLY_EMBED_URL}
-          loading="lazy"
+          loading="eager"
           title="Octalve project brief form"
           className="min-h-[980px] w-full rounded-[22px] border-0 bg-white sm:min-h-[920px]"
         />
