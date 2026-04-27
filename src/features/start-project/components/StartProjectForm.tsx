@@ -109,7 +109,7 @@ const phoneNumbers = [
     number: "Coming soon",
     href: "",
     flagUrl: "https://flagcdn.com/w80/qa.png",
-    note: "For future Qatar partnership and client support.",
+    note: "For Qatar partnership and client support.",
     active: false,
   },
   {
@@ -118,7 +118,7 @@ const phoneNumbers = [
     number: "Coming soon",
     href: "",
     flagUrl: "https://flagcdn.com/w80/gb.png",
-    note: "For future UK partnership and client support.",
+    note: "For UK partnership and client support.",
     active: false,
   },
 ];
