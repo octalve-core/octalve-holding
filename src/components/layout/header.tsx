@@ -81,7 +81,7 @@ const whoWeAre = [
 const explore = [
   { label: "Trend", href: "/trends" },
   { label: "Portfolio", href: "/portfolio" },
-  { label: "Bixpod", href: "/bixpod" },
+  { label: "IAMimpact", href: "/iamimpact" },
   { label: "Career", href: "/career" },
 ];
 
