@@ -168,7 +168,7 @@ type ContactItem = {
 
 const CONTACT_LINKS = {
   location:
-    "https://www.google.com/maps/search/?api=1&query=Gwarimpa%201st%20Avenue%2C%20Abuja%2C%20Nigeria",
+    "https://www.google.com/maps/search/?api=1&query=suite%2019%2C%20anafaraa%20plaza%2C%20opp%20oando%20filling%20station%2C%201st%20avenue%2C%20gwarimpa%2C%20abuja%2C%20nigeria",
   phone: "tel:+2348073459090",
   email: "mailto:info@octalve.com",
   whatsapp:
