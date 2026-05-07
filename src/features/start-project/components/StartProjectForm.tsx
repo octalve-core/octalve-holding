@@ -89,7 +89,7 @@ const emailContacts = [
   },
   {
     title: "Cloud",
-    email: "cloud@octalve.com",
+    email: "info@octalve.cloud",
     note: "For hosting, domains, email setup, servers, migration, and infrastructure questions.",
     icon: Cloud,
   },

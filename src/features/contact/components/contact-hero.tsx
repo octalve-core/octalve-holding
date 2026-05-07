@@ -179,7 +179,8 @@ const CONTACT_ITEMS: ContactItem[] = [
   {
     id: "location",
     title: "Visit / Locate Us",
-    value: "Gwarimpa 1st Avenue, Abuja, Nigeria",
+    value:
+      "Suit 19, Anafaraa Plaza, Opp Oando Filling Station, 1st Avenue, Gwarimpa, Abuja.",
     description:
       "Reach Octalve physically or use the map direction to locate our base in Abuja.",
     href: CONTACT_LINKS.location,
