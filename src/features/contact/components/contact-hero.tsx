@@ -168,7 +168,7 @@ type ContactItem = {
 
 const CONTACT_LINKS = {
   location:
-    "https://www.google.com/maps/search/?api=1&query=suite%2019%2C%20anafaraa%20plaza%2C%20opp%20oando%20filling%20station%2C%201st%20avenue%2C%20gwarimpa%2C%20abuja%2C%20nigeria",
+    "https://www.google.com/maps/search/?api=1&query=Anafaraa+Plaza,+Behind+MIB+1st+Avenue,+Gwarimpa,+Abuja",
   phone: "tel:+2348073459090",
   email: "mailto:info@octalve.com",
   whatsapp:
@@ -179,8 +179,7 @@ const CONTACT_ITEMS: ContactItem[] = [
   {
     id: "location",
     title: "Visit / Locate Us",
-    value:
-      "Suit 19, Anafaraa Plaza, Opp Oando Filling Station, 1st Avenue, Gwarimpa, Abuja.",
+    value: "Anafaraa Plaza, Behind MIB, 1st Avenue, Gwarimpa, Abuja.",
     description:
       "Reach Octalve physically or use the map direction to locate our base in Abuja.",
     href: CONTACT_LINKS.location,

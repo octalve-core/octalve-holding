@@ -70,8 +70,7 @@ const feedback = [
   { label: "+234 807 345 9090", href: "tel:+2348073459090" },
   { label: "Info@octalve.com", href: "mailto:Info@octalve.com" },
   {
-    label:
-      "Suit 19, Anafaraa Plaza, Opp Oando Filling Station, 1st Avenue, Gwarimpa, Abuja.",
+    label: "Anafaraa Plaza, Behind MIB, 1st Avenue, Gwarimpa, Abuja.",
     href: "/contact",
   },
 ];
