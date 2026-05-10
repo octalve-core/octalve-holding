@@ -1,7 +1,7 @@
 "use client";
 
 import Script from "next/script";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import {
   BriefcaseBusiness,
   CalendarDays,
@@ -28,6 +28,7 @@ declare global {
 }
 
 const TALLY_FORM_ID = "kd0kDj";
+const TALLY_FORM_DIRECT_URL = `https://tally.so/r/${TALLY_FORM_ID}`;
 const TALLY_EMBED_URL = `https://tally.so/embed/${TALLY_FORM_ID}?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1`;
 
 const CALENDLY_EMBED_URL =
@@ -89,7 +90,7 @@ const emailContacts = [
   },
   {
     title: "Cloud",
-    email: "info@octalve.cloud",
+    email: "cloud@octalve.com",
     note: "For hosting, domains, email setup, servers, migration, and infrastructure questions.",
     icon: Cloud,
   },
@@ -104,30 +105,24 @@ const emailContacts = [
 const phoneNumbers = [
   {
     country: "Nigeria",
-    label: "Primary line",
+    label: "Nigeria line",
     number: "+234 807 345 9090",
     href: "tel:+2348073459090",
-    flagUrl: "https://flagcdn.com/w80/ng.png",
-    note: "Best for calls and WhatsApp enquiries.",
+    whatsappHref: WHATSAPP_URL,
+    flagUrl: "https://flagcdn.com/ng.svg",
+    note: "Best for calls, WhatsApp enquiries, project briefs, and local business conversations.",
     active: true,
   },
   {
-    country: "Qatar",
-    label: "Regional line",
-    number: "Coming soon",
-    href: "",
-    flagUrl: "https://flagcdn.com/w80/qa.png",
-    note: "For Qatar partnership and client support.",
-    active: false,
-  },
-  {
     country: "United Kingdom",
-    label: "Regional line",
-    number: "Coming soon",
-    href: "",
-    flagUrl: "https://flagcdn.com/w80/gb.png",
-    note: "For UK partnership and client support.",
-    active: false,
+    label: "UK line",
+    number: "+44 7413 753552",
+    href: "tel:+447413753552",
+    whatsappHref:
+      "https://wa.me/447413753552?text=Hello%20Octalve%2C%20I%20want%20to%20make%20an%20enquiry%20about%20your%20services.",
+    flagUrl: "https://flagcdn.com/gb.svg",
+    note: "Best for UK-based clients, partners, collaborations, and international enquiries.",
+    active: true,
   },
 ];
 
@@ -146,7 +141,7 @@ function reloadTallyEmbeds() {
 
   window.setTimeout(() => {
     window.Tally?.loadEmbeds?.();
-  }, 80);
+  }, 120);
 }
 
 export default function StartProjectForm() {
@@ -299,7 +294,7 @@ function PanelShell({
   eyebrow?: string;
   title: string;
   description: string;
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   return (
     <div className="overflow-hidden rounded-[34px] border border-slate-200/80 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.08)]">
@@ -415,7 +410,7 @@ function TallyProjectForm() {
             Octalve project enquiry
           </p>
           <p className="mt-0.5 text-xs text-slate-500">
-            Complete this in about 1 minute.
+            Complete this in about 2 minutes.
           </p>
         </div>
 
@@ -432,6 +427,21 @@ function TallyProjectForm() {
           title="Octalve project brief form"
           className="min-h-[980px] w-full rounded-[22px] border-0 bg-white sm:min-h-[920px]"
         />
+
+        <div className="border-t border-slate-100 px-3 py-4 text-center">
+          <p className="text-xs leading-5 text-slate-500">
+            Form not showing?{" "}
+            <a
+              href={TALLY_FORM_DIRECT_URL}
+              target="_blank"
+              rel="noreferrer"
+              className="font-semibold text-[#0064E0] underline-offset-4 hover:underline"
+            >
+              Open the project brief directly
+            </a>
+            .
+          </p>
+        </div>
       </div>
     </div>
   );
@@ -526,10 +536,10 @@ function CallPanel() {
     <PanelShell
       eyebrow="Phone support"
       title="Give us a call"
-      description="Prefer to speak directly? Start with our primary line or continue the conversation on WhatsApp."
+      description="Prefer to speak directly? Choose the line closest to your location or continue the conversation on WhatsApp."
     >
       <div className="p-6 sm:p-8">
-        <div className="grid gap-4 sm:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-2">
           {phoneNumbers.map((item) => (
             <PhoneCard key={item.country} {...item} />
           ))}
@@ -545,6 +555,7 @@ function CallPanel() {
               <p className="text-sm font-semibold text-slate-950">
                 Faster response on WhatsApp
               </p>
+
               <p className="mt-1 text-sm leading-6 text-slate-600">
                 Send a quick message and tell us what you want to build, fix,
                 launch, or grow.
@@ -571,6 +582,7 @@ function PhoneCard({
   label,
   number,
   href,
+  whatsappHref,
   flagUrl,
   note,
   active,
@@ -579,12 +591,13 @@ function PhoneCard({
   label: string;
   number: string;
   href: string;
+  whatsappHref?: string;
   flagUrl: string;
   note: string;
   active: boolean;
 }) {
-  const cardContent = (
-    <>
+  return (
+    <div className="group rounded-[28px] border border-slate-200 bg-[linear-gradient(180deg,#FFFFFF_0%,#F8FAFC_100%)] p-5 text-center shadow-sm transition hover:-translate-y-0.5 hover:border-[#0064E0]/20 hover:shadow-[0_14px_40px_rgba(0,100,224,0.08)] sm:p-6">
       <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border border-slate-200 bg-white shadow-sm">
         <CountryFlag src={flagUrl} label={country} />
       </div>
@@ -593,57 +606,52 @@ function PhoneCard({
         {label}
       </p>
 
-      <p className="mt-2 text-base font-semibold text-slate-950">{country}</p>
-
-      <p
-        className={cn(
-          "mt-2 text-sm font-semibold",
-          active ? "text-[#0064E0]" : "text-slate-500",
-        )}
-      >
-        {number}
+      <p className="mt-2 text-lg font-semibold tracking-[-0.02em] text-slate-950">
+        {country}
       </p>
 
-      <p className="mt-3 text-sm leading-6 text-slate-600">{note}</p>
+      <p className="mt-2 text-base font-semibold text-[#0064E0]">{number}</p>
 
-      <span
-        className={cn(
-          "mt-5 inline-flex rounded-full px-4 py-2 text-sm font-semibold",
-          active
-            ? "bg-[#0064E0]/5 text-[#0064E0]"
-            : "bg-slate-100 text-slate-500",
-        )}
-      >
-        {active ? "Call now" : "Coming soon"}
-      </span>
-    </>
-  );
+      <p className="mx-auto mt-3 max-w-sm text-sm leading-6 text-slate-600">
+        {note}
+      </p>
 
-  if (!active) {
-    return (
-      <div className="rounded-[26px] border border-slate-200 bg-[linear-gradient(180deg,#FFFFFF_0%,#F8FAFC_100%)] p-5 text-center shadow-sm">
-        {cardContent}
-      </div>
-    );
-  }
+      {active ? (
+        <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:justify-center">
+          <a
+            href={href}
+            className="inline-flex items-center justify-center rounded-full bg-[#0064E0] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#0052B8] focus:outline-none focus:ring-4 focus:ring-[#0064E0]/15"
+          >
+            Call now
+          </a>
 
-  return (
-    <a
-      href={href}
-      className="group rounded-[26px] border border-slate-200 bg-[linear-gradient(180deg,#FFFFFF_0%,#F8FAFC_100%)] p-5 text-center shadow-sm transition hover:-translate-y-0.5 hover:border-[#0064E0]/20 hover:shadow-[0_14px_40px_rgba(0,100,224,0.08)]"
-    >
-      {cardContent}
-    </a>
+          {whatsappHref ? (
+            <a
+              href={whatsappHref}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center justify-center rounded-full border border-[#0064E0]/20 bg-white px-5 py-2.5 text-sm font-semibold text-[#0064E0] transition hover:border-[#0064E0]/40 hover:bg-[#0064E0]/5 focus:outline-none focus:ring-4 focus:ring-[#0064E0]/10"
+            >
+              WhatsApp
+            </a>
+          ) : null}
+        </div>
+      ) : (
+        <span className="mt-5 inline-flex rounded-full bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-500">
+          Coming soon
+        </span>
+      )}
+    </div>
   );
 }
 
 function CountryFlag({ src, label }: { src: string; label: string }) {
   return (
-    <span
-      role="img"
-      aria-label={`${label} flag`}
-      className="block h-10 w-10 rounded-full bg-cover bg-center bg-no-repeat shadow-[inset_0_0_0_1px_rgba(15,23,42,0.08)]"
-      style={{ backgroundImage: `url(${src})` }}
+    <img
+      src={src}
+      alt={`${label} flag`}
+      className="h-10 w-10 rounded-full object-cover shadow-[inset_0_0_0_1px_rgba(15,23,42,0.08)]"
+      loading="lazy"
     />
   );
 }
