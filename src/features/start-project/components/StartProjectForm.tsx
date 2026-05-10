@@ -34,8 +34,11 @@ const TALLY_EMBED_URL = `https://tally.so/embed/${TALLY_FORM_ID}?alignLeft=1&hid
 const CALENDLY_EMBED_URL =
   "https://calendly.com/octalve-info/30min?hide_gdpr_banner=1&primary_color=0064e0";
 
-const WHATSAPP_URL =
+const NIGERIA_WHATSAPP_URL =
   "https://wa.me/2348073459090?text=Hello%20Octalve%2C%20I%20want%20to%20discuss%20how%20you%20can%20help%20me%20build%2C%20launch%2C%20structure%2C%20or%20grow%20my%20business.";
+
+const UK_WHATSAPP_URL =
+  "https://wa.me/447413753552?text=Hello%20Octalve%2C%20I%20want%20to%20make%20an%20enquiry%20about%20your%20services.";
 
 const sectionBadge = "Start a Project";
 
@@ -108,7 +111,7 @@ const phoneNumbers = [
     label: "Nigeria line",
     number: "+234 807 345 9090",
     href: "tel:+2348073459090",
-    whatsappHref: WHATSAPP_URL,
+    whatsappHref: NIGERIA_WHATSAPP_URL,
     flagUrl: "https://flagcdn.com/ng.svg",
     note: "Best for calls, WhatsApp enquiries, project briefs, and local business conversations.",
     active: true,
@@ -118,8 +121,7 @@ const phoneNumbers = [
     label: "UK line",
     number: "+44 7413 753552",
     href: "tel:+447413753552",
-    whatsappHref:
-      "https://wa.me/447413753552?text=Hello%20Octalve%2C%20I%20want%20to%20make%20an%20enquiry%20about%20your%20services.",
+    whatsappHref: UK_WHATSAPP_URL,
     flagUrl: "https://flagcdn.com/gb.svg",
     note: "Best for UK-based clients, partners, collaborations, and international enquiries.",
     active: true,
@@ -127,10 +129,13 @@ const phoneNumbers = [
 ];
 
 const primaryButtonClassName =
-  "inline-flex items-center justify-center rounded-full bg-[#0064E0] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#0052B8] focus:outline-none focus:ring-4 focus:ring-[#0064E0]/15";
+  "inline-flex items-center justify-center rounded-full bg-[#0064E0] px-6 py-3 text-sm font-semibold !text-white transition hover:bg-[#0052B8] focus:outline-none focus:ring-4 focus:ring-[#0064E0]/15";
 
 const secondaryButtonClassName =
-  "inline-flex items-center justify-center rounded-full border border-[#0064E0]/20 bg-white px-6 py-3 text-sm font-semibold text-[#0064E0] transition hover:border-[#0064E0]/40 hover:bg-[#0064E0]/5 focus:outline-none focus:ring-4 focus:ring-[#0064E0]/10";
+  "inline-flex items-center justify-center rounded-full border border-[#0064E0]/20 bg-white px-6 py-3 text-sm font-semibold !text-[#0064E0] transition hover:border-[#0064E0]/40 hover:bg-[#0064E0]/5 focus:outline-none focus:ring-4 focus:ring-[#0064E0]/10";
+
+const whatsappOutlineButtonClassName =
+  "inline-flex items-center justify-center rounded-full border px-5 py-2.5 text-sm font-semibold transition hover:!bg-[#0064E0]/5 focus:outline-none focus:ring-4 focus:ring-[#0064E0]/10";
 
 function cn(...classes: Array<string | false | null | undefined>) {
   return classes.filter(Boolean).join(" ");
@@ -435,7 +440,8 @@ function TallyProjectForm() {
               href={TALLY_FORM_DIRECT_URL}
               target="_blank"
               rel="noreferrer"
-              className="font-semibold text-[#0064E0] underline-offset-4 hover:underline"
+              className="font-semibold !text-[#0064E0] underline-offset-4 hover:underline"
+              style={{ color: "#0064E0" }}
             >
               Open the project brief directly
             </a>
@@ -476,7 +482,16 @@ function MeetingPanel({
             Send project brief instead
           </button>
 
-          <a href={WHATSAPP_URL} className={primaryButtonClassName}>
+          <a
+            href={NIGERIA_WHATSAPP_URL}
+            target="_blank"
+            rel="noreferrer"
+            className={primaryButtonClassName}
+            style={{
+              color: "#FFFFFF",
+              backgroundColor: "#0064E0",
+            }}
+          >
             Continue on WhatsApp
           </a>
         </div>
@@ -564,10 +579,14 @@ function CallPanel() {
           </div>
 
           <a
-            href={WHATSAPP_URL}
+            href={NIGERIA_WHATSAPP_URL}
             target="_blank"
             rel="noreferrer"
             className={cn("mt-4 sm:mt-0", primaryButtonClassName)}
+            style={{
+              color: "#FFFFFF",
+              backgroundColor: "#0064E0",
+            }}
           >
             Chat on WhatsApp
           </a>
@@ -620,7 +639,11 @@ function PhoneCard({
         <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:justify-center">
           <a
             href={href}
-            className="inline-flex items-center justify-center rounded-full bg-[#0064E0] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#0052B8] focus:outline-none focus:ring-4 focus:ring-[#0064E0]/15"
+            className="inline-flex items-center justify-center rounded-full bg-[#0064E0] px-5 py-2.5 text-sm font-semibold !text-white transition hover:bg-[#0052B8] focus:outline-none focus:ring-4 focus:ring-[#0064E0]/15"
+            style={{
+              color: "#FFFFFF",
+              backgroundColor: "#0064E0",
+            }}
           >
             Call now
           </a>
@@ -630,7 +653,12 @@ function PhoneCard({
               href={whatsappHref}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center justify-center rounded-full border border-[#0064E0]/20 bg-white px-5 py-2.5 text-sm font-semibold text-[#0064E0] transition hover:border-[#0064E0]/40 hover:bg-[#0064E0]/5 focus:outline-none focus:ring-4 focus:ring-[#0064E0]/10"
+              className={whatsappOutlineButtonClassName}
+              style={{
+                color: "#0064E0",
+                backgroundColor: "#FFFFFF",
+                borderColor: "rgba(0, 100, 224, 0.2)",
+              }}
             >
               WhatsApp
             </a>

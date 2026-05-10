@@ -533,7 +533,12 @@ function WhatsAppStrip() {
             href={CONTACT_LINKS.ukWhatsapp}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex shrink-0 items-center justify-center rounded-full border border-[#0064E0]/20 bg-white px-6 py-3 text-sm font-semibold text-[#0064E0] transition hover:border-[#0064E0]/40 hover:bg-[#0064E0]/5 focus:outline-none focus:ring-4 focus:ring-[#0064E0]/10"
+            style={{
+              color: "#0064E0",
+              backgroundColor: "#FFFFFF",
+              borderColor: "rgba(0, 100, 224, 0.2)",
+            }}
+            className="inline-flex shrink-0 items-center justify-center rounded-full border !bg-white px-6 py-3 text-sm font-semibold !text-[#0064E0] transition hover:!bg-[#0064E0]/5 focus:outline-none focus:ring-4 focus:ring-[#0064E0]/10"
           >
             WhatsApp UK
           </a>
