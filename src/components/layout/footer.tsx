@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useSyncExternalStore, type ReactNode } from "react";
 import octalveLogo from "@/assets/logos/octalve.png";
 
 const FOOTER_COLORS = {
@@ -16,6 +16,8 @@ const FOOTER_COLORS = {
   iconBg: "#0B7CFF",
   iconText: "#FFFFFF",
 };
+
+const DEFAULT_SERVER_HOUR = 18;
 
 const models = [
   { label: "Octalve Node", href: "/models/node" },
@@ -38,10 +40,7 @@ const suites = [
 ];
 
 const products = [
-  {
-    label: "Business Plan Templates",
-    href: "/vault/shop",
-  },
+  { label: "Business Plan Templates", href: "/vault/shop" },
   { label: "Pitch Deck Templates", href: "/vault/shop" },
   { label: "Proposal Templates", href: "/vault/shop" },
   { label: "Invoice Templates", href: "/vault/shop" },
@@ -57,7 +56,6 @@ const helpSupport = [
   { label: "Leadership", href: "/leadership" },
   { label: "Contact us", href: "/contact" },
   { label: "Mail Login", href: "/#" },
-  // { label: "Archives", href: "/archives" },
   { label: "Privacy Policy", href: "/privacy-policy" },
   { label: "Octalve Smart", href: "/#" },
   { label: "Octalve Academy", href: "/#" },
@@ -66,14 +64,46 @@ const helpSupport = [
 ];
 
 const feedback = [
-  { label: "Give feedback", href: "/contact" },
   { label: "+234 807 345 9090", href: "tel:+2348073459090" },
+  { label: "+44 7413 753552", href: "tel:+447413753552" },
   { label: "Info@octalve.com", href: "mailto:Info@octalve.com" },
   {
     label: "Anafaraa Plaza, Behind MIB, 1st Avenue, Gwarimpa, Abuja.",
     href: "/contact",
   },
 ];
+
+function getHourSnapshot() {
+  return new Date().getHours();
+}
+
+function getServerHourSnapshot() {
+  return DEFAULT_SERVER_HOUR;
+}
+
+function subscribeToHourChange(callback: () => void) {
+  const intervalId = window.setInterval(callback, 60_000);
+
+  return () => {
+    window.clearInterval(intervalId);
+  };
+}
+
+function useCurrentHour() {
+  return useSyncExternalStore(
+    subscribeToHourChange,
+    getHourSnapshot,
+    getServerHourSnapshot,
+  );
+}
+
+function isExternalHref(href: string) {
+  return (
+    href.startsWith("http") ||
+    href.startsWith("mailto:") ||
+    href.startsWith("tel:")
+  );
+}
 
 function ArrowUpRightIcon() {
   return (
@@ -177,6 +207,33 @@ function XIcon() {
   );
 }
 
+function FooterItemLink({
+  href,
+  children,
+}: {
+  href: string;
+  children: ReactNode;
+}) {
+  const className =
+    "group inline-flex items-start gap-2 text-sm leading-7 transition";
+
+  const style = { color: FOOTER_COLORS.muted };
+
+  if (isExternalHref(href)) {
+    return (
+      <a href={href} className={className} style={style}>
+        {children}
+      </a>
+    );
+  }
+
+  return (
+    <Link href={href} className={className} style={style}>
+      {children}
+    </Link>
+  );
+}
+
 function FooterSection({
   title,
   items,
@@ -195,20 +252,19 @@ function FooterSection({
 
       <ul className="mt-6 space-y-4">
         {items.map((item) => (
-          <li key={item.label}>
-            <Link
-              href={item.href}
-              className="group inline-flex items-start gap-2 text-sm leading-7 transition"
-              style={{ color: FOOTER_COLORS.muted }}
-            >
+          <li key={`${title}-${item.label}`}>
+            <FooterItemLink href={item.href}>
               <span
-                className="mt-[5px] shrink-0 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                className="mt-1.25 shrink-0 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
                 style={{ color: FOOTER_COLORS.accent }}
               >
                 <ArrowUpRightIcon />
               </span>
-              <span className="group-hover:text-white">{item.label}</span>
-            </Link>
+
+              <span className="transition group-hover:text-white">
+                {item.label}
+              </span>
+            </FooterItemLink>
           </li>
         ))}
       </ul>
@@ -223,7 +279,7 @@ function SocialLink({
 }: {
   href: string;
   label: string;
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   return (
     <a
@@ -255,20 +311,8 @@ function getGreetingByHour(hour: number) {
 }
 
 export default function Footer() {
-  const [hour, setHour] = useState<number | null>(null);
-
-  useEffect(() => {
-    setHour(new Date().getHours());
-  }, []);
-
-  const greeting = useMemo(() => {
-    if (hour === null) {
-      return { text: "evening", emoji: "🌙" };
-    }
-
-    return getGreetingByHour(hour);
-  }, [hour]);
-
+  const hour = useCurrentHour();
+  const greeting = getGreetingByHour(hour);
   const currentYear = new Date().getFullYear();
 
   return (
@@ -276,7 +320,7 @@ export default function Footer() {
       className="px-4 pt-14 pb-8 sm:px-6 md:px-8 md:pt-20"
       style={{ backgroundColor: FOOTER_COLORS.bg }}
     >
-      <div className="mx-auto max-w-[1360px]">
+      <div className="mx-auto max-w-340">
         <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between">
           <div className="max-w-3xl">
             <h2
@@ -327,7 +371,7 @@ export default function Footer() {
                 alt="Octalve logo"
                 width={170}
                 height={52}
-                className="h-auto w-[150px] object-contain sm:w-[170px]"
+                className="h-auto w-37.5 object-contain sm:w-42.5"
                 priority={false}
               />
             </Link>
