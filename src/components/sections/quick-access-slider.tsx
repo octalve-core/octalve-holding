@@ -16,6 +16,8 @@ import quick3Mobile from "@/assets/portfolio/quick-3/mobile.jpg";
 import quick4Desktop from "@/assets/portfolio/quick-4/desktop.jpg";
 import quick4Mobile from "@/assets/portfolio/quick-4/mobile.jpg";
 
+import quick5Desktop from "@/assets/portfolio/quick-5/desktop.jpg";
+import quick5Mobile from "@/assets/portfolio/quick-5/mobile.jpg";
 // Example for future cards
 // import quick5Desktop from "@/assets/portfolio/quick-5/desktop.jpg";
 // import quick5Mobile from "@/assets/portfolio/quick-5/mobile.jpg";
@@ -55,17 +57,25 @@ const quickCards: QuickCard[] = [
   },
   {
     id: 3,
-    title: "Octalve Lab",
-    href: "/models/lab",
+    title: "Octalve Cloud",
+    href: "https://octalve.cloud/",
     desktopImage: quick3Desktop,
     mobileImage: quick3Mobile,
   },
   {
     id: 4,
-    title: "PayHx",
-    href: "/",
+    title: "Octalve Lab",
+    href: "/models/lab",
     desktopImage: quick4Desktop,
     mobileImage: quick4Mobile,
+  },
+
+  {
+    id: 5,
+    title: "PayHx",
+    href: "/",
+    desktopImage: quick5Desktop,
+    mobileImage: quick5Mobile,
   },
   // {
   //   id: 5,
