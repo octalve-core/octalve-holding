@@ -939,7 +939,7 @@ const NAV_COLORS = {
   green: "#FC7E24",
   topBarBg: "#0F3D33",
   headerBg: "#F8FAFC",
-  textDark: "#0F172A",
+  textDark: "#000A16",
   textSoft: "#475569",
   border: "#E2E8F0",
   white: "#FFFFFF",
@@ -1315,11 +1315,12 @@ function DesktopNavLink({
     <Link
       href={href}
       className={cn(
-        "group relative inline-flex h-12 items-center whitespace-nowrap rounded-xl px-3.5 text-[14.5px] font-semibold transition",
-        active
-          ? "bg-[#F1F6FF] text-[#0A84FF]"
-          : "text-slate-900 hover:bg-[#F1F6FF] hover:text-[#0A84FF]",
+        "group relative inline-flex h-12 items-center whitespace-nowrap rounded-xl px-3.5 text-[14.5px] font-semibold transition hover:bg-[#F1F6FF] hover:text-[#0A84FF]",
+        active && "bg-[#F1F6FF]",
       )}
+      style={{
+        color: active ? NAV_COLORS.primary : NAV_COLORS.textDark,
+      }}
     >
       {badge ? (
         <span className="absolute -top-2 left-3.5">
@@ -1349,11 +1350,12 @@ function DesktopDropdown({
     <div className="group relative">
       <button
         className={cn(
-          "relative inline-flex h-12 items-center gap-1.5 whitespace-nowrap rounded-xl px-3.5 text-[14.5px] font-semibold transition",
-          active
-            ? "bg-[#F1F6FF] text-[#0A84FF]"
-            : "text-slate-900 hover:bg-[#F1F6FF] hover:text-[#0A84FF]",
+          "relative inline-flex h-12 items-center gap-1.5 whitespace-nowrap rounded-xl px-3.5 text-[14.5px] font-semibold transition hover:bg-[#F1F6FF] hover:text-[#0A84FF]",
+          active && "bg-[#F1F6FF]",
         )}
+        style={{
+          color: active ? NAV_COLORS.primary : NAV_COLORS.textDark,
+        }}
         type="button"
       >
         {badge ? (
@@ -1366,7 +1368,7 @@ function DesktopDropdown({
         <ChevronDown className="mt-px h-4 w-4 transition group-hover:rotate-180" />
       </button>
 
-      <div className="invisible absolute left-0 top-full z-50 pt-3 opacity-0 transition-all duration-200 group-hover:visible group-hover:opacity-100">
+      <div className="invisible absolute left-0 top-[calc(100%-1px)] z-50 pt-1 opacity-0 transition-all duration-200 group-hover:visible group-hover:opacity-100">
         <div className="w-[390px] overflow-hidden rounded-2xl border border-slate-200 bg-white p-2 shadow-[0_24px_80px_rgba(15,23,42,0.16)]">
           {items.map((item) => {
             const itemActive = isActivePath(pathname, item.href);
@@ -1382,12 +1384,12 @@ function DesktopDropdown({
               >
                 <span>
                   <span
-                    className={cn(
-                      "flex items-center gap-2 text-sm font-semibold",
-                      itemActive
-                        ? "text-[#0A84FF]"
-                        : "text-[#000A16] group-hover/item:text-[#0A84FF]",
-                    )}
+                    className="flex items-center gap-2 text-sm font-semibold"
+                    style={{
+                      color: itemActive
+                        ? NAV_COLORS.primary
+                        : NAV_COLORS.textDark,
+                    }}
                   >
                     {item.label}
                     {item.badge ? <Badge badge={item.badge} compact /> : null}
@@ -1433,12 +1435,10 @@ function MegaMenuLink({
         <div>
           <div className="flex flex-wrap items-center gap-2">
             <h4
-              className={cn(
-                "text-[15px] font-semibold tracking-[-0.02em]",
-                active
-                  ? "text-[#0A84FF]"
-                  : "text-[#000A16] group-hover:text-[#0A84FF]",
-              )}
+              className="text-[15px] font-semibold tracking-[-0.02em]"
+              style={{
+                color: active ? NAV_COLORS.primary : NAV_COLORS.textDark,
+              }}
             >
               {model.title}
             </h4>
@@ -1466,11 +1466,12 @@ function DesktopMegaMenu({ pathname }: { pathname: string }) {
     <div className="group static">
       <button
         className={cn(
-          "relative inline-flex h-12 items-center gap-1.5 whitespace-nowrap rounded-xl px-3.5 text-[14.5px] font-semibold transition",
-          active
-            ? "bg-[#F1F6FF] text-[#0A84FF]"
-            : "text-slate-900 hover:bg-[#F1F6FF] hover:text-[#0A84FF]",
+          "relative inline-flex h-12 items-center gap-1.5 whitespace-nowrap rounded-xl px-3.5 text-[14.5px] font-semibold transition hover:bg-[#F1F6FF] hover:text-[#0A84FF]",
+          active && "bg-[#F1F6FF]",
         )}
+        style={{
+          color: active ? NAV_COLORS.primary : NAV_COLORS.textDark,
+        }}
         type="button"
       >
         <span className="absolute -top-2 left-3.5">
@@ -1480,12 +1481,12 @@ function DesktopMegaMenu({ pathname }: { pathname: string }) {
         <ChevronDown className="mt-px h-4 w-4 transition group-hover:rotate-180" />
       </button>
 
-      <div className="invisible absolute left-0 top-full z-50 w-full pt-3 opacity-0 transition-all duration-200 group-hover:visible group-hover:opacity-100">
+      <div className="invisible absolute left-0 top-[calc(100%-1px)] z-50 w-full pt-1 opacity-0 transition-all duration-200 group-hover:visible group-hover:opacity-100">
         <div className="border-y border-slate-200 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.12)]">
-          <div className="mx-auto w-full max-w-[1380px] px-6 py-7 lg:px-8">
+          <div className="mx-auto w-full max-w-[1380px] px-6 py-6 lg:px-8">
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-[330px_minmax(0,1fr)]">
               <div className="rounded-[28px] border border-[#0A84FF]/20 bg-gradient-to-br from-[#001B3D] via-[#003B7A] to-[#0064E0] p-7 text-white shadow-[0_20px_60px_rgba(0,100,224,0.22)]">
-                <div className="inline-flex items-center gap-2 rounded-full bg-white/12 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.14em]">
+                <div className="inline-flex items-center gap-2 rounded-full bg-white/12 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-white">
                   Octalve Models
                   <Badge
                     badge={{ label: "Premium", tone: "popular" }}
@@ -1493,11 +1494,11 @@ function DesktopMegaMenu({ pathname }: { pathname: string }) {
                   />
                 </div>
 
-                <h3 className="mt-5 text-[31px] font-semibold leading-[1.08] tracking-[-0.05em]">
+                <h3 className="mt-5 text-[31px] font-semibold leading-[1.08] tracking-[-0.05em] text-white">
                   Explore the Octalve ecosystem
                 </h3>
 
-                <p className="mt-4 text-sm leading-7 text-white/78">
+                <p className="mt-4 text-sm leading-7 text-white/80">
                   Strategy, launch, software, cloud infrastructure, workspace,
                   and growth systems built for founders, SMEs, and ambitious
                   organizations.
@@ -1505,7 +1506,11 @@ function DesktopMegaMenu({ pathname }: { pathname: string }) {
 
                 <Link
                   href="/models"
-                  className="mt-6 inline-flex items-center gap-2 rounded-full bg-white px-4 py-3 text-sm font-semibold text-[#000A16] transition hover:-translate-y-0.5"
+                  className="mt-6 inline-flex items-center gap-2 rounded-full bg-white px-4 py-3 text-sm font-semibold transition hover:-translate-y-0.5"
+                  style={{
+                    color: NAV_COLORS.textDark,
+                    backgroundColor: NAV_COLORS.white,
+                  }}
                 >
                   View all models
                   <span>↗</span>
@@ -1550,11 +1555,12 @@ function MobileAccordion({
       <button
         onClick={() => setOpen((prev) => !prev)}
         className={cn(
-          "flex w-full items-center justify-between px-5 py-5 text-left text-[17px] font-semibold transition",
-          active || open
-            ? "bg-white text-[#0A84FF]"
-            : "bg-white text-[#000A16] hover:bg-[#F1F6FF] hover:text-[#0A84FF]",
+          "flex w-full items-center justify-between px-5 py-5 text-left text-[17px] font-semibold transition hover:bg-[#F1F6FF]",
+          active || open ? "bg-white" : "bg-white",
         )}
+        style={{
+          color: active || open ? NAV_COLORS.primary : NAV_COLORS.textDark,
+        }}
         type="button"
         aria-expanded={open}
       >
@@ -1581,10 +1587,12 @@ function MobileAccordion({
                 className="block border-t border-white/80 px-5 py-4 transition hover:bg-white"
               >
                 <span
-                  className={cn(
-                    "flex items-center gap-2 text-base font-semibold",
-                    itemActive ? "text-[#0A84FF]" : "text-[#000A16]",
-                  )}
+                  className="flex items-center gap-2 text-base font-semibold"
+                  style={{
+                    color: itemActive
+                      ? NAV_COLORS.primary
+                      : NAV_COLORS.textDark,
+                  }}
                 >
                   {item.label}
                   {item.badge ? <Badge badge={item.badge} compact /> : null}
@@ -1618,12 +1626,10 @@ function MobileModelsAccordion({
     <div className="border-b border-slate-200 last:border-b-0">
       <button
         onClick={() => setOpen((prev) => !prev)}
-        className={cn(
-          "flex w-full items-center justify-between px-5 py-5 text-left text-[17px] font-semibold transition",
-          active || open
-            ? "bg-white text-[#0A84FF]"
-            : "bg-white text-[#000A16] hover:bg-[#F1F6FF] hover:text-[#0A84FF]",
-        )}
+        className="flex w-full items-center justify-between bg-white px-5 py-5 text-left text-[17px] font-semibold transition hover:bg-[#F1F6FF]"
+        style={{
+          color: active || open ? NAV_COLORS.primary : NAV_COLORS.textDark,
+        }}
         type="button"
         aria-expanded={open}
       >
@@ -1656,10 +1662,12 @@ function MobileModelsAccordion({
               >
                 <div className="flex flex-wrap items-center gap-2">
                   <h4
-                    className={cn(
-                      "text-sm font-semibold",
-                      itemActive ? "text-[#0A84FF]" : "text-[#000A16]",
-                    )}
+                    className="text-sm font-semibold"
+                    style={{
+                      color: itemActive
+                        ? NAV_COLORS.primary
+                        : NAV_COLORS.textDark,
+                    }}
                   >
                     {model.title}
                   </h4>
@@ -1695,7 +1703,8 @@ function MobileContactLink({
       href={href}
       target={external ? "_blank" : undefined}
       rel={external ? "noreferrer" : undefined}
-      className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-3.5 py-3 text-sm font-medium text-[#000A16] transition hover:border-[#0A84FF]/40 hover:bg-[#F1F6FF]"
+      className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-3.5 py-3 text-sm font-semibold transition hover:border-[#0A84FF]/40 hover:bg-[#F1F6FF]"
+      style={{ color: NAV_COLORS.textDark }}
     >
       <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#EAF3FF] text-[#0A84FF]">
         {icon}
@@ -1709,7 +1718,10 @@ function MobileContactLink({
 function MobileEmergencyCard() {
   return (
     <div className="mt-5 rounded-3xl border border-slate-200 bg-[#F8FAFC] p-4">
-      <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">
+      <p
+        className="text-xs font-bold uppercase tracking-[0.16em]"
+        style={{ color: NAV_COLORS.textSoft }}
+      >
         Quick Response
       </p>
 
@@ -1796,14 +1808,25 @@ export default function Header() {
 
       <div
         className="px-4 py-3 text-center text-xs font-semibold uppercase tracking-[0.20em] text-white sm:px-6"
-        style={{ backgroundColor: NAV_COLORS.topBarBg }}
+        style={{
+          backgroundColor: NAV_COLORS.topBarBg,
+          color: NAV_COLORS.white,
+        }}
       >
         Quick Response&nbsp;&nbsp;|&nbsp;&nbsp;
-        <a href={CONTACT_LINKS.nigeriaPhone} className="hover:underline">
+        <a
+          href={CONTACT_LINKS.nigeriaPhone}
+          className="hover:underline"
+          style={{ color: NAV_COLORS.white }}
+        >
           +234 807 345 9090
         </a>
         &nbsp;&nbsp;|&nbsp;&nbsp;Support:
-        <a href={CONTACT_LINKS.email} className="ml-1 hover:underline">
+        <a
+          href={CONTACT_LINKS.email}
+          className="ml-1 hover:underline"
+          style={{ color: NAV_COLORS.white }}
+        >
           info@octalve.com
         </a>
       </div>
@@ -1858,14 +1881,22 @@ export default function Header() {
           <div className="hidden shrink-0 items-center gap-3 xl:flex">
             <Link
               href="/contact"
-              className="inline-flex h-11 items-center justify-center whitespace-nowrap rounded-xl border border-slate-200 bg-white px-4 text-[14.5px] font-semibold text-slate-900 transition hover:border-[#0A84FF] hover:text-[#0A84FF]"
+              className="inline-flex h-11 items-center justify-center whitespace-nowrap rounded-xl border border-slate-200 bg-white px-4 text-[14.5px] font-semibold transition hover:border-[#0A84FF]"
+              style={{
+                color: NAV_COLORS.textDark,
+                backgroundColor: NAV_COLORS.white,
+              }}
             >
               Talk to Us
             </Link>
 
             <Link
               href="/start-project"
-              className="inline-flex h-11 items-center justify-center whitespace-nowrap rounded-xl bg-[#0A84FF] px-5 text-[14.5px] font-semibold text-white shadow-[0_14px_30px_rgba(10,132,255,0.22)] transition hover:-translate-y-0.5 hover:bg-[#006FE0]"
+              className="inline-flex h-11 items-center justify-center whitespace-nowrap rounded-xl px-5 text-[14.5px] font-semibold shadow-[0_14px_30px_rgba(10,132,255,0.22)] transition hover:-translate-y-0.5"
+              style={{
+                color: NAV_COLORS.white,
+                backgroundColor: NAV_COLORS.primary,
+              }}
             >
               Start a Project
             </Link>
@@ -1873,7 +1904,8 @@ export default function Header() {
 
           <button
             onClick={() => setMobileOpen((value) => !value)}
-            className="inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-900 shadow-sm transition hover:border-[#0A84FF] hover:text-[#0A84FF] xl:hidden"
+            className="inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:border-[#0A84FF]"
+            style={{ color: NAV_COLORS.textDark }}
             aria-label="Toggle navigation menu"
             aria-expanded={mobileOpen}
             aria-controls="octalve-mobile-menu"
@@ -1891,14 +1923,15 @@ export default function Header() {
         >
           <div className="mx-auto w-full max-w-[760px] px-4 py-5 sm:px-6">
             <div className="relative mb-5">
-              <SearchIcon />
               <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500">
                 <SearchIcon />
               </div>
+
               <Link
                 href="/models"
                 onClick={closeMobileMenu}
-                className="flex h-14 w-full items-center rounded-2xl border border-slate-300 bg-white pl-12 pr-4 text-base font-medium text-slate-400 transition hover:border-[#0A84FF] hover:ring-4 hover:ring-blue-100"
+                className="flex h-14 w-full items-center rounded-2xl border border-slate-300 bg-white pl-12 pr-4 text-base font-medium transition hover:border-[#0A84FF] hover:ring-4 hover:ring-blue-100"
+                style={{ color: NAV_COLORS.textSoft }}
               >
                 Search or explore Octalve
               </Link>
@@ -1908,12 +1941,12 @@ export default function Header() {
               <Link
                 href="/"
                 onClick={closeMobileMenu}
-                className={cn(
-                  "flex items-center justify-between border-b border-slate-200 px-5 py-5 text-[17px] font-semibold transition hover:bg-[#F1F6FF] hover:text-[#0A84FF]",
-                  isActivePath(pathname, "/")
-                    ? "text-[#0A84FF]"
-                    : "text-[#000A16]",
-                )}
+                className="flex items-center justify-between border-b border-slate-200 px-5 py-5 text-[17px] font-semibold transition hover:bg-[#F1F6FF]"
+                style={{
+                  color: isActivePath(pathname, "/")
+                    ? NAV_COLORS.primary
+                    : NAV_COLORS.textDark,
+                }}
               >
                 <span>Home</span>
                 <ChevronRight className="h-5 w-5 text-slate-400" />
@@ -1943,12 +1976,12 @@ export default function Header() {
               <Link
                 href="/contact"
                 onClick={closeMobileMenu}
-                className={cn(
-                  "flex items-center justify-between px-5 py-5 text-[17px] font-semibold transition hover:bg-[#F1F6FF] hover:text-[#0A84FF]",
-                  isActivePath(pathname, "/contact")
-                    ? "text-[#0A84FF]"
-                    : "text-[#000A16]",
-                )}
+                className="flex items-center justify-between px-5 py-5 text-[17px] font-semibold transition hover:bg-[#F1F6FF]"
+                style={{
+                  color: isActivePath(pathname, "/contact")
+                    ? NAV_COLORS.primary
+                    : NAV_COLORS.textDark,
+                }}
               >
                 <span className="flex items-center gap-2">
                   Contact Us
@@ -1963,10 +1996,17 @@ export default function Header() {
               <Link
                 href="/contact"
                 onClick={closeMobileMenu}
-                className="rounded-2xl border border-slate-200 bg-white px-5 py-4 text-sm font-semibold text-[#000A16] transition hover:border-[#0A84FF] hover:text-[#0A84FF]"
+                className="rounded-2xl border border-slate-200 bg-white px-5 py-4 text-sm font-semibold transition hover:border-[#0A84FF]"
+                style={{
+                  color: NAV_COLORS.textDark,
+                  backgroundColor: NAV_COLORS.white,
+                }}
               >
                 Talk to Us
-                <span className="mt-1 block text-xs font-medium text-slate-500">
+                <span
+                  className="mt-1 block text-xs font-medium"
+                  style={{ color: NAV_COLORS.textSoft }}
+                >
                   Speak with the Octalve team
                 </span>
               </Link>
@@ -1974,7 +2014,11 @@ export default function Header() {
               <Link
                 href="/start-project"
                 onClick={closeMobileMenu}
-                className="rounded-2xl border border-[#0A84FF] bg-[#0A84FF] px-5 py-4 text-sm font-semibold text-white transition hover:bg-[#006FE0]"
+                className="rounded-2xl border border-[#0A84FF] px-5 py-4 text-sm font-semibold transition hover:bg-[#006FE0]"
+                style={{
+                  color: NAV_COLORS.white,
+                  backgroundColor: NAV_COLORS.primary,
+                }}
               >
                 Start a Project
                 <span className="mt-1 block text-xs font-medium text-white/80">
