@@ -962,6 +962,16 @@ const CONTACT_LINKS = {
     "https://wa.me/447413753552?text=Hello%20Octalve%2C%20I%20want%20to%20make%20an%20enquiry%20about%20your%20services.",
 };
 
+const PORTAL_LINK = {
+  label: "Octalve Workdesk",
+  href: "/portal",
+};
+
+const SEARCH_LINK = {
+  label: "Search or explore Octalve",
+  href: "/models",
+};
+
 type BadgeTone =
   | "new"
   | "popular"
@@ -1227,6 +1237,32 @@ function SearchIcon() {
   );
 }
 
+function UserIcon() {
+  return (
+    <svg
+      width="19"
+      height="19"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M20 21a8 8 0 0 0-16 0"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+      <path
+        d="M12 13a5 5 0 1 0 0-10 5 5 0 0 0 0 10Z"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 function PhoneIcon() {
   return (
     <svg
@@ -1295,6 +1331,22 @@ function WhatsAppIcon() {
         fill="currentColor"
       />
     </svg>
+  );
+}
+
+function PortalProfileLink({ compact = false }: { compact?: boolean }) {
+  return (
+    <Link
+      href={PORTAL_LINK.href}
+      className={cn(
+        "group inline-flex shrink-0 items-center justify-center border border-slate-200 bg-white text-[#000A16] shadow-sm transition hover:border-[#0A84FF]/40 hover:bg-[#F1F6FF] hover:text-[#0A84FF]",
+        compact ? "h-14 w-14 rounded-2xl" : "h-11 w-11 rounded-xl",
+      )}
+      aria-label={PORTAL_LINK.label}
+      title={PORTAL_LINK.label}
+    >
+      <UserIcon />
+    </Link>
   );
 }
 
@@ -1554,10 +1606,7 @@ function MobileAccordion({
     <div className="border-b border-slate-200 last:border-b-0">
       <button
         onClick={() => setOpen((prev) => !prev)}
-        className={cn(
-          "flex w-full items-center justify-between px-5 py-5 text-left text-[17px] font-semibold transition hover:bg-[#F1F6FF]",
-          active || open ? "bg-white" : "bg-white",
-        )}
+        className="flex w-full items-center justify-between bg-white px-5 py-5 text-left text-[17px] font-semibold transition hover:bg-[#F1F6FF]"
         style={{
           color: active || open ? NAV_COLORS.primary : NAV_COLORS.textDark,
         }}
@@ -1900,11 +1949,13 @@ export default function Header() {
             >
               Start a Project
             </Link>
+
+            <PortalProfileLink />
           </div>
 
           <button
             onClick={() => setMobileOpen((value) => !value)}
-            className="inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:border-[#0A84FF]"
+            className="inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:border-[#0A84FF] xl:hidden"
             style={{ color: NAV_COLORS.textDark }}
             aria-label="Toggle navigation menu"
             aria-expanded={mobileOpen}
@@ -1922,19 +1973,20 @@ export default function Header() {
           className="max-h-[calc(100vh-134px)] overflow-y-auto border-b border-slate-200 bg-white shadow-[0_24px_70px_rgba(15,23,42,0.14)] xl:hidden"
         >
           <div className="mx-auto w-full max-w-[760px] px-4 py-5 sm:px-6">
-            <div className="relative mb-5">
-              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500">
-                <SearchIcon />
-              </div>
-
+            <div className="mb-5 grid grid-cols-[1fr_auto] gap-3">
               <Link
-                href="/models"
+                href={SEARCH_LINK.href}
                 onClick={closeMobileMenu}
-                className="flex h-14 w-full items-center rounded-2xl border border-slate-300 bg-white pl-12 pr-4 text-base font-medium transition hover:border-[#0A84FF] hover:ring-4 hover:ring-blue-100"
+                className="relative flex h-14 w-full items-center rounded-2xl border border-slate-300 bg-white pl-12 pr-4 text-base font-medium transition hover:border-[#0A84FF] hover:ring-4 hover:ring-blue-100"
                 style={{ color: NAV_COLORS.textSoft }}
               >
-                Search or explore Octalve
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500">
+                  <SearchIcon />
+                </span>
+                {SEARCH_LINK.label}
               </Link>
+
+              <PortalProfileLink compact />
             </div>
 
             <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white">
