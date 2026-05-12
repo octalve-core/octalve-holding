@@ -16,11 +16,11 @@ export default function ModelsCta() {
                 Not sure where to start?
               </p>
 
-              <h2 className="mt-4 text-4xl font-semibold leading-[1.04] tracking-[-0.05em] sm:text-5xl">
+              <h2 className="mt-4 text-4xl font-medium leading-[1.04] tracking-[-0.05em] !text-white sm:text-5xl">
                 Let Octalve help you choose the right model for your next move.
               </h2>
 
-              <p className="mt-5 max-w-2xl text-base leading-8 text-white/70 sm:text-lg">
+              <p className="mt-5 max-w-2xl text-base leading-8 !text-white/70 sm:text-lg">
                 Whether you need clarity, a launch package, a website, software,
                 hosting, workspace, or execution resources, we can map the right
                 path and help you start with confidence.
@@ -30,14 +30,22 @@ export default function ModelsCta() {
             <div className="flex flex-col gap-3 sm:flex-row lg:flex-col">
               <Link
                 href="/start-project"
-                className="inline-flex min-h-14 items-center justify-center rounded-full bg-[#0064E0] px-7 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:bg-[#0052B8]"
+                className="inline-flex min-h-14 items-center justify-center rounded-full bg-[#0064E0] px-7 text-sm font-semibold !text-white transition hover:-translate-y-0.5 hover:bg-[#0052B8]"
+                style={{
+                  color: "#FFFFFF",
+                  backgroundColor: "#0064E0",
+                }}
               >
                 Start a Project
               </Link>
 
               <Link
                 href="/contact"
-                className="inline-flex min-h-14 items-center justify-center rounded-full border border-white/20 bg-white px-7 text-sm font-semibold text-[#000A16] transition hover:-translate-y-0.5 hover:bg-white/90"
+                className="inline-flex min-h-14 items-center justify-center rounded-full border border-white/20 bg-white px-7 text-sm font-semibold !text-[#000A16] transition hover:-translate-y-0.5 hover:bg-white/90"
+                style={{
+                  color: "#000A16",
+                  backgroundColor: "#FFFFFF",
+                }}
               >
                 Talk to Us
               </Link>

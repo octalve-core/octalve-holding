@@ -48,11 +48,11 @@ export default function ModelsHero({
 
       <div className="relative mx-auto max-w-[1320px]">
         <div className="mx-auto max-w-[1040px] text-center">
-          <p className="text-xs font-bold uppercase tracking-[0.28em] text-[#0064E0]">
-            Octalve index
+          <p className="text-xs font-medium uppercase tracking-[0.28em] text-[#0064E0]">
+            Octalve Models
           </p>
 
-          <h1 className="mt-5 text-[2.65rem] font-semibold leading-[1.04] tracking-[-0.06em] text-[#000A16] sm:text-6xl lg:text-[5.2rem]">
+          <h1 className="mt-5 text-[2.65rem] font-medium leading-[1.04] tracking-[-0.06em] text-[#000A16] sm:text-6xl lg:text-[5.2rem]">
             <span className="text-[#0064E0]">A-Z Index</span> of Octalve
             <br className="hidden md:block" /> Models, Products & Systems.
           </h1>

@@ -567,11 +567,11 @@ export default function Models() {
           <p className="text-[15px]" style={{ color: COLORS.footerText }}>
             Explore the ecosystem.{" "}
             <Link
-              href="/models/one"
+              href="/models"
               className="font-semibold underline underline-offset-4"
               style={{ color: COLORS.footerLink }}
             >
-              Browse all Products
+              Browse all Models
             </Link>
           </p>
         </div>
