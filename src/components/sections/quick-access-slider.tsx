@@ -18,9 +18,10 @@ import quick4Mobile from "@/assets/portfolio/quick-4/mobile.jpg";
 
 import quick5Desktop from "@/assets/portfolio/quick-5/desktop.jpg";
 import quick5Mobile from "@/assets/portfolio/quick-5/mobile.jpg";
+
 // Example for future cards
-// import quick5Desktop from "@/assets/portfolio/quick-5/desktop.jpg";
-// import quick5Mobile from "@/assets/portfolio/quick-5/mobile.jpg";
+// import quick6Desktop from "@/assets/portfolio/quick-6/desktop.jpg";
+// import quick6Mobile from "@/assets/portfolio/quick-6/mobile.jpg";
 
 const SECTION_COLORS = {
   white: "#FFFFFF",
@@ -78,11 +79,11 @@ const quickCards: QuickCard[] = [
     mobileImage: quick5Mobile,
   },
   // {
-  //   id: 5,
+  //   id: 6,
   //   title: "Strategy Portfolio",
   //   href: "/portfolio/strategy",
-  //   desktopImage: quick5Desktop,
-  //   mobileImage: quick5Mobile,
+  //   desktopImage: quick6Desktop,
+  //   mobileImage: quick6Mobile,
   // },
 ];
 
