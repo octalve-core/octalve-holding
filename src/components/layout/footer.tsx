@@ -597,22 +597,22 @@ const suites: FooterItem[] = [
 
 const products: FooterItem[] = [
   {
-    label: "Business Plan Templates",
+    label: "Business Plan",
     href: "/vault/shop",
     labels: [{ text: "Template", tone: "template" }],
   },
   {
-    label: "Pitch Deck Templates",
+    label: "Pitch Deck",
     href: "/vault/shop",
     labels: [{ text: "Template", tone: "template" }],
   },
   {
-    label: "Proposal Templates",
+    label: "Proposal",
     href: "/vault/shop",
     labels: [{ text: "Template", tone: "template" }],
   },
   {
-    label: "Invoice Templates",
+    label: "Invoice",
     href: "/vault/shop",
     labels: [{ text: "Template", tone: "template" }],
   },
