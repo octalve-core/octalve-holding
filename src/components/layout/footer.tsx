@@ -678,7 +678,8 @@ const feedback: FooterItem[] = [
     href: "tel:+447413753552",
     labels: [{ text: "UK", tone: "cloud" }],
   },
-  { label: "Info@octalve.com", href: "mailto:Info@octalve.com" },
+  { label: "info@octalve.com", href: "mailto:info@octalve.com" },
+  { label: "uk@octalve.com", href: "mailto:uk@octalve.com" },
   {
     label: "Anafaraa Plaza, Behind MIB, 1st Avenue, Gwarimpa, Abuja.",
     href: "/contact",
