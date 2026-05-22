@@ -22,16 +22,20 @@ export default function Workspace() {
       </div>
 
       <div className="mx-auto flex min-h-[100svh] w-full max-w-7xl items-center px-5 py-24 sm:px-8 lg:px-10">
-        <div className="max-w-[760px]">
-          <h2 className="text-[44px] font-medium leading-[0.98] tracking-[-0.055em] text-white sm:text-[58px] lg:text-[72px]">
+        <div className="max-w-[690px]">
+          <h2 className="text-[38px] font-medium leading-[1.1] tracking-[-0.04em] text-white sm:text-[48px] lg:text-[58px] xl:text-[62px]">
             <span className="block">Control your Octalve</span>
             <span className="block">project from request</span>
             <span className="block">to final delivery.</span>
           </h2>
 
-          <p className="mt-7 max-w-2xl text-base font-normal leading-8 text-white/78 sm:text-lg">
-            Built for clear communication, payment control, project approvals,
-            and seamless client delivery.
+          <p className="mt-7 max-w-[560px] text-base font-normal leading-8 text-white/78 sm:text-lg">
+            <span className="block">
+              Built for clear communication, payment control,
+            </span>
+            <span className="block">
+              project approvals, and seamless client delivery.
+            </span>
           </p>
 
           <div className="mt-10">
