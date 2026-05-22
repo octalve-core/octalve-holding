@@ -14,6 +14,7 @@ import HomeCta from "@/components/sections/home-cta";
 import QuickAccessTraction from "@/components/sections/quick-access-traction";
 import QuickAccessSlider from "@/components/sections/quick-access-slider";
 import StartHereSection from "@/components/sections/StartHereSection";
+import Workspace from "@/components/sections/workspace";
 
 export default function Home() {
   return (
@@ -26,6 +27,7 @@ export default function Home() {
       <QuickAccessSlider />
       {/* <QuickAccess /> */}
       <Models />
+      <Workspace />
       <FeaturedProjects />
       <BrandingShowcase />
       <Partners />
