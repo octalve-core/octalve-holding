@@ -527,7 +527,7 @@ const models: FooterItem[] = [
   {
     label: "Octalve Node",
     href: "/models/node",
-    labels: [{ text: "Workspace", tone: "workspace" }],
+    labels: [{ text: "Soon", tone: "new" }],
   },
   {
     label: "Octalve Consult",
@@ -563,6 +563,11 @@ const models: FooterItem[] = [
     label: "Octalve One",
     href: "/models/one",
     labels: [{ text: "AI", tone: "ai" }],
+  },
+  {
+    label: "Octalve Workspace",
+    href: "http://workspace.octalve.com/",
+    labels: [{ text: "Workspace", tone: "workspace" }],
   },
 ];
 
