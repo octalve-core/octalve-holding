@@ -170,7 +170,7 @@ const PACKAGES: LeapPackage[] = [
   {
     name: "Premium Package",
     category: "RC / LTD / LLC",
-    price: "₦133,500",
+    price: "₦123,500",
     icon: Building2,
     summary:
       "A more complete company package for founders who want compliance and presentation tools together.",
@@ -201,7 +201,7 @@ const PACKAGES: LeapPackage[] = [
   {
     name: "Best Package",
     category: "RC / LTD / LLC",
-    price: "₦269,500",
+    price: "₦250,500",
     icon: ShieldCheck,
     badge: "Complete coverage",
     summary:
