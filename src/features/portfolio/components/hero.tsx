@@ -8,13 +8,11 @@ export default function PortfolioHero() {
           </span>
 
           <h1 className="mt-6 text-4xl font-semibold tracking-[-0.03em] text-slate-950 sm:text-5xl lg:text-6xl">
-            Selected work that shows how we build for growth.
+            We build digital products that grow
           </h1>
 
           <p className="mt-5 max-w-2xl text-base leading-7 text-slate-600 sm:text-lg">
-            This is the demo version of the Portfolio page. We will refine the
-            layout, visuals, cards, and interactions next to match the Octalve
-            standard properly.
+            We are a team of designers and engineers who build digital products
           </p>
 
           <div className="mt-8 flex flex-wrap gap-4">
