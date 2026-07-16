@@ -931,6 +931,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import octalveLogo from "@/assets/logos/octalve.png";
+import { LogIn } from "lucide-react";
 
 const NAV_COLORS = {
   red: "#E61525",
@@ -1892,15 +1893,26 @@ export default function Header() {
               Talk to Us
             </Link>
 
-            <Link
-              href="/start-project"
+            {/* <Link
+              href="https://workspace.octalve.com"
               className="inline-flex h-11 items-center justify-center whitespace-nowrap rounded-xl px-5 text-[14.5px] font-semibold shadow-[0_14px_30px_rgba(10,132,255,0.22)] transition hover:-translate-y-0.5"
               style={{
                 color: NAV_COLORS.white,
                 backgroundColor: NAV_COLORS.primary,
               }}
             >
-              Start a Project
+              Login
+            </Link> */}
+            <Link
+              href="https://workspace.octalve.com"
+              className="inline-flex h-11 items-center justify-center gap-2 whitespace-nowrap rounded-xl px-5 text-[14.5px] font-semibold shadow-[0_14px_30px_rgba(10,132,255,0.22)] transition hover:-translate-y-0.5"
+              style={{
+                color: NAV_COLORS.white,
+                backgroundColor: NAV_COLORS.primary,
+              }}
+            >
+              <span>Login</span>
+              <LogIn className="h-4 w-4" />
             </Link>
           </div>
 
@@ -2011,7 +2023,7 @@ export default function Header() {
               </Link>
 
               <Link
-                href="/start-project"
+                href="https://workspace.octalve.com"
                 onClick={closeMobileMenu}
                 className="rounded-2xl border border-[#0A84FF] px-5 py-4 text-sm font-semibold transition hover:bg-[#006FE0]"
                 style={{
@@ -2019,9 +2031,9 @@ export default function Header() {
                   backgroundColor: NAV_COLORS.primary,
                 }}
               >
-                Start a Project
+                Login
                 <span className="mt-1 block text-xs font-medium text-white/80">
-                  Begin your brand, website, app, or system
+                  Access your Octalve workspace
                 </span>
               </Link>
             </div>
