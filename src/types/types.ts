@@ -1,12 +1,5 @@
 export type ModelSlug =
-  | "node"
-  | "consult"
-  | "lab"
-  | "leap"
-  | "suite"
-  | "cloud"
-  | "vault"
-  | "one";
+  "node" | "consult" | "lab" | "leap" | "suite" | "cloud" | "vault" | "one";
 
 export type ModelSection = {
   title: string;

@@ -77,9 +77,8 @@ const MAX_CHUNKS_PER_SITE = Number(
 );
 
 declare global {
-  // eslint-disable-next-line no-var
   var __octalve_site_cache__: Map<string, CachedEntry> | undefined;
-  // eslint-disable-next-line no-var
+
   var __octalve_site_refreshes__: Map<string, Promise<CachedEntry>> | undefined;
 }
 

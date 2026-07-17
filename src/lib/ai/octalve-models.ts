@@ -1,11 +1,5 @@
 export type BusinessContext =
-  | "school"
-  | "clinic"
-  | "ngo"
-  | "ecommerce"
-  | "real-estate"
-  | "agency"
-  | null;
+  "school" | "clinic" | "ngo" | "ecommerce" | "real-estate" | "agency" | null;
 
 export type OctalveModelKey =
   | "group"

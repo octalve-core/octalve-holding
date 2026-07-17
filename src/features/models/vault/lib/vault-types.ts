@@ -1,10 +1,7 @@
 import type { StaticImageData } from "next/image";
 
 export type VaultProductCategory =
-  | "Business & Startup"
-  | "Operations & Admin"
-  | "Website & Launch"
-  | "Bundles";
+  "Business & Startup" | "Operations & Admin" | "Website & Launch" | "Bundles";
 
 export type VaultProduct = {
   id: string;

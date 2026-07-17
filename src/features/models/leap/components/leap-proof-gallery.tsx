@@ -1,187 +1,271 @@
-"use client";
+﻿"use client";
 
-import Image from "next/image";
+import type { CSSProperties } from "react";
+import { useMemo, useState } from "react";
 
-type ProofItem = {
-  id: number;
-  tag: string;
-  title: string;
-  src: string;
-};
-
-const proofItems: ProofItem[] = [
-  {
-    id: 1,
-    tag: "CAC",
-    title: "Business Registration Approval",
-    src: "/images/leap-proof/certificate-01.jpg",
-  },
-  {
-    id: 2,
-    tag: "Compliance",
-    title: "Startup Documentation Support",
-    src: "/images/leap-proof/certificate-02.jpg",
-  },
-  {
-    id: 3,
-    tag: "Licensing",
-    title: "Regulatory Processing Evidence",
-    src: "/images/leap-proof/certificate-03.jpg",
-  },
-  {
-    id: 4,
-    tag: "Founder Support",
-    title: "Business Setup Completion",
-    src: "/images/leap-proof/certificate-04.jpg",
-  },
-  {
-    id: 5,
-    tag: "Registration",
-    title: "Company Formation Success",
-    src: "/images/leap-proof/certificate-05.jpg",
-  },
-  {
-    id: 6,
-    tag: "Tax & Setup",
-    title: "Operational Readiness Evidence",
-    src: "/images/leap-proof/certificate-06.jpg",
-  },
-  {
-    id: 7,
-    tag: "Delivery",
-    title: "Client Approval Outcome",
-    src: "/images/leap-proof/certificate-07.jpg",
-  },
+const proofImages = [
+  "/images/leap-proof/01.jpg",
+  "/images/leap-proof/02.jpg",
+  "/images/leap-proof/03.jpg",
+  "/images/leap-proof/04.jpg",
+  "/images/leap-proof/05.jpg",
+  "/images/leap-proof/06.jpg",
+  "/images/leap-proof/07.jpg",
+  "/images/leap-proof/08.jpg",
+  "/images/leap-proof/09.jpg",
+  "/images/leap-proof/10.jpg",
+  "/images/leap-proof/11.jpg",
+  "/images/leap-proof/12.jpg",
 ];
 
-const arcClasses = [
-  "translate-y-8 -rotate-[10deg] sm:translate-y-10 lg:translate-y-12 lg:-rotate-[11deg]",
-  "translate-y-2 -rotate-[6deg] sm:translate-y-3 lg:translate-y-4 lg:-rotate-[7deg]",
-  "-translate-y-2 -rotate-[3deg] sm:-translate-y-3 lg:-translate-y-4 lg:-rotate-[4deg]",
-  "-translate-y-5 rotate-0 sm:-translate-y-6 lg:-translate-y-8",
-  "-translate-y-2 rotate-[3deg] sm:-translate-y-3 lg:-translate-y-4 lg:rotate-[4deg]",
-  "translate-y-2 rotate-[6deg] sm:translate-y-3 lg:translate-y-4 lg:rotate-[7deg]",
-  "translate-y-8 rotate-[10deg] sm:translate-y-10 lg:translate-y-12 lg:rotate-[11deg]",
-];
-
-const frameClasses = [
-  "h-[250px] w-[170px] sm:h-[290px] sm:w-[190px] lg:h-[370px] lg:w-[250px]",
-  "h-[200px] w-[145px] sm:h-[225px] sm:w-[155px] lg:h-[265px] lg:w-[185px]",
-  "h-[190px] w-[138px] sm:h-[210px] sm:w-[148px] lg:h-[245px] lg:w-[175px]",
-  "h-[205px] w-[145px] sm:h-[225px] sm:w-[155px] lg:h-[260px] lg:w-[182px]",
-  "h-[190px] w-[138px] sm:h-[210px] sm:w-[148px] lg:h-[245px] lg:w-[175px]",
-  "h-[200px] w-[145px] sm:h-[225px] sm:w-[155px] lg:h-[265px] lg:w-[185px]",
-  "h-[250px] w-[170px] sm:h-[290px] sm:w-[190px] lg:h-[370px] lg:w-[250px]",
-];
-
-const marqueeItems = [...proofItems, ...proofItems];
+const hoverZones = 9;
+const centerZone = Math.ceil(hoverZones / 2);
 
 export default function LeapProofGallery() {
-  const duration = `${Math.max(proofItems.length * 5, 32)}s`;
+  const [activePicture, setActivePicture] = useState<number | null>(null);
+  const [activeZone, setActiveZone] = useState(centerZone);
+
+  const navStyle = useMemo(
+    () =>
+      ({
+        ["--max-p" as string]: proofImages.length,
+        ["--max-z" as string]: hoverZones,
+        ["--p" as string]: activePicture ?? 1,
+        ["--z" as string]: activeZone,
+      }) as CSSProperties,
+    [activePicture, activeZone],
+  );
+
+  const resetInteraction = () => {
+    setActivePicture(null);
+    setActiveZone(centerZone);
+  };
 
   return (
-    <section className="bg-[#F7FBF8] px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
-      <div className="mx-auto max-w-[1380px]">
-        <div className="overflow-hidden rounded-[34px] border border-[#DCEBDD] bg-white px-5 py-10 shadow-[0_20px_60px_rgba(15,23,42,0.05)] sm:px-8 sm:py-12 lg:rounded-[40px] lg:px-12 lg:py-16">
-          <div className="mx-auto max-w-[860px] text-center">
-            <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#29BE3E]">
-              Proof & Evidence
-            </p>
+    <section className="overflow-hidden bg-[#06110A] py-16 sm:py-20 lg:py-24">
+      <div className="mx-auto max-w-4xl px-5 text-center sm:px-6 lg:px-8">
+        <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#29BE3E]">Traction</p>
 
-            <h2 className="mt-4 text-3xl font-semibold tracking-[-0.05em] text-[#0F172A] sm:text-5xl lg:text-6xl">
-              Real certificates, approvals, and outcomes we have helped clients
-              secure
-            </h2>
+        <h2 className="mt-4 text-3xl font-semibold tracking-[-0.05em] text-white sm:text-5xl lg:text-6xl">
+          Real results. Real documents. Real business progress.
+        </h2>
 
-            <p className="mx-auto mt-5 max-w-3xl text-sm leading-7 text-[#5B6472] sm:text-base sm:leading-8">
-              This gallery keeps growing as we help more founders and businesses
-              move through registration, compliance, licensing, and structured
-              setup. Add as many proof items as you want — the loop continues
-              seamlessly.
-            </p>
-          </div>
+        <p className="mx-auto mt-5 max-w-3xl text-sm leading-7 text-white/70 sm:text-base sm:leading-8">A visual record of the registrations, approvals, and business documentation outcomes we have helped founders and growing businesses secure through Octalve Leap.</p>
+      </div>
 
-          <div className="mt-12 sm:mt-14 lg:mt-16">
-            <div
-              className="relative overflow-hidden"
-              style={{
-                maskImage:
-                  "linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%)",
-                WebkitMaskImage:
-                  "linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%)",
-              }}
-            >
-              <div
-                className="leap-proof-track flex w-max items-end gap-3 sm:gap-4 lg:gap-5"
-                style={{ animationDuration: duration }}
-              >
-                {marqueeItems.map((item, index) => {
-                  const arcClass = arcClasses[index % arcClasses.length];
-                  const frameClass = frameClasses[index % frameClasses.length];
+      <div className="mt-12 sm:mt-14 lg:mt-16">
+        <div className="relative left-1/2 w-screen -translate-x-1/2 overflow-hidden px-2 sm:px-3 lg:px-4">
+          <nav
+            className="leap-proof-nav"
+            style={navStyle}
+            data-engaged={activePicture !== null}
+            aria-label="Octalve Leap proof gallery"
+            onMouseLeave={resetInteraction}
+          >
+            {proofImages.map((src, index) => {
+              const pictureNumber = index + 1;
 
-                  return (
-                    <article
-                      key={`${item.id}-${index}`}
-                      className={`group shrink-0 ${arcClass} transition-transform duration-500 hover:-translate-y-1`}
-                    >
-                      <div
-                        className={`relative overflow-hidden rounded-[26px] border border-[#E1ECE3] bg-[#F5FAF6] shadow-[0_18px_35px_rgba(15,23,42,0.08)] ${frameClass}`}
-                      >
-                        <Image
-                          src={item.src}
-                          alt={item.title}
-                          fill
-                          sizes="(max-width: 640px) 170px, (max-width: 1024px) 220px, 260px"
-                          className="object-cover transition duration-500 group-hover:scale-[1.04]"
-                        />
+              return (
+                <button
+                  key={src}
+                  type="button"
+                  className="proof-panel"
+                  data-active={activePicture === pictureNumber}
+                  style={
+                    {
+                      ["--i" as string]: index,
+                    } as CSSProperties
+                  }
+                  aria-label={`Proof image ${pictureNumber}`}
+                  onMouseEnter={() => {
+                    setActivePicture(pictureNumber);
+                    setActiveZone(centerZone);
+                  }}
+                  onFocus={() => {
+                    setActivePicture(pictureNumber);
+                    setActiveZone(centerZone);
+                  }}
+                >
+                  <div
+                    className="proof-image"
+                    style={
+                      {
+                        ["--img" as string]: `url("${src}")`,
+                      } as CSSProperties
+                    }
+                  />
 
-                        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/65 via-black/20 to-transparent px-4 pb-4 pt-10">
-                          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#C6F6CE]">
-                            {item.tag}
-                          </p>
-                          <p className="mt-1 text-sm font-medium leading-6 text-white sm:text-[15px]">
-                            {item.title}
-                          </p>
-                        </div>
-                      </div>
-                    </article>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-10 text-center">
-            <p className="text-xs leading-6 text-[#6B7280] sm:text-sm">
-              Add more proof items anytime by extending the{" "}
-              <span className="font-semibold text-[#111827]">proofItems</span>{" "}
-              array. The gallery will continue sliding infinitely without
-              breaking the loop.
-            </p>
-          </div>
+                  <aside className="hover-zone" aria-hidden="true">
+                    {Array.from({ length: hoverZones }).map((_, zoneIndex) => (
+                      <i
+                        key={`${src}-${zoneIndex}`}
+                        onMouseEnter={() => {
+                          setActivePicture(pictureNumber);
+                          setActiveZone(zoneIndex + 1);
+                        }}
+                      />
+                    ))}
+                  </aside>
+                </button>
+              );
+            })}
+          </nav>
         </div>
       </div>
 
       <style jsx>{`
-        .leap-proof-track {
-          animation-name: leapProofMarquee;
-          animation-timing-function: linear;
-          animation-iteration-count: infinite;
+        .leap-proof-nav {
+          --clr-bg: #06110a;
+          --clr-text: #ffffff;
+          --hover-intensity: 8rem;
+          --hover-smoothness: 70ms;
+          --fall-smoothness: 250ms;
+          --perspective: 2000px;
+          --dir: 0deg;
+
+          --r: calc(var(--max-z) * (var(--p) - 1) + var(--z));
+          --r-n: calc((var(--r) - 1) / (var(--max-z) * var(--max-p) - 1));
+
+          block-size: clamp(17rem, 34vw, 29rem);
+          inline-size: min(100%, 110rem);
+
+          display: flex;
+          align-items: flex-end;
+          position: relative;
+          margin-inline: auto;
+
+          perspective: var(--perspective);
+          transform-style: preserve-3d;
+          overflow: visible;
         }
 
-        .leap-proof-track:hover {
-          animation-play-state: paused;
+        .proof-panel {
+          flex: 1;
+          block-size: 100%;
+          position: relative;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          appearance: none;
+          border: none;
+          background: transparent;
+          padding: 0;
+          cursor: pointer;
+          transform-style: preserve-3d;
+          outline: none;
+
+          --p-n: calc(var(--i) / (var(--max-p) - 1));
+          --diff: calc(var(--p-n) - var(--r-n));
+          --u: calc(abs(var(--diff)) / var(--w));
+          --w: 0.4;
+          --falloff: clamp(
+            calc(0.5 * (1 + cos(min(var(--u), 1) * 180deg))),
+            0,
+            1
+          );
+
+          --tilt: calc(clamp(-1, var(--diff) * 5, 1) * var(--falloff) * 70deg);
+
+          --ts: calc(
+            var(--hover-smoothness) * var(--falloff) +
+              var(--fall-smoothness) * (1 - var(--falloff))
+          );
+
+          --fs: calc(0.1s * var(--falloff, 0) + 0.8s * (1 - var(--falloff, 0)));
+
+          transition:
+            filter var(--fs),
+            transform var(--ts, var(--fall-smoothness)),
+            flex 0.3s ease;
         }
 
-        @keyframes leapProofMarquee {
-          0% {
-            transform: translate3d(0, 0, 0);
+        .proof-image {
+          width: 100%;
+          height: 100%;
+          margin-inline: 0.12rem;
+          border-radius: 1.2rem;
+          background-image: var(--img);
+          background-color: rgba(255, 255, 255, 0.1);
+          background-size: cover;
+          background-position: center;
+          box-shadow:
+            0 18px 40px rgba(0, 0, 0, 0.18),
+            inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+        }
+
+        .hover-zone {
+          position: absolute;
+          inset: 0;
+          inset-inline: -3px;
+          display: flex;
+          z-index: 5;
+        }
+
+        .hover-zone > i {
+          flex: 1;
+          display: block;
+        }
+
+        .leap-proof-nav[data-engaged="false"] .proof-panel {
+          transform: none;
+          filter: brightness(0.92) saturate(0.92);
+        }
+
+        .leap-proof-nav[data-engaged="true"] .proof-panel {
+          transform:
+            translateZ(calc(var(--falloff) * var(--hover-intensity)))
+            rotateY(calc(var(--tilt) * cos(var(--dir))))
+            rotateX(calc(var(--tilt) * sin(var(--dir))));
+          filter:
+            brightness(max(0.56, var(--falloff, 0) * 1.18))
+            saturate(calc(0.45 + var(--falloff, 0) * 0.85));
+        }
+
+        .proof-panel[data-active="true"] {
+          flex: 4;
+        }
+
+        .proof-panel:focus-visible .proof-image {
+          box-shadow:
+            0 18px 40px rgba(0, 0, 0, 0.18),
+            inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+            0 0 0 2px rgba(41, 190, 62, 0.7);
+        }
+
+        @media (max-width: 1024px) {
+          .leap-proof-nav {
+            block-size: clamp(15rem, 42vw, 22rem);
           }
-          100% {
-            transform: translate3d(-50%, 0, 0);
+
+          .proof-panel[data-active="true"] {
+            flex: 3.2;
+          }
+
+          .proof-image {
+            border-radius: 1rem;
+          }
+        }
+
+        @media (max-width: 640px) {
+          .leap-proof-nav {
+            block-size: clamp(13rem, 52vw, 17rem);
+          }
+
+          .proof-panel {
+            --hover-intensity: 4rem;
+          }
+
+          .proof-panel[data-active="true"] {
+            flex: 2.8;
+          }
+
+          .proof-image {
+            margin-inline: 0.08rem;
+            border-radius: 0.85rem;
           }
         }
       `}</style>
     </section>
   );
 }
+

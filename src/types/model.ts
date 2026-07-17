@@ -83,14 +83,7 @@
 // };
 
 export type ModelSlug =
-  | "node"
-  | "suite"
-  | "consult"
-  | "lab"
-  | "leap"
-  | "vault"
-  | "cloud"
-  | "one";
+  "node" | "suite" | "consult" | "lab" | "leap" | "vault" | "cloud" | "one";
 
 export type ModelCTA = {
   label: string;
