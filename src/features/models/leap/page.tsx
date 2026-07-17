@@ -7,6 +7,7 @@ import LeapTestimonial from "./components/leap-testimonial";
 import LeapWhy from "./components/leap-why";
 import LeapPricing from "./components/leap-pricing";
 import LeapCta from "./components/leap-cta";
+import LeapProofGallery from "./components/leap-proof-gallery";
 
 export default function LeapPage() {
   return (
@@ -16,6 +17,7 @@ export default function LeapPage() {
       <LeapWhy />
       <LeapPricing />
       {/* <LeapResults /> */}
+      <LeapProofGallery />
       <LeapTestimonial />
       <LeapCta />
       <LeapFaq />
