@@ -714,9 +714,14 @@ export default function LeapPricingPackages() {
           <div className="mx-auto mt-10 max-w-4xl text-center">
             <p className="text-xs leading-6 text-[#6B7280] sm:text-sm">
               These packages are presented as structured business support
-              options. Final requirements, regulator processes, and timelines
-              may depend on the nature of the business, available documents, and
-              applicable compliance needs.
+              options. Final requirements, processing timelines, and
+              deliverables may vary according to the business type, available
+              documents, CAC record availability, NRS verification, applicable
+              tax obligations, regulatory requirements, and the selected bank’s
+              documentation policy. Octalve provides registration,
+              documentation, onboarding, and application support but does not
+              independently issue Tax IDs, tax certificates, Tax Clearance
+              Certificates, or bank approvals.
             </p>
           </div>
         </div>
