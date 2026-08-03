@@ -19,7 +19,7 @@ import Workspace from "@/components/sections/workspace";
 export default function Home() {
   return (
     <main>
-      <HomeWelcomePopup />
+      {/* <HomeWelcomePopup /> */}
       <Header />
       <Hero />
       <QuickAccessTraction />
