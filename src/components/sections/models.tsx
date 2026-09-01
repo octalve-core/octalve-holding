@@ -368,6 +368,7 @@ import suiteImage from "@/assets/portfolio/models/suite.png";
 import cloudImage from "@/assets/portfolio/models/cloud.png";
 import vaultImage from "@/assets/portfolio/models/vault.png";
 import oneImage from "@/assets/portfolio/models/one.png";
+import workspaceImage from "@/assets/portfolio/models/workspace.png";
 
 type ModelCard = {
   title: string;
@@ -430,6 +431,13 @@ const modelCards: ModelCard[] = [
     href: "/models/cloud",
     image: cloudImage,
     summary: "Domains, hosting, security, and infrastructure made simpler.",
+  },
+  {
+    title: "Octalve Workspace",
+    href: "/models/workspace",
+    image: workspaceImage,
+    summary:
+      "Built for clear communication, payment control, and seamless client delivery.",
   },
   {
     title: "Octalve Vault",

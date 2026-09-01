@@ -11,7 +11,8 @@ export type LabelTone =
   | "cloud"
   | "assets"
   | "ai"
-  | "workspace";
+  | "workspace"
+  | "office";
 
 export type ModelIndexItem = {
   name: string;
@@ -40,6 +41,7 @@ const labelClasses: Record<LabelTone, string> = {
   assets: "bg-[#29BE3E] text-white",
   ai: "bg-[#651FFF] text-white",
   workspace: "bg-[#E61525] text-white",
+  office: "bg-[#000A16] text-white",
 };
 
 function ArrowUpRightIcon() {

@@ -1092,9 +1092,9 @@ const explore: NavItem[] = [
     badge: { label: "Work", tone: "build" },
   },
   {
-    label: "IAMimpact",
-    href: "/iamimpact",
-    description: "A personal impact and thought-leadership channel.",
+    label: "IAMimpact Foundation",
+    href: "https://www.iamimpact.org",
+    description: "A personal impact and CSR initiative.",
     badge: { label: "Impact", tone: "impact" },
   },
   {

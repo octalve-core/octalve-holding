@@ -14,6 +14,7 @@ import suiteImage from "@/assets/portfolio/models/suite.png";
 import cloudImage from "@/assets/portfolio/models/cloud.png";
 import vaultImage from "@/assets/portfolio/models/vault.png";
 import oneImage from "@/assets/portfolio/models/one.png";
+import workspaceImage from "@/assets/portfolio/models/workspace.png";
 
 import ModelsHero from "./components/models-hero";
 import ModelsGrid, { type ModelIndexItem } from "./components/models-grid";
@@ -116,13 +117,36 @@ const modelIndexItems: ModelIndexItem[] = [
       "For teams that need smarter operations through business software, workflow automation, CRM systems, invoicing, analytics, booking tools, and AI-enabled systems.",
     tags: ["software", "automation", "crm", "ai", "analytics", "workflow"],
   },
+
+  {
+    name: "Workspace",
+    title: "Octalve Workspace",
+    href: "https://workspace.octalve.com",
+    image: workspaceImage as StaticImageData,
+    label: "Workspace",
+    labelTone: "workspace",
+    type: "Model",
+    summary:
+      "Built for clear communication, payment control, and seamless client delivery.",
+    description:
+      "We build workspace platforms for clear communication, payment control, track your projects, and seamless client delivery in phases.",
+    tags: [
+      "workspace",
+      "project management",
+      "communication",
+      "ai",
+      "requests jobs",
+      "start project",
+    ],
+  },
+
   {
     name: "Node",
     title: "Octalve Node",
     href: "/models/node",
     image: nodeImage as StaticImageData,
-    label: "Workspace",
-    labelTone: "workspace",
+    label: "Office",
+    labelTone: "office",
     type: "Model",
     summary: "Workspace, virtual office, training, and startup environment.",
     description:
