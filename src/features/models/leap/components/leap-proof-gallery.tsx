@@ -492,7 +492,7 @@ export default function LeapProofGallery() {
            * Increase the seconds = slower.
            * Reduce the seconds = faster.
            */
-          animation: proof-scroll 46s linear infinite;
+          animation: proof-scroll 60s linear infinite;
         }
 
         /*
@@ -560,7 +560,7 @@ export default function LeapProofGallery() {
         }
 
         :global(.proof-image) {
-          object-fit: cover;
+          object-fit: contain;
 
           pointer-events: none;
 
