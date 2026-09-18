@@ -272,8 +272,8 @@
 "use client";
 
 import Image from "next/image";
-import type { SyntheticEvent } from "react";
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 
 const proofImages = [
   "/images/leap-proof/01.jpg",
@@ -292,7 +292,22 @@ const proofImages = [
 
 export default function LeapProofGallery() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
 
+  /*
+   * We only create the portal after the client has mounted.
+   * This prevents document/body access during SSR.
+   */
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  /*
+   * Lightbox behaviour:
+   * - lock page scrolling
+   * - ESC closes
+   * - restore scrolling when closed
+   */
   useEffect(() => {
     if (!selectedImage) return;
 
@@ -313,18 +328,87 @@ export default function LeapProofGallery() {
     };
   }, [selectedImage]);
 
-  const preventImageActions = (event: SyntheticEvent) => {
-    event.preventDefault();
-  };
+  /*
+   * The popup is rendered directly into document.body.
+   *
+   * This is important because it keeps the popup outside
+   * any parent overflow, transform or stacking context.
+   */
+  const lightbox =
+    mounted && selectedImage
+      ? createPortal(
+          <div
+            className="leap-proof-lightbox"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Proof image preview"
+            onClick={() => setSelectedImage(null)}
+            onContextMenu={(event) => event.preventDefault()}
+            onDragStart={(event) => event.preventDefault()}
+          >
+            {/* CLOSE BUTTON */}
+            <button
+              type="button"
+              className="leap-proof-lightbox-close"
+              aria-label="Close image preview"
+              onClick={() => setSelectedImage(null)}
+            >
+              <svg
+                width="22"
+                height="22"
+                viewBox="0 0 24 24"
+                fill="none"
+                aria-hidden="true"
+              >
+                <path
+                  d="M6 6L18 18M18 6L6 18"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </button>
+
+            {/* IMAGE AREA */}
+            <div
+              className="leap-proof-lightbox-content"
+              onClick={(event) => event.stopPropagation()}
+            >
+              <Image
+                src={selectedImage}
+                alt="Octalve Leap proof document"
+                width={1400}
+                height={1800}
+                quality={90}
+                draggable={false}
+                className="leap-proof-lightbox-image"
+                onContextMenu={(event) => event.preventDefault()}
+                onDragStart={(event) => event.preventDefault()}
+              />
+
+              {/* Protection layer */}
+              <span className="leap-proof-image-guard" aria-hidden="true" />
+            </div>
+
+            <p className="leap-proof-lightbox-hint">
+              Click outside the document to close
+            </p>
+          </div>,
+          document.body,
+        )
+      : null;
 
   return (
     <>
       <section
-        className="overflow-hidden bg-[#06110A] py-16 sm:py-20 lg:py-24"
-        onContextMenu={preventImageActions}
-        onDragStart={preventImageActions}
+        className="leap-proof-section"
+        onContextMenu={(event) => event.preventDefault()}
+        onDragStart={(event) => event.preventDefault()}
       >
-        {/* Heading */}
+        {/* ====================================================
+            HEADING
+        ==================================================== */}
+
         <div className="mx-auto max-w-4xl px-5 text-center sm:px-6 lg:px-8">
           <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#29BE3E]">
             Traction
@@ -341,55 +425,90 @@ export default function LeapProofGallery() {
           </p>
         </div>
 
-        {/* Infinite carousel */}
-        <div className="gallery-shell mt-12 sm:mt-14 lg:mt-16">
-          <div className="gallery-track">
+        {/* ====================================================
+            GALLERY
+        ==================================================== */}
+
+        <div className="leap-proof-viewport">
+          <div className="leap-proof-track">
+            {/*
+             * Two completely identical groups.
+             *
+             * GROUP 1
+             * 01 02 03 ... 12
+             *
+             * GROUP 2
+             * 01 02 03 ... 12
+             *
+             * When group 1 finishes, group 2 is already
+             * occupying exactly the same visual position.
+             */}
             {[0, 1].map((groupIndex) => (
               <div
                 key={groupIndex}
-                className="gallery-group"
-                aria-hidden={groupIndex === 1 ? "true" : undefined}
+                className="leap-proof-group"
+                aria-hidden={groupIndex === 1}
               >
                 {proofImages.map((src, index) => (
                   <button
                     key={`${groupIndex}-${src}`}
                     type="button"
-                    className="proof-card"
-                    aria-label={`Open proof image ${index + 1}`}
+                    className="leap-proof-card"
+                    aria-label={`View proof image ${index + 1}`}
                     tabIndex={groupIndex === 1 ? -1 : 0}
                     onClick={() => setSelectedImage(src)}
-                    onContextMenu={preventImageActions}
-                    onDragStart={preventImageActions}
+                    onContextMenu={(event) => event.preventDefault()}
+                    onDragStart={(event) => event.preventDefault()}
                   >
-                    <div className="proof-media">
+                    <div className="leap-proof-media">
+                      {/*
+                       * IMPORTANT:
+                       *
+                       * No `fill`.
+                       *
+                       * The image now has real dimensions.
+                       * This prevents absolute-positioned images
+                       * from collapsing/stacking at the top.
+                       */}
                       <Image
                         src={src}
                         alt={`Octalve Leap proof ${index + 1}`}
-                        fill
-                        priority={groupIndex === 0 && index < 4}
+                        width={900}
+                        height={1125}
+                        quality={76}
                         draggable={false}
-                        sizes="(max-width: 640px) 88vw, (max-width: 900px) 44vw, 24vw"
-                        className="proof-image"
+                        loading={
+                          groupIndex === 0 && index < 4 ? "eager" : "lazy"
+                        }
+                        sizes="
+                          (max-width: 640px) 100vw,
+                          (max-width: 900px) 50vw,
+                          25vw
+                        "
+                        className="leap-proof-image"
                       />
 
-                      {/* Prevent direct interaction with actual image */}
-                      <span className="image-guard" aria-hidden="true" />
+                      {/* Prevent direct image interaction */}
+                      <span
+                        className="leap-proof-image-guard"
+                        aria-hidden="true"
+                      />
 
-                      {/* Hover viewer */}
-                      <span className="proof-overlay" aria-hidden="true">
-                        <span className="view-pill">
+                      {/* Hover overlay */}
+                      <span className="leap-proof-overlay" aria-hidden="true">
+                        <span className="leap-proof-view-pill">
                           <svg
                             width="18"
                             height="18"
                             viewBox="0 0 24 24"
                             fill="none"
-                            aria-hidden="true"
                           >
                             <path
                               d="M2.5 12C4.8 7.7 8 5.5 12 5.5S19.2 7.7 21.5 12C19.2 16.3 16 18.5 12 18.5S4.8 16.3 2.5 12Z"
                               stroke="currentColor"
                               strokeWidth="1.7"
                             />
+
                             <circle
                               cx="12"
                               cy="12"
@@ -410,132 +529,117 @@ export default function LeapProofGallery() {
         </div>
       </section>
 
-      {/* Image popup / lightbox */}
-      {selectedImage && (
-        <div
-          className="lightbox"
-          role="dialog"
-          aria-modal="true"
-          aria-label="Proof image preview"
-          onClick={() => setSelectedImage(null)}
-          onContextMenu={preventImageActions}
-          onDragStart={preventImageActions}
-        >
-          {/* Close button */}
-          <button
-            type="button"
-            className="lightbox-close"
-            aria-label="Close image preview"
-            onClick={() => setSelectedImage(null)}
-          >
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-              <path
-                d="M6 6L18 18M18 6L6 18"
-                stroke="currentColor"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-              />
-            </svg>
-          </button>
+      {lightbox}
 
-          {/* Large image */}
-          <div
-            className="lightbox-content"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <Image
-              src={selectedImage}
-              alt="Octalve Leap proof document"
-              fill
-              priority
-              draggable={false}
-              sizes="95vw"
-              className="lightbox-image"
-            />
+      {/*
+       * Deliberately using a normal style element,
+       * NOT styled-jsx.
+       *
+       * Class names are unique to this component.
+       */}
+      <style>{`
+        /* =====================================================
+           SECTION
+        ===================================================== */
 
-            <span className="image-guard" aria-hidden="true" />
-          </div>
-
-          <p className="lightbox-hint">Click outside the image to close</p>
-        </div>
-      )}
-
-      <style jsx>{`
-        /* ======================================================
-           INFINITE GALLERY
-        ====================================================== */
-
-        .gallery-shell {
-          --gap: 14px;
-          --side: 16px;
-
-          width: 100vw;
+        .leap-proof-section {
+          width: 100%;
           overflow: hidden;
+          background: #06110a;
+          padding-top: 4rem;
+          padding-bottom: 4rem;
 
-          padding-inline: var(--side);
-
-          user-select: none;
           -webkit-user-select: none;
+          user-select: none;
           -webkit-touch-callout: none;
         }
 
-        .gallery-track {
+        /* =====================================================
+           VIEWPORT
+        ===================================================== */
+
+        .leap-proof-viewport {
+          --leap-gap: 14px;
+          --leap-half-gap: 7px;
+
+          width: 100%;
+          overflow: hidden;
+
+          margin-top: 3rem;
+          padding-inline: 16px;
+
+          box-sizing: border-box;
+        }
+
+        /* =====================================================
+           MOVING TRACK
+        ===================================================== */
+
+        .leap-proof-track {
           display: flex;
 
           width: max-content;
 
-          gap: var(--gap);
+          gap: var(--leap-gap);
 
-          will-change: transform;
+          transform: translate3d(0, 0, 0);
 
           /*
-           * Increase the seconds = slower.
-           * Reduce the seconds = faster.
+           * Only the track is continuously animated.
+           * This is much cheaper than animating each image.
            */
-          animation: proof-scroll 60s linear infinite;
+          animation:
+            leap-proof-scroll
+            48s
+            linear
+            infinite;
+
+          will-change: transform;
         }
 
-        /*
-         * We create TWO identical groups.
-         *
-         * 01 02 03 ... 12
-         * 01 02 03 ... 12
-         *
-         * This gives us a genuinely seamless reset.
-         */
-        .gallery-group {
+        .leap-proof-group {
           display: flex;
 
           flex-shrink: 0;
 
-          gap: var(--gap);
+          gap: var(--leap-gap);
         }
 
-        /* ======================================================
-           PROOF CARD
-        ====================================================== */
+        /* =====================================================
+           CARD
+        ===================================================== */
 
-        .proof-card {
+        .leap-proof-card {
           /*
-           * Exactly four cards visible on desktop.
+           * Desktop:
+           * 4 images visible.
+           *
+           * viewport padding = 32px
+           * 3 internal gaps = 42px
+           *
+           * 32 + 42 = 74px
            */
-          flex: 0 0 calc((100vw - (var(--side) * 2) - (var(--gap) * 3)) / 4);
+          width: calc((100vw - 74px) / 4);
 
-          width: calc((100vw - (var(--side) * 2) - (var(--gap) * 3)) / 4);
+          flex: 0 0 calc((100vw - 74px) / 4);
 
           appearance: none;
 
           border: 0;
+          outline: none;
+
+          margin: 0;
           padding: 0;
 
           background: transparent;
 
           cursor: zoom-in;
 
-          outline: none;
+          -webkit-user-select: none;
+          user-select: none;
         }
 
-        .proof-media {
+        .leap-proof-media {
           position: relative;
 
           width: 100%;
@@ -544,240 +648,306 @@ export default function LeapProofGallery() {
 
           overflow: hidden;
 
-          border-radius: 1.2rem;
+          border-radius: 20px;
 
-          background: #0b170e;
+          background: #0a160d;
 
           box-shadow:
-            0 18px 40px rgba(0, 0, 0, 0.22),
-            inset 0 0 0 1px rgba(255, 255, 255, 0.08);
-
-          transform: translateZ(0);
+            0 16px 40px rgba(0, 0, 0, 0.22),
+            inset 0 0 0 1px rgba(255, 255, 255, 0.07);
 
           transition:
-            transform 350ms cubic-bezier(0.22, 1, 0.36, 1),
-            box-shadow 350ms ease;
+            transform 300ms ease,
+            box-shadow 300ms ease;
         }
 
-        :global(.proof-image) {
-          object-fit: contain;
+        /* =====================================================
+           IMAGE
+        ===================================================== */
+
+        .leap-proof-image {
+          display: block;
+
+          width: 100% !important;
+          height: 100% !important;
+
+          object-fit: cover;
 
           pointer-events: none;
 
-          user-select: none;
           -webkit-user-select: none;
+          user-select: none;
+
           -webkit-user-drag: none;
 
           transition:
-            transform 650ms cubic-bezier(0.22, 1, 0.36, 1),
+            transform 500ms cubic-bezier(0.22, 1, 0.36, 1),
             filter 300ms ease;
         }
 
-        /*
-         * Invisible layer sitting above image.
-         * Makes direct interaction with <img> more difficult.
-         */
-        .image-guard {
+        .leap-proof-image-guard {
           position: absolute;
 
           inset: 0;
 
           z-index: 2;
+
+          -webkit-user-select: none;
+          user-select: none;
         }
 
-        /* ======================================================
-           HOVER OVERLAY
-        ====================================================== */
+        /* =====================================================
+           HOVER
+        ===================================================== */
 
-        .proof-overlay {
+        .leap-proof-overlay {
           position: absolute;
 
           inset: 0;
 
           z-index: 3;
 
-          display: grid;
+          display: flex;
 
-          place-items: center;
+          align-items: center;
+          justify-content: center;
 
-          background: rgba(0, 8, 3, 0.08);
+          background: rgba(0, 7, 3, 0.05);
 
           opacity: 0;
 
           transition:
-            opacity 260ms ease,
-            background 260ms ease;
+            opacity 250ms ease,
+            background 250ms ease;
         }
 
-        .view-pill {
+        .leap-proof-view-pill {
           display: inline-flex;
 
           align-items: center;
 
-          gap: 0.45rem;
+          gap: 7px;
 
-          padding: 0.65rem 0.95rem;
+          padding: 10px 15px;
 
-          border: 1px solid rgba(255, 255, 255, 0.18);
+          border: 1px solid rgba(255, 255, 255, 0.2);
 
           border-radius: 999px;
 
-          background: rgba(3, 14, 7, 0.78);
+          background: rgba(4, 15, 7, 0.9);
 
           color: #ffffff;
 
-          font-size: 0.8rem;
+          font-size: 13px;
 
           font-weight: 600;
 
-          backdrop-filter: blur(12px);
-          -webkit-backdrop-filter: blur(12px);
-
           transform: translateY(8px) scale(0.96);
 
-          transition: transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
+          transition:
+            transform
+            260ms
+            cubic-bezier(0.22, 1, 0.36, 1);
         }
 
-        .proof-card:hover .proof-media {
-          transform: translateY(-5px);
+        .leap-proof-card:hover .leap-proof-media {
+          transform: translateY(-4px);
 
           box-shadow:
-            0 25px 58px rgba(0, 0, 0, 0.32),
+            0 22px 50px rgba(0, 0, 0, 0.3),
             inset 0 0 0 1px rgba(41, 190, 62, 0.3);
         }
 
-        .proof-card:hover :global(.proof-image) {
-          transform: scale(1.045);
+        .leap-proof-card:hover .leap-proof-image {
+          transform: scale(1.035);
 
-          filter: brightness(0.78);
+          filter: brightness(0.8);
         }
 
-        .proof-card:hover .proof-overlay,
-        .proof-card:focus-visible .proof-overlay {
+        .leap-proof-card:hover .leap-proof-overlay,
+        .leap-proof-card:focus-visible .leap-proof-overlay {
           opacity: 1;
 
-          background: rgba(0, 8, 3, 0.24);
+          background: rgba(0, 7, 3, 0.22);
         }
 
-        .proof-card:hover .view-pill,
-        .proof-card:focus-visible .view-pill {
+        .leap-proof-card:hover .leap-proof-view-pill,
+        .leap-proof-card:focus-visible .leap-proof-view-pill {
           transform: translateY(0) scale(1);
         }
 
-        .proof-card:focus-visible .proof-media {
-          box-shadow:
-            0 25px 58px rgba(0, 0, 0, 0.32),
-            0 0 0 2px #29be3e;
+        .leap-proof-card:focus-visible .leap-proof-media {
+          outline: 2px solid #29be3e;
+
+          outline-offset: 3px;
         }
 
-        /* ======================================================
-           LIGHTBOX
-        ====================================================== */
+        /* =====================================================
+           TRUE INFINITE LOOP
+        ===================================================== */
 
-        .lightbox {
+        @keyframes leap-proof-scroll {
+          from {
+            transform: translate3d(0, 0, 0);
+          }
+
+          to {
+            /*
+             * Move one complete group plus the
+             * gap between group 1 and group 2.
+             *
+             * The visual frame at the end is identical
+             * to the visual frame at the beginning.
+             */
+            transform: translate3d(
+              calc(-50% - var(--leap-half-gap)),
+              0,
+              0
+            );
+          }
+        }
+
+        /* =====================================================
+           LIGHTBOX
+        ===================================================== */
+
+        .leap-proof-lightbox {
           position: fixed;
 
           inset: 0;
 
-          z-index: 9999;
+          z-index: 2147483000;
 
           display: flex;
 
           align-items: center;
           justify-content: center;
 
+          width: 100vw;
+          height: 100dvh;
+
           padding: 24px;
 
-          background: rgba(0, 5, 2, 0.94);
-
-          backdrop-filter: blur(18px);
-          -webkit-backdrop-filter: blur(18px);
-
-          animation: lightbox-fade 220ms ease both;
-
-          user-select: none;
-          -webkit-user-select: none;
-          -webkit-touch-callout: none;
-        }
-
-        .lightbox-content {
-          position: relative;
-
-          width: min(92vw, 1100px);
-
-          height: min(86vh, 900px);
+          box-sizing: border-box;
 
           overflow: hidden;
 
-          border-radius: 1.25rem;
+          background: rgba(0, 5, 2, 0.95);
 
-          background: #08140b;
+          -webkit-user-select: none;
+          user-select: none;
 
-          box-shadow:
-            0 40px 120px rgba(0, 0, 0, 0.65),
-            0 0 0 1px rgba(255, 255, 255, 0.09);
+          -webkit-touch-callout: none;
 
-          animation: lightbox-scale 300ms cubic-bezier(0.22, 1, 0.36, 1) both;
+          animation:
+            leap-proof-lightbox-in
+            180ms
+            ease
+            both;
         }
 
-        :global(.lightbox-image) {
+        .leap-proof-lightbox-content {
+          position: relative;
+
+          z-index: 2;
+
+          display: flex;
+
+          align-items: center;
+          justify-content: center;
+
+          width: min(92vw, 1100px);
+          height: min(86dvh, 900px);
+
+          padding: 12px;
+
+          box-sizing: border-box;
+
+          border: 1px solid rgba(255, 255, 255, 0.08);
+
+          border-radius: 18px;
+
+          background: #08120a;
+
+          box-shadow:
+            0 35px 100px rgba(0, 0, 0, 0.55);
+
+          animation:
+            leap-proof-lightbox-content-in
+            250ms
+            cubic-bezier(0.22, 1, 0.36, 1)
+            both;
+        }
+
+        .leap-proof-lightbox-image {
+          display: block;
+
+          width: auto !important;
+          height: auto !important;
+
+          max-width: 100% !important;
+          max-height: 100% !important;
+
           object-fit: contain;
 
           pointer-events: none;
 
-          user-select: none;
           -webkit-user-select: none;
+          user-select: none;
+
           -webkit-user-drag: none;
         }
 
-        /* ======================================================
+        /* =====================================================
            CLOSE BUTTON
-        ====================================================== */
+        ===================================================== */
 
-        .lightbox-close {
+        .leap-proof-lightbox-close {
           position: fixed;
 
-          top: 22px;
-          right: 22px;
+          top: 20px;
+          right: 20px;
 
-          z-index: 10001;
+          z-index: 2147483002;
 
-          display: grid;
+          display: flex;
+
+          align-items: center;
+          justify-content: center;
 
           width: 46px;
           height: 46px;
 
-          place-items: center;
+          padding: 0;
 
-          border: 1px solid rgba(255, 255, 255, 0.14);
+          border: 1px solid rgba(255, 255, 255, 0.15);
 
           border-radius: 999px;
 
-          background: rgba(255, 255, 255, 0.08);
+          background: rgba(255, 255, 255, 0.09);
 
           color: #ffffff;
 
           cursor: pointer;
-
-          backdrop-filter: blur(10px);
-          -webkit-backdrop-filter: blur(10px);
 
           transition:
             background 180ms ease,
             transform 180ms ease;
         }
 
-        .lightbox-close:hover {
-          background: rgba(255, 255, 255, 0.15);
+        .leap-proof-lightbox-close:hover {
+          background: rgba(255, 255, 255, 0.17);
 
           transform: scale(1.06);
         }
 
-        .lightbox-hint {
+        .leap-proof-lightbox-hint {
           position: fixed;
 
-          bottom: 18px;
+          bottom: 17px;
           left: 50%;
+
+          z-index: 2147483002;
 
           margin: 0;
 
@@ -785,39 +955,18 @@ export default function LeapProofGallery() {
 
           color: rgba(255, 255, 255, 0.48);
 
-          font-size: 0.75rem;
-
-          pointer-events: none;
+          font-size: 12px;
 
           white-space: nowrap;
+
+          pointer-events: none;
         }
 
-        /* ======================================================
-           INFINITE LOOP
-        ====================================================== */
-
-        @keyframes proof-scroll {
-          from {
-            transform: translate3d(0, 0, 0);
-          }
-
-          to {
-            /*
-             * Because there are two identical groups,
-             * this ends exactly at the start of group 2.
-             *
-             * When animation restarts at group 1,
-             * both positions look identical.
-             */
-            transform: translate3d(calc(-50% - (var(--gap) / 2)), 0, 0);
-          }
-        }
-
-        /* ======================================================
+        /* =====================================================
            LIGHTBOX ANIMATIONS
-        ====================================================== */
+        ===================================================== */
 
-        @keyframes lightbox-fade {
+        @keyframes leap-proof-lightbox-in {
           from {
             opacity: 0;
           }
@@ -827,11 +976,11 @@ export default function LeapProofGallery() {
           }
         }
 
-        @keyframes lightbox-scale {
+        @keyframes leap-proof-lightbox-content-in {
           from {
             opacity: 0;
 
-            transform: scale(0.95);
+            transform: scale(0.97);
           }
 
           to {
@@ -841,83 +990,99 @@ export default function LeapProofGallery() {
           }
         }
 
-        /* ======================================================
+        /* =====================================================
            TABLET
-        ====================================================== */
+        ===================================================== */
 
         @media (max-width: 900px) {
-          .gallery-shell {
-            --gap: 12px;
-            --side: 14px;
-          }
+          .leap-proof-viewport {
+            --leap-gap: 12px;
+            --leap-half-gap: 6px;
 
-          .gallery-track {
-            animation-duration: 42s;
+            padding-inline: 14px;
           }
 
           /*
-           * Exactly 2 cards visible.
+           * 2 visible.
+           *
+           * side padding = 28px
+           * gap = 12px
+           * total = 40px
            */
-          .proof-card {
-            flex-basis: calc((100vw - (var(--side) * 2) - var(--gap)) / 2);
+          .leap-proof-card {
+            width: calc((100vw - 40px) / 2);
 
-            width: calc((100vw - (var(--side) * 2) - var(--gap)) / 2);
+            flex-basis: calc((100vw - 40px) / 2);
           }
 
-          .proof-media {
-            border-radius: 1rem;
+          .leap-proof-track {
+            animation-duration: 44s;
+          }
+
+          .leap-proof-media {
+            border-radius: 17px;
           }
         }
 
-        /* ======================================================
+        /* =====================================================
            MOBILE
-        ====================================================== */
+        ===================================================== */
 
         @media (max-width: 640px) {
-          .gallery-shell {
-            --gap: 10px;
-            --side: 12px;
+          .leap-proof-section {
+            padding-top: 3.5rem;
+            padding-bottom: 3.5rem;
           }
 
-          .gallery-track {
-            animation-duration: 38s;
+          .leap-proof-viewport {
+            --leap-gap: 10px;
+            --leap-half-gap: 5px;
+
+            margin-top: 2.5rem;
+
+            padding-inline: 12px;
           }
 
           /*
-           * Exactly 1 card visible.
+           * One image visible.
            */
-          .proof-card {
-            flex-basis: calc(100vw - (var(--side) * 2));
+          .leap-proof-card {
+            width: calc(100vw - 24px);
 
-            width: calc(100vw - (var(--side) * 2));
+            flex-basis: calc(100vw - 24px);
           }
 
-          .proof-media {
-            border-radius: 0.9rem;
+          .leap-proof-track {
+            animation-duration: 40s;
           }
 
-          .lightbox {
+          .leap-proof-media {
+            border-radius: 15px;
+          }
+
+          .leap-proof-lightbox {
             padding: 12px;
           }
 
-          .lightbox-content {
+          .leap-proof-lightbox-content {
             width: 96vw;
+            height: 84dvh;
 
-            height: 82vh;
+            padding: 8px;
 
-            border-radius: 0.9rem;
+            border-radius: 14px;
           }
 
-          .lightbox-close {
-            top: 14px;
-            right: 14px;
+          .leap-proof-lightbox-close {
+            top: 12px;
+            right: 12px;
 
             width: 42px;
             height: 42px;
           }
 
-          .lightbox-hint {
-            bottom: 12px;
+          .leap-proof-lightbox-hint {
+            bottom: 10px;
           }
         }
       `}</style>
