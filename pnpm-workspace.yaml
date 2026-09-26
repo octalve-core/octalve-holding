@@ -1,6 +1,12 @@
 allowBuilds:
-  '@prisma/client': true
-  '@prisma/engines': true
+  "@prisma/client": true
+  "@prisma/engines": true
   prisma: true
   sharp: true
   unrs-resolver: true
+
+overrides:
+  "undici@": 7.29.1
+  "browserslist@": 4.29.1
+  "baseline-browser-mapping@": 2.11.26
+  "@babel/core@": 7.29.7
