@@ -584,37 +584,6 @@ export default function Models() {
           </p>
         </div>
       </div>
-
-      <style jsx global>{`
-        @keyframes octalveIconSwing {
-          0% {
-            transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
-          }
-          20% {
-            transform: translate3d(2px, -2px, 0) rotate(7deg) scale(1.04);
-          }
-          40% {
-            transform: translate3d(-2px, 1px, 0) rotate(-6deg) scale(1.02);
-          }
-          60% {
-            transform: translate3d(2px, -1px, 0) rotate(5deg) scale(1.05);
-          }
-          80% {
-            transform: translate3d(-1px, 1px, 0) rotate(-3deg) scale(1.02);
-          }
-          100% {
-            transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
-          }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-          * {
-            animation-duration: 0.01ms !important;
-            animation-iteration-count: 1 !important;
-            transition-duration: 0.01ms !important;
-          }
-        }
-      `}</style>
     </section>
   );
 }
