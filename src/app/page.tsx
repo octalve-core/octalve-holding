@@ -20,8 +20,10 @@ export default function Home() {
   return (
     <main>
       {/* <HomeWelcomePopup /> */}
-      <Header />
-      <Hero />
+      <div className="flex min-h-svh flex-col">
+        <Header />
+        <Hero />
+      </div>
       <QuickAccessTraction />
       <StartHereSection />
       <QuickAccessSlider />
