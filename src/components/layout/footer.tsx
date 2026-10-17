@@ -603,39 +603,39 @@ const suites: FooterItem[] = [
 const products: FooterItem[] = [
   {
     label: "Business Plan",
-    href: "/vault/shop",
+    href: "/models/vault",
     labels: [{ text: "Template", tone: "template" }],
   },
   {
     label: "Pitch Deck",
-    href: "/vault/shop",
+    href: "/models/vault",
     labels: [{ text: "Template", tone: "template" }],
   },
   {
     label: "Proposal",
-    href: "/vault/shop",
+    href: "/models/vault",
     labels: [{ text: "Template", tone: "template" }],
   },
   {
     label: "Invoice",
-    href: "/vault/shop",
+    href: "/models/vault",
     labels: [{ text: "Template", tone: "template" }],
   },
   {
     label: "Startup Guides",
-    href: "/vault/shop",
+    href: "/models/vault",
     labels: [{ text: "Guide", tone: "assets" }],
   },
   {
     label: "Sales Scripts",
-    href: "/vault/shop",
+    href: "/models/vault",
     labels: [{ text: "Sales", tone: "growth" }],
   },
-  { label: "HR Templates", href: "/vault/shop" },
-  { label: "Finance Trackers", href: "/vault/shop" },
+  { label: "HR Templates", href: "/models/vault" },
+  { label: "Finance Trackers", href: "/models/vault" },
   {
     label: "Resource Bundles",
-    href: "/vault/shop",
+    href: "/models/vault",
     labels: [{ text: "Bundle", tone: "popular" }],
   },
 ];

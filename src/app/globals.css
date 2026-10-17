@@ -100,3 +100,84 @@ button {
     display: none;
   }
 }
+/* OCTALVE HEADER V5 - MOBILE SCROLLBAR VISIBILITY */
+/* Scroll gestures and keyboard scrolling remain functional. */
+@media (max-width: 1535px) {
+  #octalve-mobile-menu {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    overscroll-behavior: contain;
+  }
+
+  #octalve-mobile-menu::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+}
+
+/* Hide the mobile page scrollbar track, not page scrolling itself. */
+@media (max-width: 767px) {
+  html, body {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  html::-webkit-scrollbar, body::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+}
+
+/* OCTALVE V7 STABLE ANIMATIONS - moved out of styled-jsx */
+/* From Models */
+@keyframes octalveIconSwing {
+          0% {
+            transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+          }
+          20% {
+            transform: translate3d(2px, -2px, 0) rotate(7deg) scale(1.04);
+          }
+          40% {
+            transform: translate3d(-2px, 1px, 0) rotate(-6deg) scale(1.02);
+          }
+          60% {
+            transform: translate3d(2px, -1px, 0) rotate(5deg) scale(1.05);
+          }
+          80% {
+            transform: translate3d(-1px, 1px, 0) rotate(-3deg) scale(1.02);
+          }
+          100% {
+            transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+          }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          #models * {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+          }
+        }
+
+/* From Partners */
+.partners-track {
+          animation-name: octalvePartnersMarqueeX;
+          animation-timing-function: linear;
+          animation-iteration-count: infinite;
+          will-change: transform;
+        }
+
+        .partners-track:hover {
+          animation-play-state: paused;
+        }
+
+        @keyframes octalvePartnersMarqueeX {
+          from {
+            transform: translateX(0);
+          }
+          to {
+            transform: translateX(-50%);
+          }
+        }

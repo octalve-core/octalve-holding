@@ -62,28 +62,6 @@ export default function Partners() {
           ))}
         </div>
       </div>
-
-      <style jsx>{`
-        .partners-track {
-          animation-name: marqueeX;
-          animation-timing-function: linear;
-          animation-iteration-count: infinite;
-          will-change: transform;
-        }
-
-        .partners-track:hover {
-          animation-play-state: paused;
-        }
-
-        @keyframes marqueeX {
-          from {
-            transform: translateX(0);
-          }
-          to {
-            transform: translateX(-50%);
-          }
-        }
-      `}</style>
     </section>
   );
 }
