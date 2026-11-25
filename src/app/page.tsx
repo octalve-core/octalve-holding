@@ -18,12 +18,13 @@ import Workspace from "@/components/sections/workspace";
 
 export default function Home() {
   return (
-    <main>
-      {/* <HomeWelcomePopup /> */}
-      <div className="flex min-h-svh flex-col">
-        <Header />
-        <Hero />
-      </div>
+    <div className="flex min-h-svh flex-col">
+      <Header />
+      <main className="flex flex-1 flex-col">
+        {/* <HomeWelcomePopup /> */}
+        <div className="flex min-h-[calc(100svh-var(--holding-header-height,128px))] flex-col">
+          <Hero />
+        </div>
       <QuickAccessTraction />
       <StartHereSection />
       <QuickAccessSlider />
@@ -36,7 +37,8 @@ export default function Home() {
       <HomeCta />
       <Testimonials />
       {/* <NewsletterCTA formSlot={<NewsletterFormShell />} /> */}
+      </main>
       <Footer />
-    </main>
+    </div>
   );
 }

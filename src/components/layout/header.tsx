@@ -2631,13 +2631,33 @@ export default function Header() {
     };
   }, [mobileOpen]);
 
+  useEffect(() => {
+    const element = headerRef.current;
+    if (!element) return;
+    const update = () => document.documentElement.style.setProperty("--holding-header-height", `${element.offsetHeight}px`);
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(element);
+    return () => {
+      observer.disconnect();
+      document.documentElement.style.removeProperty("--holding-header-height");
+    };
+  }, []);
+
+  useEffect(() => {
+    const desktop = window.matchMedia("(min-width: 1536px)");
+    const close = () => { if (desktop.matches) setMobileOpen(false); };
+    desktop.addEventListener("change", close);
+    return () => desktop.removeEventListener("change", close);
+  }, []);
+
   function closeMobileMenu() {
     setMobileOpen(false);
   }
 
   return (
     <header ref={headerRef} className="sticky top-0 z-[70] w-full shrink-0">
-      <div className="w-full overflow-visible bg-[#0A0D11] shadow-[0_24px_70px_rgba(0,0,0,0.34)]">
+      <div className="w-full overflow-visible rounded-b-2xl bg-[#0A0D11] shadow-[0_24px_70px_rgba(0,0,0,0.34)]">
         <div className="flex h-[5px] w-full overflow-hidden">
           <div className="w-1/4" style={{ backgroundColor: NAV_COLORS.red }} />
           <div className="w-1/4" style={{ backgroundColor: NAV_COLORS.blue }} />
@@ -2665,7 +2685,7 @@ export default function Header() {
           </div>
         </div>
 
-        <div className="relative px-5 sm:px-6 lg:px-8" style={{ backgroundColor: NAV_COLORS.shell }}>
+        <div className="relative rounded-b-2xl px-5 sm:px-6 lg:px-8" style={{ backgroundColor: NAV_COLORS.shell }}>
           <div className="flex h-[78px] items-center gap-5 xl:gap-7">
             <HeaderBrand />
 
@@ -2711,6 +2731,7 @@ export default function Header() {
               <button
                 type="button"
                 aria-label="Open search"
+                onClick={() => { setMobileOpen(true); requestAnimationFrame(() => headerRef.current?.querySelector<HTMLInputElement>("#octalve-mobile-menu input")?.focus()); }}
                 className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/12 bg-white/[0.03] text-white"
               >
                 <Search className="h-5 w-5" />
@@ -2731,7 +2752,7 @@ export default function Header() {
           {mobileOpen ? (
             <div
               id="octalve-mobile-menu"
-              className="absolute left-0 right-0 top-full z-[90] mx-4 mt-2 max-h-[calc(100dvh-128px)] overflow-y-auto rounded-[24px] border border-white/10 bg-[#0D1014] p-4 shadow-[0_24px_70px_rgba(0,0,0,0.42)] 2xl:hidden"
+              className="absolute left-0 right-0 top-full z-[90] mx-4 mt-2 max-h-[calc(100dvh-var(--holding-header-height,128px)-16px)] overflow-y-auto rounded-[24px] border border-white/10 bg-[#0D1014] p-4 shadow-[0_24px_70px_rgba(0,0,0,0.42)] 2xl:hidden"
             >
               <HeaderSearch onNavigate={closeMobileMenu} />
 

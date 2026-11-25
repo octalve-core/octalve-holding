@@ -256,7 +256,8 @@ const ROTATING_WORDS = [
   { text: "Websites", color: "#0064E0" },
   { text: "Strategy", color: "#29BE3E" },
   { text: "Software", color: "#FC7E24" },
-  { text: "AI & Smart Systems", color: "#8C4DFF" },
+  { text: "AI System", color: "#8C4DFF" },
+  { text: "Smart System", color: "#CBD5E1" },
   { text: "Apps", color: "#FFFFFF" },
   { text: "Cloud Hosting", color: "#258CFF" },
 ];
